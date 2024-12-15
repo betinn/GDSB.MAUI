@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GDSB.MAUI.FileFinderDecrypter"
+             Title="Find your file and decrypt it!">
+    <VerticalStackLayout Padding="50" Spacing="15">
+        <Image
+            Source="palhacinho.jpg"
+            HeightRequest="185"
+            Aspect="AspectFit" />
+        <Entry x:Name="PasswordEntry" IsPassword="True"
+               Placeholder="Your password here!"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"/>
+        <Button
+            x:Name="FilePickBtn"
+            Clicked="FilePickBtn_Clicked"
+            Text="Pick your file" 
+            HorizontalOptions="Fill" />
+    </VerticalStackLayout>
+</ContentPage>
