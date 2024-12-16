@@ -71,6 +71,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\GDSB.Domain\GDSB.Domain.csproj" />
+	  <ProjectReference Include="..\GDSB.Infrastructure\GDSB.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="FileFinderDecrypter.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -1,4 +1,7 @@
-﻿using GDSB.MAUI.Interfaces;
+﻿using GDSB.Domain.Interfaces;
+using GDSB.Infrastructure.Encryption;
+using GDSB.MAUI.Interfaces;
+using GDSB.MAUI.Services;
 using Microsoft.Extensions.Logging;
 
 namespace GDSB.MAUI
@@ -25,6 +28,10 @@ namespace GDSB.MAUI
 #elif WINDOWS
             builder.Services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
 #endif
+
+            builder.Services.AddSingleton<IFileDataService, FileDataService>();
+            builder.Services.AddSingleton<IFileDecryptionService, FileDecryptionService>();
+
             builder.Services.AddSingleton<AppShell>();
             builder.Services.AddTransient<FileFinderDecrypter>();
 
