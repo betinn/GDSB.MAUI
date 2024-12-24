@@ -7,11 +7,6 @@
             InitializeComponent();
         }
 
-        public AppShell(FileFinderDecrypter fileFinderDecrypter)
-        {
-            InitializeComponent();
-            Items.Add(new ShellContent { Content = fileFinderDecrypter });
-        }
     }
 
 }

@@ -9,7 +9,7 @@ namespace GDSB.Domain.Entities
     public class SecretBox
     {
         public bool Favorito { get; set; }
-        public string BoxNmae { get; set; } = string.Empty;
+        public string BoxName { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
         public string User { get; set; } = string.Empty;
         public string Pass {  get; set; } = string.Empty;

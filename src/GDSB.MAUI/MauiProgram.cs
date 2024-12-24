@@ -23,17 +23,17 @@ namespace GDSB.MAUI
     		builder.Logging.AddDebug();
 #endif
             //builder.Services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
-#if ANDROID
-            builder.Services.AddSingleton<IFilePickerService, Platforms.Android.Services.FilePickerService>();
-#elif WINDOWS
-            builder.Services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
-#endif
+//#if ANDROID
+//            builder.Services.AddSingleton<IFilePickerService, Platforms.Android.Services.FilePickerService>();
+//#elif WINDOWS
+//            builder.Services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
+//#endif
 
-            builder.Services.AddSingleton<IFileDataService, FileDataService>();
-            builder.Services.AddSingleton<IFileDecryptionService, FileDecryptionService>();
+            //builder.Services.AddSingleton<IFileDataService, FileDataService>();
+            //builder.Services.AddSingleton<IFileDecryptionService, FileDecryptionService>();
 
-            builder.Services.AddSingleton<AppShell>();
-            builder.Services.AddTransient<FileFinderDecrypter>();
+            //builder.Services.AddSingleton<AppShell>();
+            //builder.Services.AddTransient<FileFinderDecrypter>();
 
             return builder.Build();
         }
