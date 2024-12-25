@@ -38,4 +38,9 @@ public partial class FileFinderDecrypter : ContentPage
 
         
     }
+
+    private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
+    {
+		PasswordEntry.Text = string.Empty;
+    }
 }

@@ -1,15 +1,19 @@
-# GDSB.MAUI
+# GDSB
 
-## Versão 1.0
+## Version 1.0.1
 
-**Data de Lançamento:** 24/12/2024
+- When returning to the home screen, the `password` field will be cleared.
 
-### Funcionalidades
+## Version 1.0
 
-- Primeira versão funcional.
-- Compatível apenas com arquivos `.GDSBX` das versões anteriores.
-- Suporte somente para leitura e descriptografia dos arquivos antigos já existentes.
+**Release Date:** 12/24/2024
 
-### Observações
+### Features
 
-Esta versão é destinada apenas para leitura e descriptografia dos arquivos antigos. Novas funcionalidades serão adicionadas em versões futuras.
+- First functional version.
+- Compatible only with `.GDSBX` files from previous versions.
+- Support only for reading and decrypting existing old files.
+
+### Notes
+
+This version is intended only for reading and decrypting old files. New features will be added in future versions.
