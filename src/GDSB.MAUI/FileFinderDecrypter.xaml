@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GDSB.MAUI.FileFinderDecrypter"
-             Title="Find your file and decrypt it!">
+             Title="Find your file and decrypt it!" 
+             NavigatedTo="ContentPage_NavigatedTo">
     <VerticalStackLayout Padding="50" Spacing="15">
         <Image
             Source="palhacinho.jpg"
