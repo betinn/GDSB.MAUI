@@ -15,16 +15,25 @@ namespace GDSB.MAUI.ViewModels
         private readonly IProfileFileService _profileFileService;
         private readonly IFilePickerService _filePickerService;
         private readonly INavigationService _navigationService;
+        private readonly IBiometricUnlockService _biometricUnlockService;
 
         public CreateVaultViewModel(
             IProfileFileService profileFileService,
             IFilePickerService filePickerService,
-            INavigationService navigationService)
+            INavigationService navigationService,
+            IBiometricUnlockService biometricUnlockService,
+            BiometricOptInCoordinator biometricOptIn)
         {
             _profileFileService = profileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
+            _biometricUnlockService = biometricUnlockService;
+            BiometricOptIn = biometricOptIn;
         }
+
+        // Exposto pra CreateVaultPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
+        // BiometricOptIn}") - ver GDSB.MAUI.ViewModels.BiometricOptInCoordinator.
+        public BiometricOptInCoordinator BiometricOptIn { get; }
 
         [ObservableProperty]
         private string vaultName = "Meu Cofre";
@@ -94,6 +103,22 @@ namespace GDSB.MAUI.ViewModels
                 var enteredPassword = Password;
 
                 await Task.Run(() => _profileFileService.Save(location, profile, enteredPassword));
+
+                // Um cofre novo nunca deve herdar o atalho de biometria de outro que o usuário
+                // tinha aberto antes - sem isso, criar o cofre B com a biometria do cofre A ainda
+                // ativa deixava o atalho selado com a senha errada pra qualquer um dos dois. Some
+                // com o antigo (se houver) e oferece de novo, já mirando o cofre recém-criado.
+                try
+                {
+                    await _biometricUnlockService.DisableAsync();
+                }
+                catch (Exception)
+                {
+                }
+
+                BiometricOptInCoordinator.ForgetVault();
+                BiometricOptInCoordinator.RememberVault(location, profile.Nome);
+                await BiometricOptIn.MaybeOfferAsync(enteredPassword);
 
                 await _navigationService.NavigateToRootAsync(nameof(VaultPage), new Dictionary<string, object>
                 {

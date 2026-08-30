@@ -63,6 +63,10 @@ namespace GDSB.MAUI
 
         private static void RegisterViewModels(IServiceCollection services)
         {
+            // Transient (não Singleton): cada tela que oferece o opt-in (Unlock, CreateVault)
+            // precisa da sua própria instância, com seu próprio TaskCompletionSource pendente.
+            services.AddTransient<BiometricOptInCoordinator>();
+
             services.AddTransient<UnlockViewModel>();
             services.AddTransient<VaultViewModel>();
             services.AddTransient<CreateVaultViewModel>();

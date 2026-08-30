@@ -17,40 +17,29 @@ namespace GDSB.MAUI.ViewModels
         private const string GenericErrorMessage = "Senha incorreta ou arquivo corrompido.";
         private const string EmptyPasswordMessage = "Digite a senha mestra do cofre.";
         private const string FilePickerErrorMessage = "Não foi possível abrir o seletor de arquivos.";
-        private const string BiometricUnavailableMessage = "Não foi possível usar a biometria. Digite a senha mestra.";
-
-        // Amarrado ao último cofre aberto: não existe seleção de perfil, um uso real é um cofre
-        // por aparelho, então guardar a última location (+ o nome do cofre, só pra exibição) já
-        // basta. Preferences é usado direto aqui (sem uma interface própria) pelo mesmo motivo de
-        // Launcher em VaultViewModel.OpenUrlAsync: é um detalhe de sessão, não algo que precisa de
-        // mock nos fluxos já cobertos por teste.
-        private const string LastLocationPreferenceKey = "gdsb.lastVaultLocation";
-        private const string LastVaultNamePreferenceKey = "gdsb.lastVaultName";
-        private const string BiometricPromptedPreferenceKey = "gdsb.biometricPrompted";
 
         private readonly IProfileFileService _profileFileService;
         private readonly IFilePickerService _filePickerService;
         private readonly INavigationService _navigationService;
-        private readonly IAlertService _alertService;
         private readonly IBiometricUnlockService _biometricUnlockService;
-
-        // Resolvida quando o usuário responde ao overlay de opt-in (Aceitar/Agora não) - ver
-        // AcceptBiometricOptIn/DeclineBiometricOptIn.
-        private TaskCompletionSource<bool>? _biometricOptInResponse;
 
         public UnlockViewModel(
             IProfileFileService profileFileService,
             IFilePickerService filePickerService,
             INavigationService navigationService,
-            IAlertService alertService,
-            IBiometricUnlockService biometricUnlockService)
+            IBiometricUnlockService biometricUnlockService,
+            BiometricOptInCoordinator biometricOptIn)
         {
             _profileFileService = profileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
-            _alertService = alertService;
             _biometricUnlockService = biometricUnlockService;
+            BiometricOptIn = biometricOptIn;
         }
+
+        // Exposto pra UnlockPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
+        // BiometricOptIn}") - ver GDSB.MAUI.ViewModels.BiometricOptInCoordinator.
+        public BiometricOptInCoordinator BiometricOptIn { get; }
 
         [ObservableProperty]
         private string password = string.Empty;
@@ -72,9 +61,6 @@ namespace GDSB.MAUI.ViewModels
 
         [ObservableProperty]
         private string biometricVaultPath = string.Empty;
-
-        [ObservableProperty]
-        private bool isBiometricOptInVisible;
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
@@ -121,7 +107,7 @@ namespace GDSB.MAUI.ViewModels
         // falhou, pra não entrar em loop disparando o sensor de novo sozinha.
         private async Task RefreshBiometricAvailabilityAsync()
         {
-            var lastLocation = Preferences.Default.Get<string?>(LastLocationPreferenceKey, null);
+            var lastLocation = Preferences.Default.Get<string?>(BiometricOptInCoordinator.LastLocationPreferenceKey, null);
             if (string.IsNullOrEmpty(lastLocation))
             {
                 CanUseBiometric = false;
@@ -133,7 +119,7 @@ namespace GDSB.MAUI.ViewModels
 
             if (CanUseBiometric)
             {
-                BiometricVaultName = Preferences.Default.Get(LastVaultNamePreferenceKey, string.Empty);
+                BiometricVaultName = Preferences.Default.Get(BiometricOptInCoordinator.LastVaultNamePreferenceKey, string.Empty);
                 BiometricVaultPath = lastLocation;
             }
         }
@@ -169,7 +155,7 @@ namespace GDSB.MAUI.ViewModels
         [RelayCommand(CanExecute = nameof(CanUnlock))]
         private async Task UnlockWithBiometricAsync()
         {
-            var lastLocation = Preferences.Default.Get<string?>(LastLocationPreferenceKey, null);
+            var lastLocation = Preferences.Default.Get<string?>(BiometricOptInCoordinator.LastLocationPreferenceKey, null);
             if (string.IsNullOrEmpty(lastLocation))
                 return;
 
@@ -219,11 +205,10 @@ namespace GDSB.MAUI.ViewModels
                 if (result.WasLegacyFormat)
                     await Task.Run(() => _profileFileService.Save(location, result.Profile, enteredPassword));
 
-                Preferences.Default.Set(LastLocationPreferenceKey, location);
-                Preferences.Default.Set(LastVaultNamePreferenceKey, result.Profile.Nome);
+                BiometricOptInCoordinator.RememberVault(location, result.Profile.Nome);
 
                 if (offerBiometricOptIn)
-                    await MaybeOfferBiometricOptInAsync(enteredPassword);
+                    await BiometricOptIn.MaybeOfferAsync(enteredPassword);
 
                 ClearPassword();
 
@@ -247,54 +232,6 @@ namespace GDSB.MAUI.ViewModels
             }
         }
 
-        // Só pergunta uma vez na vida do app (por dispositivo) - nem repete a pergunta se o
-        // usuário recusar. Chamado só depois de um Open manual bem-sucedido, nunca a partir do
-        // próprio atalho de biometria. O overlay (ver UnlockPage.xaml) substitui um DisplayAlert
-        // nativo justamente pra poder usar as cores/estilos do app em vez do diálogo do sistema.
-        private async Task MaybeOfferBiometricOptInAsync(string password)
-        {
-            if (Preferences.Default.Get(BiometricPromptedPreferenceKey, false))
-                return;
-
-            if (!await _biometricUnlockService.IsAvailableAsync() || await _biometricUnlockService.IsEnabledAsync())
-                return;
-
-            Preferences.Default.Set(BiometricPromptedPreferenceKey, true);
-
-            _biometricOptInResponse = new TaskCompletionSource<bool>();
-            IsBiometricOptInVisible = true;
-            var accepted = await _biometricOptInResponse.Task;
-
-            if (!accepted)
-                return;
-
-            var secret = Encoding.UTF8.GetBytes(password);
-            try
-            {
-                var stored = await _biometricUnlockService.StoreKeyAsync(secret);
-                if (!stored)
-                    await _alertService.DisplayAlertAsync(null, BiometricUnavailableMessage, "Ok");
-            }
-            finally
-            {
-                CryptographicOperations.ZeroMemory(secret);
-            }
-        }
-
-        [RelayCommand]
-        private void AcceptBiometricOptIn()
-        {
-            IsBiometricOptInVisible = false;
-            _biometricOptInResponse?.TrySetResult(true);
-        }
-
-        [RelayCommand]
-        private void DeclineBiometricOptIn()
-        {
-            IsBiometricOptInVisible = false;
-            _biometricOptInResponse?.TrySetResult(false);
-        }
-
         // "Trocar cofre": a biometria só faz sentido presa a um cofre por vez (é uma senha selada,
         // não uma chave universal), então trocar de cofre precisa apagar o atalho atual por
         // completo - incluindo o "já perguntei" - pra que o próximo Open bem-sucedido (de
@@ -310,9 +247,7 @@ namespace GDSB.MAUI.ViewModels
             {
             }
 
-            Preferences.Default.Remove(LastLocationPreferenceKey);
-            Preferences.Default.Remove(LastVaultNamePreferenceKey);
-            Preferences.Default.Remove(BiometricPromptedPreferenceKey);
+            BiometricOptInCoordinator.ForgetVault();
 
             CanUseBiometric = false;
             BiometricVaultName = string.Empty;

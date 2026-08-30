@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GDSB.MAUI.Views.BiometricOptInView">
+
+    <!-- Dialog no lugar de um DisplayAlert nativo, pra manter as cores/estilos do app (o alerta
+         do sistema não pode ser tematizado). Reaproveitada tanto no Unlock quanto na criação de
+         cofre - quem hospeda define BindingContext="{Binding BiometricOptIn}" na instância. -->
+    <Grid IsVisible="{Binding IsVisible}" BackgroundColor="#CC141414" Padding="32">
+        <Border Style="{StaticResource CardBorderStyle}" Padding="26" StrokeShape="RoundRectangle 20"
+                VerticalOptions="Center" MaximumWidthRequest="360">
+            <VerticalStackLayout Spacing="20">
+
+                <Border WidthRequest="64" HeightRequest="64" StrokeShape="RoundRectangle 32"
+                        BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
+                        HorizontalOptions="Center">
+                    <Label Text="&#128272;" FontSize="26" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Desbloqueio por biometria"
+                           FontFamily="OpenSansSemibold" FontSize="18"
+                           TextColor="{StaticResource TextPrimaryDark}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Da próxima vez, use sua digital ou rosto pra abrir este cofre sem digitar a senha. A senha mestra continua funcionando normalmente quando você quiser."
+                           FontSize="13.5" TextColor="{StaticResource TextSecondaryDark}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="10">
+                    <Button Text="Ativar biometria"
+                            Style="{StaticResource PrimaryActionButtonStyle}"
+                            Command="{Binding AcceptCommand}" />
+                    <Button Text="Agora não"
+                            Style="{StaticResource SecondaryActionButtonStyle}"
+                            Command="{Binding DeclineCommand}" />
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>
