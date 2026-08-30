@@ -62,6 +62,14 @@
                             Command="{Binding UnlockCommand}"
                             IsEnabled="{Binding CanInteract}" />
 
+                    <Button Text="&#128272; Desbloquear com biometria"
+                            Command="{Binding UnlockWithBiometricCommand}"
+                            IsVisible="{Binding CanUseBiometric}"
+                            IsEnabled="{Binding CanInteract}"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource PrimaryDark}"
+                            FontSize="14" />
+
                 </VerticalStackLayout>
             </Border>
 

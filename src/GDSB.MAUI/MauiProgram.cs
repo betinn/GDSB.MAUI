@@ -42,9 +42,11 @@ namespace GDSB.MAUI
 #if ANDROID
             services.AddSingleton<IFilePickerService, Platforms.Android.Services.FilePickerService>();
             services.AddSingleton<IVaultFileSystem, Platforms.Android.Services.AndroidSafFileSystem>();
+            services.AddSingleton<IBiometricUnlockService, Platforms.Android.Services.BiometricUnlockService>();
 #elif WINDOWS
             services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
             services.AddSingleton<IVaultFileSystem, LocalFileSystem>();
+            services.AddSingleton<IBiometricUnlockService, Platforms.Windows.Services.BiometricUnlockService>();
 #endif
 
 #pragma warning disable CS0618 // leitor legado obsoleto, usado só por trás de IProfileFileService
@@ -56,6 +58,7 @@ namespace GDSB.MAUI
             services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IAlertService, AlertService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IIdleLockService, IdleLockService>();
         }
 
         private static void RegisterViewModels(IServiceCollection services)
