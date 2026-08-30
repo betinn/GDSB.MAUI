@@ -1,0 +1,104 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using GDSB.Domain.Interfaces;
+using GDSB.MAUI.Services;
+using Microsoft.Maui.Storage;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace GDSB.MAUI.ViewModels
+{
+    // ViewModel da BiometricOptInView (Views/BiometricOptInView.xaml). O mesmo diálogo de opt-in
+    // de biometria é oferecido tanto depois de abrir um cofre existente (UnlockViewModel) quanto
+    // depois de criar um novo (CreateVaultViewModel) - por isso vive num lugar só em vez de
+    // duplicado nos dois, incluindo as chaves de Preferences que amarram a biometria a um cofre
+    // específico (ver RememberVault/ForgetVault).
+    public partial class BiometricOptInCoordinator : ObservableObject
+    {
+        public const string PromptedPreferenceKey = "gdsb.biometricPrompted";
+        public const string LastLocationPreferenceKey = "gdsb.lastVaultLocation";
+        public const string LastVaultNamePreferenceKey = "gdsb.lastVaultName";
+
+        private const string UnavailableMessage = "Não foi possível usar a biometria. Digite a senha mestra.";
+
+        private readonly IBiometricUnlockService _biometricUnlockService;
+        private readonly IAlertService _alertService;
+
+        private TaskCompletionSource<bool>? _response;
+
+        public BiometricOptInCoordinator(IBiometricUnlockService biometricUnlockService, IAlertService alertService)
+        {
+            _biometricUnlockService = biometricUnlockService;
+            _alertService = alertService;
+        }
+
+        [ObservableProperty]
+        private bool isVisible;
+
+        // Grava qual cofre a biometria deve mirar da próxima vez - chamado a cada Open/CreateVault
+        // bem-sucedido, esteja a biometria ativa ou não (é só o "candidato" a próximo alvo).
+        public static void RememberVault(string location, string vaultName)
+        {
+            Preferences.Default.Set(LastLocationPreferenceKey, location);
+            Preferences.Default.Set(LastVaultNamePreferenceKey, vaultName);
+        }
+
+        // Esquece o cofre-alvo e a resposta já dada ao opt-in - usado ao trocar de cofre (manual
+        // ou criando um novo), pra que o próximo Open/CreateVault bem-sucedido ofereça o opt-in de
+        // novo, já mirando o cofre certo. Não mexe no segredo selado em si - quem chama isso é
+        // responsável por também chamar IBiometricUnlockService.DisableAsync.
+        public static void ForgetVault()
+        {
+            Preferences.Default.Remove(LastLocationPreferenceKey);
+            Preferences.Default.Remove(LastVaultNamePreferenceKey);
+            Preferences.Default.Remove(PromptedPreferenceKey);
+        }
+
+        // Só pergunta uma vez na vida do app (por dispositivo) - nem repete a pergunta se o
+        // usuário recusar (ver PromptedPreferenceKey). Chamado só depois de um Open/CreateVault
+        // bem-sucedido, nunca a partir do próprio atalho de biometria.
+        public async Task MaybeOfferAsync(string password)
+        {
+            if (Preferences.Default.Get(PromptedPreferenceKey, false))
+                return;
+
+            if (!await _biometricUnlockService.IsAvailableAsync() || await _biometricUnlockService.IsEnabledAsync())
+                return;
+
+            Preferences.Default.Set(PromptedPreferenceKey, true);
+
+            _response = new TaskCompletionSource<bool>();
+            IsVisible = true;
+            var accepted = await _response.Task;
+
+            if (!accepted)
+                return;
+
+            var secret = Encoding.UTF8.GetBytes(password);
+            try
+            {
+                var stored = await _biometricUnlockService.StoreKeyAsync(secret);
+                if (!stored)
+                    await _alertService.DisplayAlertAsync(null, UnavailableMessage, "Ok");
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(secret);
+            }
+        }
+
+        [RelayCommand]
+        private void Accept()
+        {
+            IsVisible = false;
+            _response?.TrySetResult(true);
+        }
+
+        [RelayCommand]
+        private void Decline()
+        {
+            IsVisible = false;
+            _response?.TrySetResult(false);
+        }
+    }
+}

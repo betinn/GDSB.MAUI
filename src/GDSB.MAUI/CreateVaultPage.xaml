@@ -2,80 +2,87 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
+             xmlns:views="clr-namespace:GDSB.MAUI.Views"
              x:Class="GDSB.MAUI.CreateVaultPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
 
-    <Grid RowDefinitions="Auto,*,Auto" Padding="32">
+    <Grid>
 
-        <Label Grid.Row="0" Text="&#8592; Voltar" TextColor="{StaticResource TextSecondaryDark}"
-               FontSize="14" Margin="0,8,0,0" behaviors:HoverCursor.IsHand="True">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding GoBackCommand}" />
-            </Label.GestureRecognizers>
-        </Label>
+        <Grid RowDefinitions="Auto,*,Auto" Padding="32">
 
-        <VerticalStackLayout Grid.Row="1" Spacing="28">
+            <Label Grid.Row="0" Text="&#8592; Voltar" TextColor="{StaticResource TextSecondaryDark}"
+                   FontSize="14" Margin="0,8,0,0" behaviors:HoverCursor.IsHand="True">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
 
-            <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
-                <Border WidthRequest="72" HeightRequest="72" StrokeShape="RoundRectangle 36"
-                        BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
-                        HorizontalOptions="Center">
-                    <Label Text="&#128273;" FontSize="30" HorizontalOptions="Center" VerticalOptions="Center" />
+            <VerticalStackLayout Grid.Row="1" Spacing="28">
+
+                <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+                    <Border WidthRequest="72" HeightRequest="72" StrokeShape="RoundRectangle 36"
+                            BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
+                            HorizontalOptions="Center">
+                        <Label Text="&#128273;" FontSize="30" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Text="Novo cofre" FontSize="22" FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
+                    <Label Text="Escolha onde guardar e defina a senha mestra" FontSize="13"
+                           TextColor="{StaticResource TextSecondaryDark}" HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
+                    <VerticalStackLayout Spacing="16">
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="NOME DO COFRE" Style="{StaticResource FieldLabelStyle}" />
+                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                    StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                <Entry Text="{Binding VaultName}" TextColor="{StaticResource TextPrimaryDark}"
+                                       PlaceholderColor="{StaticResource TextMutedDark}" BackgroundColor="Transparent"
+                                       VerticalOptions="Center" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                    StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                <Entry Text="{Binding Password}" IsPassword="True"
+                                       Placeholder="Mínimo de 8 caracteres"
+                                       TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                       BackgroundColor="Transparent" VerticalOptions="Center" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="CONFIRMAR SENHA" Style="{StaticResource FieldLabelStyle}" />
+                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                    StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                <Entry Text="{Binding ConfirmPassword}" IsPassword="True"
+                                       Placeholder="Digite a senha novamente"
+                                       TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                       BackgroundColor="Transparent" VerticalOptions="Center"
+                                       ReturnCommand="{Binding CreateVaultCommand}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                               IsVisible="{Binding HasErrorMessage}" />
+
+                        <Button Text="{Binding CreateButtonText}" Style="{StaticResource PrimaryActionButtonStyle}"
+                                Command="{Binding CreateVaultCommand}" IsEnabled="{Binding CanInteract}" />
+
+                    </VerticalStackLayout>
                 </Border>
-                <Label Text="Novo cofre" FontSize="22" FontFamily="OpenSansSemibold"
-                       TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
-                <Label Text="Escolha onde guardar e defina a senha mestra" FontSize="13"
-                       TextColor="{StaticResource TextSecondaryDark}" HorizontalOptions="Center"
-                       HorizontalTextAlignment="Center" />
+
             </VerticalStackLayout>
 
-            <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
-                <VerticalStackLayout Spacing="16">
+        </Grid>
 
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="NOME DO COFRE" Style="{StaticResource FieldLabelStyle}" />
-                        <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                            <Entry Text="{Binding VaultName}" TextColor="{StaticResource TextPrimaryDark}"
-                                   PlaceholderColor="{StaticResource TextMutedDark}" BackgroundColor="Transparent"
-                                   VerticalOptions="Center" />
-                        </Border>
-                    </VerticalStackLayout>
-
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
-                        <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                            <Entry Text="{Binding Password}" IsPassword="True"
-                                   Placeholder="Mínimo de 8 caracteres"
-                                   TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                                   BackgroundColor="Transparent" VerticalOptions="Center" />
-                        </Border>
-                    </VerticalStackLayout>
-
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="CONFIRMAR SENHA" Style="{StaticResource FieldLabelStyle}" />
-                        <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                            <Entry Text="{Binding ConfirmPassword}" IsPassword="True"
-                                   Placeholder="Digite a senha novamente"
-                                   TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                                   BackgroundColor="Transparent" VerticalOptions="Center"
-                                   ReturnCommand="{Binding CreateVaultCommand}" />
-                        </Border>
-                    </VerticalStackLayout>
-
-                    <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
-                           IsVisible="{Binding HasErrorMessage}" />
-
-                    <Button Text="{Binding CreateButtonText}" Style="{StaticResource PrimaryActionButtonStyle}"
-                            Command="{Binding CreateVaultCommand}" IsEnabled="{Binding CanInteract}" />
-
-                </VerticalStackLayout>
-            </Border>
-
-        </VerticalStackLayout>
+        <views:BiometricOptInView BindingContext="{Binding BiometricOptIn}" />
 
     </Grid>
 </ContentPage>
