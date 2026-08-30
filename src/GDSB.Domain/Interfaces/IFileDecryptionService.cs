@@ -9,6 +9,6 @@ namespace GDSB.Domain.Interfaces
 {
     public interface IFileDecryptionService
     {
-        Profile GetProfileDecrypted(string filePath, string password);
+        Profile GetProfileDecrypted(string fileContent, string password);
     }
 }

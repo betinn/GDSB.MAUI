@@ -21,9 +21,9 @@ namespace GDSB.Infrastructure.Encryption.Legacy
         //chumbado mesmo pq o jovem roberto fez isso sem nem pensar duas vezes
         //um dia será corrigido
         private static byte[] _aesIVBase = new byte[16] { 239, 68, 204, 163, 219, 235, 157, 26, 55, 162, 251, 0, 207, 131, 254, 254 };
-        public Profile GetProfileDecrypted(string filePath, string password)
+        public Profile GetProfileDecrypted(string fileContent, string password)
         {
-            var profileBytes = Convert.FromBase64String(ExtractJsonData(File.ReadAllText(filePath), "profileEncrypted"));
+            var profileBytes = Convert.FromBase64String(ExtractJsonData(fileContent, "profileEncrypted"));
 
             var decryptedAesJson = DecryptStringFromBytes_Aes(profileBytes, GetPasswordStringIntoByte(password), _aesIVBase);
 

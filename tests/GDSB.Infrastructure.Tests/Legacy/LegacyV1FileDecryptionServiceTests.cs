@@ -37,7 +37,7 @@ namespace GDSB.Infrastructure.Tests.Legacy
                 var profile = CreateSampleProfile();
                 LegacyV1FixtureBuilder.WriteV1File(path, profile, Password);
 
-                var result = _sut.GetProfileDecrypted(path, Password);
+                var result = _sut.GetProfileDecrypted(File.ReadAllText(path), Password);
 
                 Assert.Equal(profile.Nome, result.Nome);
                 Assert.Equal(profile.Boxes[0].BoxName, result.Boxes[0].BoxName);
@@ -57,7 +57,7 @@ namespace GDSB.Infrastructure.Tests.Legacy
             {
                 LegacyV1FixtureBuilder.WriteV1File(path, CreateSampleProfile(), Password);
 
-                Assert.ThrowsAny<Exception>(() => _sut.GetProfileDecrypted(path, "senha-errada"));
+                Assert.ThrowsAny<Exception>(() => _sut.GetProfileDecrypted(File.ReadAllText(path), "senha-errada"));
             }
             finally
             {

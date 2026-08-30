@@ -1,22 +1,28 @@
 using GDSB.Domain.Entities;
 using GDSB.Domain.Exceptions;
 using GDSB.Domain.Interfaces;
+using System.Text;
 using System.Text.Json;
 
 namespace GDSB.Infrastructure
 {
-    // Detecta o formato pelos 4 primeiros bytes do arquivo (v2 começa com o magic "GDSB";
+    // Detecta o formato pelos 4 primeiros bytes do conteúdo (v2 começa com o magic "GDSB";
     // v1 é texto JSON, então nunca bate com o magic) e delega pro serviço certo. Save sempre
-    // grava em v2 — se o arquivo de destino ainda estiver em v1, faz backup antes de sobrescrever.
-    public class ProfileFileService(IFileDecryptionService legacyFileDecryptionService, IFileCryptoServiceV2 fileCryptoServiceV2) : IProfileFileService
+    // grava em v2. Toda leitura/gravação passa por IVaultFileSystem: esta classe nunca assume
+    // que "location" é um caminho de arquivo de verdade (no Android pode ser um content:// URI).
+    public class ProfileFileService(
+        IFileDecryptionService legacyFileDecryptionService,
+        IFileCryptoServiceV2 fileCryptoServiceV2,
+        IVaultFileSystem fileSystem) : IProfileFileService
     {
         private static readonly byte[] V2Magic = { (byte)'G', (byte)'D', (byte)'S', (byte)'B' };
 
-        public ProfileOpenResult Open(string path, string password)
+        public ProfileOpenResult Open(string location, string password)
         {
-            if (IsV2Format(path))
+            var fileBytes = fileSystem.ReadAllBytes(location);
+
+            if (IsV2Format(fileBytes))
             {
-                var fileBytes = File.ReadAllBytes(path);
                 var json = fileCryptoServiceV2.Decrypt(fileBytes, password);
                 var profile = JsonSerializer.Deserialize<Profile>(json)
                     ?? throw new InvalidPasswordOrCorruptFileException();
@@ -24,41 +30,45 @@ namespace GDSB.Infrastructure
                 return new ProfileOpenResult(profile, WasLegacyFormat: false);
             }
 
-            var legacyProfile = legacyFileDecryptionService.GetProfileDecrypted(path, password);
+            // Arquivos v1 sempre foram gravados como texto (File.WriteAllText, UTF-8 sem BOM) -
+            // decodificar aqui em vez de repassar bytes mantém o leitor legado sem nenhuma
+            // dependência de sistema de arquivos.
+            var legacyContent = Encoding.UTF8.GetString(fileBytes);
+            var legacyProfile = legacyFileDecryptionService.GetProfileDecrypted(legacyContent, password);
             return new ProfileOpenResult(legacyProfile, WasLegacyFormat: true);
         }
 
-        public void Save(string path, Profile profile, string password)
+        public void Save(string location, Profile profile, string password)
         {
-            BackupIfLegacy(path);
+            BackupBeforeOverwrite(location);
 
             var json = JsonSerializer.Serialize(profile);
             var fileBytes = fileCryptoServiceV2.Encrypt(json, password);
-            File.WriteAllBytes(path, fileBytes);
+            fileSystem.WriteAllBytes(location, fileBytes);
         }
 
-        private static void BackupIfLegacy(string path)
+        private void BackupBeforeOverwrite(string location)
         {
-            if (!File.Exists(path) || IsV2Format(path))
+            if (!fileSystem.Exists(location))
                 return;
 
-            var backupPath = path + ".v1.bak";
-            if (!File.Exists(backupPath))
-                File.Copy(path, backupPath);
+            var currentBytes = fileSystem.ReadAllBytes(location);
+
+            if (IsV2Format(currentBytes))
+            {
+                // Backup "corrente": sempre a versão de antes do último save, sobrescrito a cada vez.
+                var backupLocation = fileSystem.GetBackupLocation(location, ".bak");
+                fileSystem.WriteAllBytes(backupLocation, currentBytes);
+                return;
+            }
+
+            // Backup da migração v1 -> v2: preserva o original importado, nunca sobrescrito depois.
+            var legacyBackupLocation = fileSystem.GetBackupLocation(location, ".v1.bak");
+            if (!fileSystem.Exists(legacyBackupLocation))
+                fileSystem.WriteAllBytes(legacyBackupLocation, currentBytes);
         }
 
-        private static bool IsV2Format(string path)
-        {
-            if (!File.Exists(path))
-                return false;
-
-            using var stream = File.OpenRead(path);
-            if (stream.Length < V2Magic.Length)
-                return false;
-
-            var buffer = new byte[V2Magic.Length];
-            var read = stream.Read(buffer, 0, buffer.Length);
-            return read == V2Magic.Length && buffer.AsSpan().SequenceEqual(V2Magic);
-        }
+        private static bool IsV2Format(byte[] fileBytes) =>
+            fileBytes.Length >= V2Magic.Length && fileBytes.AsSpan(0, V2Magic.Length).SequenceEqual(V2Magic);
     }
 }

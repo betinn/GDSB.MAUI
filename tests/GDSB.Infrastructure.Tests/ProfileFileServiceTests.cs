@@ -11,7 +11,7 @@ namespace GDSB.Infrastructure.Tests
     {
         private const string Password = "senha-do-cofre-123";
 
-        private readonly ProfileFileService _sut = new(new LegacyV1FileDecryptionService(), new AesGcmFileCryptoService());
+        private readonly ProfileFileService _sut = new(new LegacyV1FileDecryptionService(), new AesGcmFileCryptoService(), new LocalFileSystem());
 
         private static Profile CreateSampleProfile() => new()
         {
@@ -109,6 +109,36 @@ namespace GDSB.Infrastructure.Tests
 
                 var reopened = _sut.Open(path, Password);
                 Assert.Equal("Netflix (editado)", reopened.Profile.Boxes[0].BoxName);
+            }
+            finally
+            {
+                File.Delete(path);
+                File.Delete(backupPath);
+            }
+        }
+
+        [Fact]
+        public void Save_OverwritingV2File_CreatesRollingBakOfPreviousVersion()
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
+            var backupPath = path + ".bak";
+            try
+            {
+                var profile = CreateSampleProfile();
+                _sut.Save(path, profile, Password);
+
+                profile.Boxes[0].BoxName = "Netflix (editado)";
+                _sut.Save(path, profile, Password);
+
+                Assert.True(File.Exists(backupPath));
+                var backedUp = _sut.Open(backupPath, Password);
+                Assert.Equal("Netflix", backedUp.Profile.Boxes[0].BoxName);
+
+                profile.Boxes[0].BoxName = "Netflix (editado de novo)";
+                _sut.Save(path, profile, Password);
+
+                var backedUpAgain = _sut.Open(backupPath, Password);
+                Assert.Equal("Netflix (editado)", backedUpAgain.Profile.Boxes[0].BoxName);
             }
             finally
             {
