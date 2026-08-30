@@ -98,7 +98,7 @@ namespace GDSB.MAUI.ViewModels
 
                 ClearPassword();
 
-                await _navigationService.NavigateToAsync(nameof(VaultPage), new Dictionary<string, object>
+                await _navigationService.NavigateToRootAsync(nameof(VaultPage), new Dictionary<string, object>
                 {
                     ["Profile"] = result.Profile,
                     ["Location"] = location,

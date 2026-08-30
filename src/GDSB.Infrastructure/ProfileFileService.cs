@@ -54,6 +54,13 @@ namespace GDSB.Infrastructure
 
             var currentBytes = fileSystem.ReadAllBytes(location);
 
+            // O picker de salvar (FileSavePicker no Windows, ActionCreateDocument/SAF no Android)
+            // já cria o arquivo de destino vazio antes do primeiro Save - isso não é um cofre v1
+            // a preservar, é só o arquivo novo reservando o nome. Sem esse corte, todo cofre criado
+            // do zero ganhava um ".v1.bak" vazio e desnecessário.
+            if (currentBytes.Length == 0)
+                return;
+
             if (IsV2Format(currentBytes))
             {
                 // Backup "corrente": sempre a versão de antes do último save, sobrescrito a cada vez.

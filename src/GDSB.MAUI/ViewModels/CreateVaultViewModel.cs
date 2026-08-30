@@ -95,7 +95,7 @@ namespace GDSB.MAUI.ViewModels
 
                 await Task.Run(() => _profileFileService.Save(location, profile, enteredPassword));
 
-                await _navigationService.NavigateToAsync(nameof(VaultPage), new Dictionary<string, object>
+                await _navigationService.NavigateToRootAsync(nameof(VaultPage), new Dictionary<string, object>
                 {
                     ["Profile"] = profile,
                     ["Location"] = location,

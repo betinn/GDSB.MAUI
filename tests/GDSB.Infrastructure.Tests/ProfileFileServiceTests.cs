@@ -146,6 +146,35 @@ namespace GDSB.Infrastructure.Tests
                 File.Delete(backupPath);
             }
         }
+
+        [Fact]
+        public void Save_ToFreshlyCreatedEmptyFile_DoesNotCreateSpuriousV1Backup()
+        {
+            // Reproduz o que o picker de salvar já deixa no disco antes do primeiro Save: no Windows,
+            // FileSavePicker.PickSaveFileAsync cria o arquivo de destino vazio (0 bytes); no Android,
+            // ActionCreateDocument via SAF faz o mesmo. Um arquivo vazio não é um cofre v1 a migrar.
+            var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
+            var v1BackupPath = path + ".v1.bak";
+            var bakPath = path + ".bak";
+            try
+            {
+                File.WriteAllBytes(path, Array.Empty<byte>());
+
+                _sut.Save(path, CreateSampleProfile(), Password);
+
+                Assert.False(File.Exists(v1BackupPath));
+                Assert.False(File.Exists(bakPath));
+
+                var reopened = _sut.Open(path, Password);
+                Assert.False(reopened.WasLegacyFormat);
+            }
+            finally
+            {
+                File.Delete(path);
+                File.Delete(v1BackupPath);
+                File.Delete(bakPath);
+            }
+        }
     }
 #pragma warning restore CS0618
 }
