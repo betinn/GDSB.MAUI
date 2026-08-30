@@ -1,0 +1,210 @@
+using GDSB.Domain.Entities;
+using GDSB.Domain.Exceptions;
+using GDSB.MAUI.Tests.Fakes;
+using GDSB.MAUI.ViewModels;
+using System.Text;
+using Xunit;
+
+namespace GDSB.MAUI.Tests
+{
+    public class UnlockViewModelTests
+    {
+        private const string Password = "senha-do-cofre-123";
+        private const string Location = "content://fake-vault";
+
+        private sealed class Sut
+        {
+            public FakeProfileFileService ProfileFileService { get; } = new();
+            public FakeFilePickerService FilePickerService { get; } = new();
+            public FakeNavigationService NavigationService { get; } = new();
+            public FakeBiometricUnlockService BiometricUnlockService { get; } = new();
+            public FakePreferencesService PreferencesService { get; } = new();
+            public FakeAlertService AlertService { get; } = new();
+            public UnlockViewModel ViewModel { get; }
+
+            public Sut()
+            {
+                var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
+                ViewModel = new UnlockViewModel(
+                    ProfileFileService,
+                    FilePickerService,
+                    NavigationService,
+                    BiometricUnlockService,
+                    PreferencesService,
+                    biometricOptIn);
+            }
+        }
+
+        private static Profile SampleProfile() => new() { Nome = "Cofre de teste" };
+
+        [Fact]
+        public async Task UnlockAsync_EmptyPassword_SetsErrorMessage()
+        {
+            var sut = new Sut();
+            sut.ViewModel.Password = string.Empty;
+
+            await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
+
+            Assert.Equal("Digite a senha mestra do cofre.", sut.ViewModel.ErrorMessage);
+            Assert.Empty(sut.NavigationService.NavigateToRootCalls);
+        }
+
+        [Fact]
+        public async Task UnlockAsync_FilePickerThrows_SetsGenericFilePickerError()
+        {
+            var sut = new Sut();
+            sut.ViewModel.Password = Password;
+            sut.FilePickerService.PickFileNameException = new InvalidOperationException("boom");
+
+            await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
+
+            Assert.Equal("Não foi possível abrir o seletor de arquivos.", sut.ViewModel.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task UnlockAsync_FilePickerCancelled_DoesNothing()
+        {
+            var sut = new Sut();
+            sut.ViewModel.Password = Password;
+            sut.FilePickerService.PickFileNameResult = string.Empty;
+
+            await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
+
+            Assert.Null(sut.ViewModel.ErrorMessage);
+            Assert.Empty(sut.NavigationService.NavigateToRootCalls);
+        }
+
+        [Fact]
+        public async Task UnlockAsync_WrongPassword_SetsGenericErrorMessage()
+        {
+            var sut = new Sut();
+            sut.ViewModel.Password = "senha-errada";
+            sut.ProfileFileService.OpenHandler = (_, _) => throw new InvalidPasswordOrCorruptFileException();
+
+            await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
+
+            Assert.Equal("Senha incorreta ou arquivo corrompido.", sut.ViewModel.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task UnlockAsync_Success_NavigatesToVaultAndRemembersVault()
+        {
+            var sut = new Sut();
+            var profile = SampleProfile();
+            sut.ViewModel.Password = Password;
+            sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: false);
+
+            await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
+
+            Assert.Null(sut.ViewModel.ErrorMessage);
+            Assert.Equal(string.Empty, sut.ViewModel.Password);
+            var navigation = Assert.Single(sut.NavigationService.NavigateToRootCalls);
+            Assert.Equal("VaultPage", navigation.Route);
+            Assert.Equal(profile, navigation.Parameters!["Profile"]);
+            Assert.Equal(Location, navigation.Parameters!["Location"]);
+            Assert.Equal(
+                Location,
+                sut.PreferencesService.GetString(BiometricOptInCoordinator.LastLocationPreferenceKey, null));
+            Assert.Empty(sut.ProfileFileService.SaveCalls);
+        }
+
+        [Fact]
+        public async Task UnlockAsync_LegacyFormat_MigratesBySaving()
+        {
+            var sut = new Sut();
+            var profile = SampleProfile();
+            sut.ViewModel.Password = Password;
+            sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: true);
+
+            await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
+
+            var save = Assert.Single(sut.ProfileFileService.SaveCalls);
+            Assert.Equal(Location, save.Location);
+            Assert.Equal(profile, save.Profile);
+        }
+
+        [Fact]
+        public void ToggleShowPassword_TogglesIsPasswordHidden()
+        {
+            var sut = new Sut();
+            Assert.True(sut.ViewModel.IsPasswordHidden);
+
+            sut.ViewModel.ToggleShowPasswordCommand.Execute(null);
+
+            Assert.False(sut.ViewModel.IsPasswordHidden);
+        }
+
+        [Fact]
+        public async Task GoToCreateVaultAsync_NavigatesToCreateVaultPage()
+        {
+            var sut = new Sut();
+
+            await sut.ViewModel.GoToCreateVaultCommand.ExecuteAsync(null);
+
+            var navigation = Assert.Single(sut.NavigationService.NavigateToCalls);
+            Assert.Equal("CreateVaultPage", navigation.Route);
+        }
+
+        [Fact]
+        public async Task InitializeAsync_NoLastLocation_DoesNotEnableBiometric()
+        {
+            var sut = new Sut();
+
+            await sut.ViewModel.InitializeAsync();
+
+            Assert.False(sut.ViewModel.CanUseBiometric);
+        }
+
+        [Fact]
+        public async Task InitializeAsync_BiometricAvailableAndEnabled_UnlocksAutomatically()
+        {
+            var sut = new Sut();
+            var profile = SampleProfile();
+            sut.PreferencesService.SetString(BiometricOptInCoordinator.LastLocationPreferenceKey, Location);
+            sut.PreferencesService.SetString(BiometricOptInCoordinator.LastVaultNamePreferenceKey, profile.Nome);
+            sut.BiometricUnlockService.IsAvailable = true;
+            sut.BiometricUnlockService.IsEnabled = true;
+            sut.BiometricUnlockService.TryUnlockResult = Encoding.UTF8.GetBytes(Password);
+            sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: false);
+
+            await sut.ViewModel.InitializeAsync();
+
+            Assert.True(sut.ViewModel.CanUseBiometric);
+            var navigation = Assert.Single(sut.NavigationService.NavigateToRootCalls);
+            Assert.Equal(Password, navigation.Parameters!["Password"]);
+        }
+
+        [Fact]
+        public async Task UnlockWithBiometricAsync_Cancelled_FallsBackWithoutError()
+        {
+            var sut = new Sut();
+            sut.PreferencesService.SetString(BiometricOptInCoordinator.LastLocationPreferenceKey, Location);
+            sut.BiometricUnlockService.IsAvailable = true;
+            sut.BiometricUnlockService.IsEnabled = true;
+            sut.BiometricUnlockService.TryUnlockResult = null;
+
+            await sut.ViewModel.InitializeAsync();
+
+            Assert.Null(sut.ViewModel.ErrorMessage);
+            Assert.Empty(sut.NavigationService.NavigateToRootCalls);
+        }
+
+        [Fact]
+        public async Task ChangeVaultAsync_ForgetsVaultAndDisablesBiometric()
+        {
+            var sut = new Sut();
+            sut.PreferencesService.SetString(BiometricOptInCoordinator.LastLocationPreferenceKey, Location);
+            sut.PreferencesService.SetBool(BiometricOptInCoordinator.PromptedPreferenceKey, true);
+            sut.BiometricUnlockService.IsAvailable = true;
+            sut.BiometricUnlockService.IsEnabled = true;
+            await sut.ViewModel.InitializeAsync();
+            Assert.True(sut.ViewModel.CanUseBiometric);
+
+            await sut.ViewModel.ChangeVaultCommand.ExecuteAsync(null);
+
+            Assert.Equal(1, sut.BiometricUnlockService.DisableCallCount);
+            Assert.False(sut.ViewModel.CanUseBiometric);
+            Assert.Null(sut.PreferencesService.GetString(BiometricOptInCoordinator.LastLocationPreferenceKey, null));
+        }
+    }
+}

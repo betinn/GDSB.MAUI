@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Interfaces;
 using GDSB.MAUI.Services;
-using Microsoft.Maui.Storage;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -23,13 +22,18 @@ namespace GDSB.MAUI.ViewModels
 
         private readonly IBiometricUnlockService _biometricUnlockService;
         private readonly IAlertService _alertService;
+        private readonly IPreferencesService _preferencesService;
 
         private TaskCompletionSource<bool>? _response;
 
-        public BiometricOptInCoordinator(IBiometricUnlockService biometricUnlockService, IAlertService alertService)
+        public BiometricOptInCoordinator(
+            IBiometricUnlockService biometricUnlockService,
+            IAlertService alertService,
+            IPreferencesService preferencesService)
         {
             _biometricUnlockService = biometricUnlockService;
             _alertService = alertService;
+            _preferencesService = preferencesService;
         }
 
         [ObservableProperty]
@@ -37,21 +41,21 @@ namespace GDSB.MAUI.ViewModels
 
         // Grava qual cofre a biometria deve mirar da próxima vez - chamado a cada Open/CreateVault
         // bem-sucedido, esteja a biometria ativa ou não (é só o "candidato" a próximo alvo).
-        public static void RememberVault(string location, string vaultName)
+        public void RememberVault(string location, string vaultName)
         {
-            Preferences.Default.Set(LastLocationPreferenceKey, location);
-            Preferences.Default.Set(LastVaultNamePreferenceKey, vaultName);
+            _preferencesService.SetString(LastLocationPreferenceKey, location);
+            _preferencesService.SetString(LastVaultNamePreferenceKey, vaultName);
         }
 
         // Esquece o cofre-alvo e a resposta já dada ao opt-in - usado ao trocar de cofre (manual
         // ou criando um novo), pra que o próximo Open/CreateVault bem-sucedido ofereça o opt-in de
         // novo, já mirando o cofre certo. Não mexe no segredo selado em si - quem chama isso é
         // responsável por também chamar IBiometricUnlockService.DisableAsync.
-        public static void ForgetVault()
+        public void ForgetVault()
         {
-            Preferences.Default.Remove(LastLocationPreferenceKey);
-            Preferences.Default.Remove(LastVaultNamePreferenceKey);
-            Preferences.Default.Remove(PromptedPreferenceKey);
+            _preferencesService.Remove(LastLocationPreferenceKey);
+            _preferencesService.Remove(LastVaultNamePreferenceKey);
+            _preferencesService.Remove(PromptedPreferenceKey);
         }
 
         // Só pergunta uma vez na vida do app (por dispositivo) - nem repete a pergunta se o
@@ -59,13 +63,13 @@ namespace GDSB.MAUI.ViewModels
         // bem-sucedido, nunca a partir do próprio atalho de biometria.
         public async Task MaybeOfferAsync(string password)
         {
-            if (Preferences.Default.Get(PromptedPreferenceKey, false))
+            if (_preferencesService.GetBool(PromptedPreferenceKey, false))
                 return;
 
             if (!await _biometricUnlockService.IsAvailableAsync() || await _biometricUnlockService.IsEnabledAsync())
                 return;
 
-            Preferences.Default.Set(PromptedPreferenceKey, true);
+            _preferencesService.SetBool(PromptedPreferenceKey, true);
 
             _response = new TaskCompletionSource<bool>();
             IsVisible = true;

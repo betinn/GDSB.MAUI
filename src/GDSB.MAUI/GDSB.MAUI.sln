@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GDSB.Infrastructure", "..\G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GDSB.Infrastructure.Tests", "..\..\tests\GDSB.Infrastructure.Tests\GDSB.Infrastructure.Tests.csproj", "{A5D5EA54-B586-480E-B9E8-10636E0527B9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GDSB.MAUI.ViewModels", "..\GDSB.MAUI.ViewModels\GDSB.MAUI.ViewModels.csproj", "{B63BEA9A-8836-4A4D-8FD0-A7316C90693B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GDSB.MAUI.Tests", "..\..\tests\GDSB.MAUI.Tests\GDSB.MAUI.Tests.csproj", "{C15625B0-7272-45BB-AF97-E2DB67A119B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +38,14 @@ Global
 		{A5D5EA54-B586-480E-B9E8-10636E0527B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5D5EA54-B586-480E-B9E8-10636E0527B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5D5EA54-B586-480E-B9E8-10636E0527B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B63BEA9A-8836-4A4D-8FD0-A7316C90693B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B63BEA9A-8836-4A4D-8FD0-A7316C90693B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B63BEA9A-8836-4A4D-8FD0-A7316C90693B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B63BEA9A-8836-4A4D-8FD0-A7316C90693B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C15625B0-7272-45BB-AF97-E2DB67A119B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C15625B0-7272-45BB-AF97-E2DB67A119B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C15625B0-7272-45BB-AF97-E2DB67A119B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C15625B0-7272-45BB-AF97-E2DB67A119B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

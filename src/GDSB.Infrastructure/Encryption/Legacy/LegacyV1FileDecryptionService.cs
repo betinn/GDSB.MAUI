@@ -1,13 +1,11 @@
 ﻿using GDSB.Domain.Entities;
 using GDSB.Domain.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace GDSB.Infrastructure.Encryption.Legacy
@@ -18,8 +16,8 @@ namespace GDSB.Infrastructure.Encryption.Legacy
     [Obsolete("Somente leitura de arquivos .GDSBX v1 legados, para migração. Não usar para gravar arquivos novos — use IFileCryptoServiceV2.")]
     public class LegacyV1FileDecryptionService : IFileDecryptionService
     {
-        //chumbado mesmo pq o jovem roberto fez isso sem nem pensar duas vezes
-        //um dia será corrigido
+        private static readonly JsonSerializerOptions _legacyJsonOptions = new() { PropertyNameCaseInsensitive = true };
+
         private static byte[] _aesIVBase = new byte[16] { 239, 68, 204, 163, 219, 235, 157, 26, 55, 162, 251, 0, 207, 131, 254, 254 };
         public Profile GetProfileDecrypted(string fileContent, string password)
         {
@@ -31,7 +29,7 @@ namespace GDSB.Infrastructure.Encryption.Legacy
             var aesByteFirst = Convert.FromBase64String(ExtractJsonData(decryptedAesJson, "bytekyte"));
             var aesSecByte = Convert.FromBase64String(ExtractJsonData(decryptedAesJson, "secbyte"));
 
-            var profile = JsonConvert.DeserializeObject<Profile>(DecryptStringFromBytes_Aes(aesText, aesByteFirst, aesSecByte));
+            var profile = JsonSerializer.Deserialize<Profile>(DecryptStringFromBytes_Aes(aesText, aesByteFirst, aesSecByte), _legacyJsonOptions);
 
             if (profile == null)
                 throw new NullReferenceException("Profile is null");
@@ -62,7 +60,7 @@ namespace GDSB.Infrastructure.Encryption.Legacy
                 throw new ArgumentException($"ProfileData not found on filePath. Property: {property}. exception message: {ex.Message}");
             }
         }
-        private static byte[] GetPasswordStringIntoByte(string senha) // isso aqui é uma vergonha, pq fizestes isso jovem roberto?
+        private static byte[] GetPasswordStringIntoByte(string senha)
         {
             byte[] newKey = new byte[32];
             var bts = Encoding.ASCII.GetBytes(senha);
@@ -85,7 +83,7 @@ namespace GDSB.Infrastructure.Encryption.Legacy
             if (IVBase == null || IVBase.Length <= 0)
                 throw new ArgumentNullException("IV");
 
-            string plaintext = null;
+            string plaintext;
 
             using (Aes aesAlg = Aes.Create())
             {

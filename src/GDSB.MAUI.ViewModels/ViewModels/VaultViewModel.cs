@@ -14,6 +14,7 @@ namespace GDSB.MAUI.ViewModels
         private readonly IAlertService _alertService;
         private readonly IProfileFileService _profileFileService;
         private readonly INavigationService _navigationService;
+        private readonly IAppLauncherService _appLauncherService;
 
         private Profile? _profile;
         private string? _location;
@@ -23,12 +24,14 @@ namespace GDSB.MAUI.ViewModels
             IClipboardService clipboardService,
             IAlertService alertService,
             IProfileFileService profileFileService,
-            INavigationService navigationService)
+            INavigationService navigationService,
+            IAppLauncherService appLauncherService)
         {
             _clipboardService = clipboardService;
             _alertService = alertService;
             _profileFileService = profileFileService;
             _navigationService = navigationService;
+            _appLauncherService = appLauncherService;
         }
 
         // A View anima um toast quando isso dispara - decidido por evento (não por uma propriedade
@@ -439,7 +442,7 @@ namespace GDSB.MAUI.ViewModels
             try
             {
                 var url = item.Url.Contains("://") ? item.Url : $"https://{item.Url}";
-                await Launcher.OpenAsync(new Uri(url));
+                await _appLauncherService.OpenAsync(new Uri(url));
             }
             catch (Exception ex)
             {
