@@ -4,6 +4,7 @@ using GDSB.Domain.Interfaces;
 using GDSB.MAUI.Interfaces;
 using GDSB.MAUI.Services;
 using Microsoft.Maui.Storage;
+using System.Security.Cryptography;
 using System.Text;
 
 // VaultPage vive no namespace raiz GDSB.MAUI (namespace mãe deste), resolvida sem using extra.
@@ -18,11 +19,10 @@ namespace GDSB.MAUI.ViewModels
         private const string FilePickerErrorMessage = "Não foi possível abrir o seletor de arquivos.";
         private const string BiometricUnavailableMessage = "Não foi possível usar a biometria. Digite a senha mestra.";
 
-        // "Amarrado ao último cofre aberto" (decisão da Fase 5): não existe seleção de perfil, um
-        // uso real é um cofre por aparelho, então guardar só a última location basta. Preferences
-        // é usado direto aqui (sem uma interface própria) pelo mesmo motivo de Launcher em
-        // VaultViewModel.OpenUrlAsync: é um detalhe de sessão, não algo que precisa de mock nos
-        // fluxos já cobertos por teste.
+        // Amarrado ao último cofre aberto: não existe seleção de perfil, um uso real é um cofre
+        // por aparelho, então guardar só a última location basta. Preferences é usado direto aqui
+        // (sem uma interface própria) pelo mesmo motivo de Launcher em VaultViewModel.OpenUrlAsync:
+        // é um detalhe de sessão, não algo que precisa de mock nos fluxos já cobertos por teste.
         private const string LastLocationPreferenceKey = "gdsb.lastVaultLocation";
         private const string BiometricPromptedPreferenceKey = "gdsb.biometricPrompted";
 
@@ -163,7 +163,7 @@ namespace GDSB.MAUI.ViewModels
             }
             finally
             {
-                System.Security.Cryptography.CryptographicOperations.ZeroMemory(secret);
+                CryptographicOperations.ZeroMemory(secret);
             }
 
             await OpenAndNavigateAsync(lastLocation, recoveredPassword, offerBiometricOptIn: false);
@@ -237,7 +237,7 @@ namespace GDSB.MAUI.ViewModels
             }
             finally
             {
-                System.Security.Cryptography.CryptographicOperations.ZeroMemory(secret);
+                CryptographicOperations.ZeroMemory(secret);
             }
         }
 

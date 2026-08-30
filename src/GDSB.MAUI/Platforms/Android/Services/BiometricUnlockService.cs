@@ -106,7 +106,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
             {
                 // Chave invalidada (ex.: nova digital cadastrada) - o segredo selado já ficou
                 // inútil pra sempre; limpa e cai de volta pro campo de senha sem tratamento
-                // especial, como decidido no plano da Fase 5.
+                // especial.
                 await DisableAsync();
                 return null;
             }
