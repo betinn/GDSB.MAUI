@@ -378,6 +378,12 @@ namespace GDSB.MAUI.ViewModels
             IsEditingItem = false;
             IsPasswordVisible = false;
             IsConfirmingDelete = false;
+
+            // No layout largo (tablet) o painel lateral fica visível enquanto ShowItemEditor for
+            // true (HasSelectedItem || IsEditingItem) - sem limpar a seleção aqui, o "X" fechava
+            // IsEditorOpen (que só controla o bottom-sheet do celular) e o painel do tablet, que
+            // não depende disso, continuava aberto do mesmo jeito.
+            SelectedItem = null;
         }
 
         [RelayCommand]
