@@ -80,6 +80,12 @@ namespace GDSB.MAUI.ViewModels
 
         public bool CanInteract => !IsBusy;
 
+        // Com biometria ativa, o campo de senha some e a única forma de abrir um cofre é o mesmo
+        // que ela mira (ou trocar de cofre, que a desativa) - ver ChangeVaultAsync: sem isso, dava
+        // pra abrir manualmente um cofre B com uma biometria ainda selada com a senha do cofre A,
+        // e a próxima tentativa por biometria tentava abrir B com a senha de A.
+        public bool ShowManualUnlock => !CanUseBiometric;
+
         public string UnlockButtonText => IsBusy ? "Abrindo..." : "Abrir cofre";
 
         public string EyeGlyph => IsPasswordHidden ? "👁" : "🙈";
@@ -289,6 +295,30 @@ namespace GDSB.MAUI.ViewModels
             _biometricOptInResponse?.TrySetResult(false);
         }
 
+        // "Trocar cofre": a biometria só faz sentido presa a um cofre por vez (é uma senha selada,
+        // não uma chave universal), então trocar de cofre precisa apagar o atalho atual por
+        // completo - incluindo o "já perguntei" - pra que o próximo Open bem-sucedido (de
+        // qualquer cofre, o mesmo ou outro) ofereça o opt-in de novo, agora mirando o cofre certo.
+        [RelayCommand]
+        private async Task ChangeVaultAsync()
+        {
+            try
+            {
+                await _biometricUnlockService.DisableAsync();
+            }
+            catch (Exception)
+            {
+            }
+
+            Preferences.Default.Remove(LastLocationPreferenceKey);
+            Preferences.Default.Remove(LastVaultNamePreferenceKey);
+            Preferences.Default.Remove(BiometricPromptedPreferenceKey);
+
+            CanUseBiometric = false;
+            BiometricVaultName = string.Empty;
+            BiometricVaultPath = string.Empty;
+        }
+
         private bool CanUnlock() => !IsBusy;
 
         partial void OnIsBusyChanged(bool value)
@@ -302,5 +332,7 @@ namespace GDSB.MAUI.ViewModels
         partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasErrorMessage));
 
         partial void OnIsPasswordHiddenChanged(bool value) => OnPropertyChanged(nameof(EyeGlyph));
+
+        partial void OnCanUseBiometricChanged(bool value) => OnPropertyChanged(nameof(ShowManualUnlock));
     }
 }

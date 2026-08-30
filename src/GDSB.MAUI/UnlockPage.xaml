@@ -27,7 +27,13 @@
                 <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                     <VerticalStackLayout Spacing="16">
 
-                        <VerticalStackLayout Spacing="8">
+                        <!-- Com biometria ativa (CanUseBiometric) o campo de senha some por completo:
+                             o único jeito de abrir um cofre é aquele que a biometria mira, ou trocar
+                             de cofre (o que a desativa) - ver ChangeVaultCommand. Sem essa exclusão
+                             mútua, dava pra abrir manualmente um cofre B com uma biometria ainda
+                             selada com a senha do cofre A, e a tentativa seguinte por biometria
+                             abria B com a senha errada (a de A). -->
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding ShowManualUnlock}">
                             <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
                             <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                     StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
@@ -62,12 +68,14 @@
                         <Button Text="{Binding UnlockButtonText}"
                                 Style="{StaticResource PrimaryActionButtonStyle}"
                                 Command="{Binding UnlockCommand}"
+                                IsVisible="{Binding ShowManualUnlock}"
                                 IsEnabled="{Binding CanInteract}" />
 
                         <!-- Ao abrir a UnlockPage, a biometria já dispara sozinha quando disponível
-                             (UnlockViewModel.InitializeAsync) - este bloco fica visível mesmo assim,
-                             indicando pra qual cofre ela está mirando e servindo de retry manual se
-                             o usuário cancelar o prompt do sistema sem querer. -->
+                             (UnlockViewModel.InitializeAsync) - este bloco mostra pra qual cofre ela
+                             está mirando e as duas únicas opções nesse estado: usá-la (opção
+                             principal - também serve de retry manual se o usuário cancelar o prompt
+                             do sistema sem querer) ou trocar de cofre. -->
                         <VerticalStackLayout Spacing="10" IsVisible="{Binding CanUseBiometric}">
                             <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                     StrokeShape="RoundRectangle 12" Padding="14,10">
@@ -84,11 +92,14 @@
                             </Border>
 
                             <Button Text="&#128272; Desbloquear com biometria"
+                                    Style="{StaticResource PrimaryActionButtonStyle}"
                                     Command="{Binding UnlockWithBiometricCommand}"
-                                    IsEnabled="{Binding CanInteract}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{StaticResource PrimaryDark}"
-                                    FontSize="14" />
+                                    IsEnabled="{Binding CanInteract}" />
+
+                            <Button Text="Trocar cofre"
+                                    Style="{StaticResource SecondaryActionButtonStyle}"
+                                    Command="{Binding ChangeVaultCommand}"
+                                    IsEnabled="{Binding CanInteract}" />
                         </VerticalStackLayout>
 
                     </VerticalStackLayout>
