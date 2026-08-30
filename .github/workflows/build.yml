@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run unit tests
+        run: dotnet test tests/GDSB.Infrastructure.Tests/GDSB.Infrastructure.Tests.csproj -c Release
+
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore MAUI Android workload
+        run: dotnet workload restore src/GDSB.MAUI/GDSB.MAUI.csproj -p:GdsbAndroidOnly=true
+
+      - name: Build Android
+        run: dotnet build src/GDSB.MAUI/GDSB.MAUI.csproj -c Release -p:GdsbAndroidOnly=true
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore MAUI workload
+        run: dotnet workload restore src/GDSB.MAUI/GDSB.MAUI.csproj
+
+      - name: Build Windows
+        run: dotnet build src/GDSB.MAUI/GDSB.MAUI.csproj -c Release -f net10.0-windows10.0.19041.0 -p:WindowsPackageType=None
