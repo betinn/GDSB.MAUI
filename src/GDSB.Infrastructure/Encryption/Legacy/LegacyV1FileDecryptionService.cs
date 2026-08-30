@@ -10,9 +10,13 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace GDSB.Infrastructure.Encryption
+namespace GDSB.Infrastructure.Encryption.Legacy
 {
-    public class FileDecryptionService : IFileDecryptionService
+    // Leitor do formato .GDSBX v1 (diagnosticado na Fase 0 como fraco: IV fixo, senha ciclada sem KDF).
+    // Existe só para abrir arquivos antigos e migrá-los para o formato v2 (AesGcmFileCryptoService) ao salvar.
+    // Nunca deve voltar a gravar nada neste formato.
+    [Obsolete("Somente leitura de arquivos .GDSBX v1 legados, para migração. Não usar para gravar arquivos novos — use IFileCryptoServiceV2.")]
+    public class LegacyV1FileDecryptionService : IFileDecryptionService
     {
         //chumbado mesmo pq o jovem roberto fez isso sem nem pensar duas vezes
         //um dia será corrigido

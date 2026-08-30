@@ -28,11 +28,34 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
 
+    <!-- Fase 3: aprovadas junto com o protótipo visual (favorito / ações destrutivas) -->
+    <Color x:Key="FavoriteGold">#F5B93E</Color>
+    <Color x:Key="Danger">#E5484D</Color>
+
+    <!-- Aliases da superfície escura usada no protótipo (tela de desbloqueio, lista, editor) -->
+    <Color x:Key="SurfaceDark">#141414</Color>
+    <Color x:Key="SurfaceCardDark">#1f1f1f</Color>
+    <Color x:Key="BorderDark">#2b2b2b</Color>
+    <Color x:Key="TextPrimaryDark">#F7F5FC</Color>
+    <Color x:Key="TextSecondaryDark">#919191</Color>
+    <Color x:Key="TextMutedDark">#6E6E6E</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+    <SolidColorBrush x:Key="FavoriteGoldBrush" Color="{StaticResource FavoriteGold}"/>
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}"/>
+    <!-- Stroke/Background de Border são Brush, não Color: estes existem pra não depender de conversão implícita -->
+    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{StaticResource SurfaceDark}"/>
+    <SolidColorBrush x:Key="SurfaceCardDarkBrush" Color="{StaticResource SurfaceCardDark}"/>
+    <SolidColorBrush x:Key="BorderDarkBrush" Color="{StaticResource BorderDark}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
+    <LinearGradientBrush x:Key="PrimaryGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+        <GradientStop Color="{StaticResource Tertiary}" Offset="1.0" />
+    </LinearGradientBrush>
 
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>

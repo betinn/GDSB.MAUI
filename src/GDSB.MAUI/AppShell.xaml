@@ -3,12 +3,13 @@
     x:Class="GDSB.MAUI.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:GDSB.MAUI"
     Shell.FlyoutBehavior="Disabled"
-    Title="GDSB.MAUI">
+    Title="GDSB">
 
-    <ShellContent
-        ContentTemplate="{DataTemplate local:FileFinderDecrypter}"
-        Route="FileFinderDecrypter" />
+    <!--
+      O conteúdo inicial (UnlockPage) é montado no code-behind: precisa vir do container de DI
+      (construtor recebe UnlockViewModel), e ShellContent.ContentTemplate no XAML criaria a
+      página via Activator.CreateInstance, sem injeção nenhuma.
+    -->
 
 </Shell>
