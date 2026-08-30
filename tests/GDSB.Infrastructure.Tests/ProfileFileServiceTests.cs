@@ -11,7 +11,7 @@ namespace GDSB.Infrastructure.Tests
     {
         private const string Password = "senha-do-cofre-123";
 
-        private readonly ProfileFileService _sut = new(new LegacyV1FileDecryptionService(), new AesGcmFileCryptoService());
+        private readonly ProfileFileService _sut = new(new LegacyV1FileDecryptionService(), new AesGcmFileCryptoService(), new LocalFileSystem());
 
         private static Profile CreateSampleProfile() => new()
         {
@@ -114,6 +114,65 @@ namespace GDSB.Infrastructure.Tests
             {
                 File.Delete(path);
                 File.Delete(backupPath);
+            }
+        }
+
+        [Fact]
+        public void Save_OverwritingV2File_CreatesRollingBakOfPreviousVersion()
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
+            var backupPath = path + ".bak";
+            try
+            {
+                var profile = CreateSampleProfile();
+                _sut.Save(path, profile, Password);
+
+                profile.Boxes[0].BoxName = "Netflix (editado)";
+                _sut.Save(path, profile, Password);
+
+                Assert.True(File.Exists(backupPath));
+                var backedUp = _sut.Open(backupPath, Password);
+                Assert.Equal("Netflix", backedUp.Profile.Boxes[0].BoxName);
+
+                profile.Boxes[0].BoxName = "Netflix (editado de novo)";
+                _sut.Save(path, profile, Password);
+
+                var backedUpAgain = _sut.Open(backupPath, Password);
+                Assert.Equal("Netflix (editado)", backedUpAgain.Profile.Boxes[0].BoxName);
+            }
+            finally
+            {
+                File.Delete(path);
+                File.Delete(backupPath);
+            }
+        }
+
+        [Fact]
+        public void Save_ToFreshlyCreatedEmptyFile_DoesNotCreateSpuriousV1Backup()
+        {
+            // Reproduz o que o picker de salvar já deixa no disco antes do primeiro Save: no Windows,
+            // FileSavePicker.PickSaveFileAsync cria o arquivo de destino vazio (0 bytes); no Android,
+            // ActionCreateDocument via SAF faz o mesmo. Um arquivo vazio não é um cofre v1 a migrar.
+            var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
+            var v1BackupPath = path + ".v1.bak";
+            var bakPath = path + ".bak";
+            try
+            {
+                File.WriteAllBytes(path, Array.Empty<byte>());
+
+                _sut.Save(path, CreateSampleProfile(), Password);
+
+                Assert.False(File.Exists(v1BackupPath));
+                Assert.False(File.Exists(bakPath));
+
+                var reopened = _sut.Open(path, Password);
+                Assert.False(reopened.WasLegacyFormat);
+            }
+            finally
+            {
+                File.Delete(path);
+                File.Delete(v1BackupPath);
+                File.Delete(bakPath);
             }
         }
     }

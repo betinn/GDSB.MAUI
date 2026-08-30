@@ -52,6 +52,9 @@ namespace GDSB.MAUI.ViewModels
         [RelayCommand]
         private void ToggleShowPassword() => IsPasswordHidden = !IsPasswordHidden;
 
+        [RelayCommand]
+        private Task GoToCreateVaultAsync() => _navigationService.NavigateToAsync(nameof(CreateVaultPage));
+
         public void ClearPassword()
         {
             Password = string.Empty;
@@ -70,10 +73,10 @@ namespace GDSB.MAUI.ViewModels
                 return;
             }
 
-            string? filePath;
+            string? location;
             try
             {
-                filePath = await _filePickerService.PickFileNameAsync();
+                location = await _filePickerService.PickFileNameAsync();
             }
             catch (Exception)
             {
@@ -81,23 +84,25 @@ namespace GDSB.MAUI.ViewModels
                 return;
             }
 
-            if (string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(location))
                 return;
 
             IsBusy = true;
             try
             {
                 var enteredPassword = Password;
-                var result = await Task.Run(() => _profileFileService.Open(filePath, enteredPassword));
+                var result = await Task.Run(() => _profileFileService.Open(location, enteredPassword));
 
                 if (result.WasLegacyFormat)
-                    await Task.Run(() => _profileFileService.Save(filePath, result.Profile, enteredPassword));
+                    await Task.Run(() => _profileFileService.Save(location, result.Profile, enteredPassword));
 
                 ClearPassword();
 
-                await _navigationService.NavigateToAsync(nameof(VaultPage), new Dictionary<string, object>
+                await _navigationService.NavigateToRootAsync(nameof(VaultPage), new Dictionary<string, object>
                 {
                     ["Profile"] = result.Profile,
+                    ["Location"] = location,
+                    ["Password"] = enteredPassword,
                 });
             }
             catch (Exception)

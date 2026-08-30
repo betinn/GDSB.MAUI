@@ -1,5 +1,6 @@
 ﻿using Android;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.App;
@@ -12,11 +13,27 @@ namespace GDSB.MAUI
     {
         const int RequestStorageId = 0;
 
+        // Ponte pro Storage Access Framework (ver Platforms/Android/Services/FilePickerService):
+        // o resultado de ActionOpenDocument/ActionCreateDocument só chega aqui, na Activity que
+        // disparou o intent - o serviço registra um callback por request code e espera por ele.
+        private static readonly Dictionary<int, Action<Result, Intent?>> PendingDocumentPicks = new();
+
+        public static void RegisterDocumentPickCallback(int requestCode, Action<Result, Intent?> callback) =>
+            PendingDocumentPicks[requestCode] = callback;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             RequestStoragePermissions();
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+
+            if (PendingDocumentPicks.Remove(requestCode, out var callback))
+                callback(resultCode, data);
         }
 
         void RequestStoragePermissions()

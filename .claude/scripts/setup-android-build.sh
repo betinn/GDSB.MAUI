@@ -18,7 +18,7 @@ set -euo pipefail
 
 SDK_BAND=10.0.100
 ANDROID_SDK=/opt/android-sdk
-API_LEVEL=34
+API_LEVEL=36
 BUILD_TOOLS=34.0.0
 JDK=/usr/lib/jvm/java-17-openjdk-amd64
 WORK=$(mktemp -d)
@@ -76,8 +76,10 @@ fi
 
 log "6/6 Android SDK mínimo em $ANDROID_SDK"
 # Só o necessário para compilar e empacotar: o aapt2 real já vem no pack do workload.
-# O android.jar é o da API 34 do SDK oficial do Google, obtido de um espelho no GitHub
-# porque dl.google.com está bloqueado pela política de saída deste ambiente.
+# O android.jar é o da API $API_LEVEL do SDK oficial do Google, obtido de um espelho no GitHub
+# porque dl.google.com está bloqueado pela política de saída deste ambiente. API_LEVEL segue a
+# versão mais nova exigida pelo workload Android instalado (ver Xamarin.Android.Tooling.targets
+# se o build reclamar de outro nível de API no futuro).
 sudo mkdir -p "$ANDROID_SDK/platforms/android-$API_LEVEL" \
               "$ANDROID_SDK/build-tools/$BUILD_TOOLS/lib" \
               "$ANDROID_SDK/platform-tools"

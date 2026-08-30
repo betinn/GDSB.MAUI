@@ -41,8 +41,10 @@ namespace GDSB.MAUI
         {
 #if ANDROID
             services.AddSingleton<IFilePickerService, Platforms.Android.Services.FilePickerService>();
+            services.AddSingleton<IVaultFileSystem, Platforms.Android.Services.AndroidSafFileSystem>();
 #elif WINDOWS
             services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
+            services.AddSingleton<IVaultFileSystem, LocalFileSystem>();
 #endif
 
 #pragma warning disable CS0618 // leitor legado obsoleto, usado só por trás de IProfileFileService
@@ -60,12 +62,14 @@ namespace GDSB.MAUI
         {
             services.AddTransient<UnlockViewModel>();
             services.AddTransient<VaultViewModel>();
+            services.AddTransient<CreateVaultViewModel>();
         }
 
         private static void RegisterPages(IServiceCollection services)
         {
             services.AddTransient<UnlockPage>();
             services.AddTransient<VaultPage>();
+            services.AddTransient<CreateVaultPage>();
             services.AddTransient<AppShell>();
         }
     }

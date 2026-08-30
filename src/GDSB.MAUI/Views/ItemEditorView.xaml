@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  Detalhe de um item do cofre. Reaproveitado sem nenhuma mudança tanto no bottom-sheet do
-  celular quanto no painel lateral do tablet — só muda o container ao redor dele (ver VaultPage.xaml).
-  Herda o BindingContext (VaultViewModel) da página que o hospeda.
+  Detalhe (e edição) de um item do cofre. Reaproveitado sem nenhuma mudança tanto no bottom-sheet
+  do celular quanto no painel lateral do tablet - só muda o container ao redor dele (ver
+  VaultPage.xaml). Herda o BindingContext (VaultViewModel) da página que o hospeda. Mostra o modo
+  de visualização (IsViewingItem) ou o formulário de edição (IsEditingItem) - nunca os dois juntos.
 -->
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -14,15 +15,16 @@
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
             <Border Grid.Column="0" WidthRequest="56" HeightRequest="56" StrokeShape="RoundRectangle 16"
                     BackgroundColor="{StaticResource Tertiary}" StrokeThickness="0">
-                <Label Text="{Binding SelectedItem.Initial}" TextColor="{StaticResource White}"
+                <Label Text="{Binding EditorHeaderInitial}" TextColor="{StaticResource White}"
                        FontSize="22" FontFamily="OpenSansSemibold"
                        HorizontalOptions="Center" VerticalOptions="Center" />
             </Border>
             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                <Label Text="{Binding SelectedItem.BoxName}" FontSize="20" FontFamily="OpenSansSemibold"
+                <Label Text="{Binding EditorHeaderTitle}" FontSize="20" FontFamily="OpenSansSemibold"
                        TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" />
                 <Label Text="{Binding SelectedItem.Url}" FontSize="13"
-                       TextColor="{StaticResource PrimaryDark}" IsVisible="{Binding SelectedItem.HasUrl}"
+                       TextColor="{StaticResource PrimaryDark}"
+                       IsVisible="{Binding IsViewingItem}"
                        LineBreakMode="TailTruncation" behaviors:HoverCursor.IsHand="True">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="{Binding SelectedItem}" />
@@ -34,61 +36,138 @@
                     WidthRequest="36" HeightRequest="36" Padding="0" FontSize="14" />
         </Grid>
 
-        <Border Style="{StaticResource CardBorderStyle}" IsVisible="{Binding SelectedItem.HasUser}">
-            <Grid ColumnDefinitions="*,Auto">
-                <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
-                    <Label Text="USUÁRIO" Style="{StaticResource FieldLabelStyle}" />
-                    <Label Text="{Binding SelectedItem.User}" TextColor="{StaticResource TextPrimaryDark}" FontSize="15" />
-                </VerticalStackLayout>
-                <Button Grid.Column="1" Text="Copiar"
-                        Command="{Binding CopyUserCommand}" CommandParameter="{Binding SelectedItem}"
-                        BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
-                        FontSize="12" HeightRequest="36" VerticalOptions="Center" />
-            </Grid>
-        </Border>
+        <!-- Modo visualização -->
+        <VerticalStackLayout Spacing="16" IsVisible="{Binding IsViewingItem}">
 
-        <Border Style="{StaticResource CardBorderStyle}">
-            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
-                    <Label Text="SENHA" Style="{StaticResource FieldLabelStyle}" />
-                    <Label Text="{Binding PasswordDisplay}" TextColor="{StaticResource TextPrimaryDark}" FontSize="15" />
-                </VerticalStackLayout>
-                <Button Grid.Column="1" Text="{Binding RevealPasswordGlyph}"
-                        Command="{Binding ToggleRevealPasswordCommand}"
-                        BackgroundColor="{StaticResource SurfaceDark}" WidthRequest="36" HeightRequest="36"
-                        Padding="0" FontSize="14" VerticalOptions="Center" />
-                <Button Grid.Column="2" Text="Copiar"
-                        Command="{Binding CopyPasswordCommand}" CommandParameter="{Binding SelectedItem}"
-                        BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
-                        FontSize="12" HeightRequest="36" VerticalOptions="Center" />
-            </Grid>
-        </Border>
+            <Border Style="{StaticResource CardBorderStyle}" IsVisible="{Binding SelectedItem.HasUser}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                        <Label Text="USUÁRIO" Style="{StaticResource FieldLabelStyle}" />
+                        <Label Text="{Binding SelectedItem.User}" TextColor="{StaticResource TextPrimaryDark}" FontSize="15" />
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" Text="Copiar"
+                            Command="{Binding CopyUserCommand}" CommandParameter="{Binding SelectedItem}"
+                            BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
+                            FontSize="12" HeightRequest="36" VerticalOptions="Center" />
+                </Grid>
+            </Border>
 
-        <Border Style="{StaticResource CardBorderStyle}" IsVisible="{Binding SelectedItem.HasObs}">
-            <VerticalStackLayout Spacing="4">
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                        <Label Text="SENHA" Style="{StaticResource FieldLabelStyle}" />
+                        <Label Text="{Binding PasswordDisplay}" TextColor="{StaticResource TextPrimaryDark}" FontSize="15" />
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" Text="{Binding RevealPasswordGlyph}"
+                            Command="{Binding ToggleRevealPasswordCommand}"
+                            BackgroundColor="{StaticResource SurfaceDark}" WidthRequest="36" HeightRequest="36"
+                            Padding="0" FontSize="14" VerticalOptions="Center" />
+                    <Button Grid.Column="2" Text="Copiar"
+                            Command="{Binding CopyPasswordCommand}" CommandParameter="{Binding SelectedItem}"
+                            BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
+                            FontSize="12" HeightRequest="36" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}" IsVisible="{Binding SelectedItem.HasObs}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="OBSERVAÇÕES" Style="{StaticResource FieldLabelStyle}" />
+                    <Label Text="{Binding SelectedItem.Obs}" TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border IsVisible="{Binding IsConfirmingDelete}" BackgroundColor="#26E5484D"
+                    Stroke="{StaticResource DangerBrush}" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{Binding ConfirmDeleteMessage}" TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Cancelar" Style="{StaticResource SecondaryActionButtonStyle}"
+                                Command="{Binding CancelDeleteCommand}" HeightRequest="40" />
+                        <Button Text="Excluir" BackgroundColor="{StaticResource Danger}" TextColor="{StaticResource White}"
+                                CornerRadius="10" HeightRequest="40" FontFamily="OpenSansSemibold"
+                                Command="{Binding ConfirmDeleteCommand}" CommandParameter="{Binding SelectedItem}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <HorizontalStackLayout Spacing="12" IsVisible="{Binding ShowItemActions}">
+                <Button Text="Editar" Style="{StaticResource SecondaryActionButtonStyle}"
+                        Command="{Binding EditItemCommand}" CommandParameter="{Binding SelectedItem}" />
+                <Button Text="Excluir" Style="{StaticResource SecondaryActionButtonStyle}" TextColor="{StaticResource Danger}"
+                        BorderColor="{StaticResource Danger}" Command="{Binding PromptDeleteCommand}" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+
+        <!-- Modo edição (item existente ou novo item, quando SelectedItem ainda é nulo) -->
+        <VerticalStackLayout Spacing="16" IsVisible="{Binding IsEditingItem}">
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="NOME" Style="{StaticResource FieldLabelStyle}" />
+                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
+                    <Entry Text="{Binding EditBoxName}" Placeholder="Ex.: Netflix"
+                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                           BackgroundColor="Transparent" VerticalOptions="Center" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="URL" Style="{StaticResource FieldLabelStyle}" />
+                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
+                    <Entry Text="{Binding EditUrl}" Placeholder="site.com" Keyboard="Url"
+                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                           BackgroundColor="Transparent" VerticalOptions="Center" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="USUÁRIO" Style="{StaticResource FieldLabelStyle}" />
+                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
+                    <Entry Text="{Binding EditUser}"
+                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                           BackgroundColor="Transparent" VerticalOptions="Center" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="SENHA" Style="{StaticResource FieldLabelStyle}" />
+                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
+                    <Entry Text="{Binding EditPassword}" IsPassword="True"
+                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                           BackgroundColor="Transparent" VerticalOptions="Center" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
                 <Label Text="OBSERVAÇÕES" Style="{StaticResource FieldLabelStyle}" />
-                <Label Text="{Binding SelectedItem.Obs}" TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
+                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                        StrokeShape="RoundRectangle 12" Padding="14,10">
+                    <Editor Text="{Binding EditObs}" AutoSize="TextChanges" MinimumHeightRequest="72"
+                            TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                            BackgroundColor="Transparent" />
+                </Border>
             </VerticalStackLayout>
-        </Border>
 
-        <Border IsVisible="{Binding IsConfirmingDelete}" BackgroundColor="#26E5484D"
-                Stroke="{StaticResource DangerBrush}" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16">
-            <VerticalStackLayout Spacing="12">
-                <Label Text="{Binding ConfirmDeleteMessage}" TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
-                <HorizontalStackLayout Spacing="10">
-                    <Button Text="Cancelar" Style="{StaticResource SecondaryActionButtonStyle}"
-                            Command="{Binding CancelDeleteCommand}" HeightRequest="40" />
-                    <Button Text="Excluir" BackgroundColor="{StaticResource Danger}" TextColor="{StaticResource White}"
-                            CornerRadius="10" HeightRequest="40" FontFamily="OpenSansSemibold"
-                            Command="{Binding ConfirmDeleteCommand}" CommandParameter="{Binding SelectedItem}" />
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-        </Border>
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox IsChecked="{Binding EditFavorito}" Color="{StaticResource FavoriteGold}" />
+                <Label Text="Marcar como favorito" TextColor="{StaticResource TextPrimaryDark}" FontSize="14" VerticalOptions="Center" />
+            </HorizontalStackLayout>
 
-        <HorizontalStackLayout Spacing="12" IsVisible="{Binding ShowItemActions}">
-            <Button Text="Excluir" Style="{StaticResource SecondaryActionButtonStyle}" TextColor="{StaticResource Danger}"
-                    BorderColor="{StaticResource Danger}" Command="{Binding PromptDeleteCommand}" />
-        </HorizontalStackLayout>
+            <Label Text="{Binding ValidationError}" TextColor="{StaticResource Danger}" FontSize="13"
+                   IsVisible="{Binding HasValidationError}" />
+
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Cancelar" Style="{StaticResource SecondaryActionButtonStyle}"
+                        Command="{Binding CancelEditItemCommand}" />
+                <Button Text="Salvar" Style="{StaticResource PrimaryActionButtonStyle}"
+                        Command="{Binding SaveItemCommand}" IsEnabled="{Binding CanInteract}" HeightRequest="46" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
 
     </VerticalStackLayout>
 </ContentView>

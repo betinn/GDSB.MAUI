@@ -4,8 +4,21 @@
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              x:Class="GDSB.MAUI.VaultPage"
+             x:Name="ThisPage"
              Title="{Binding VaultName}"
              BackgroundColor="{StaticResource SurfaceDark}">
+
+    <!--
+      Sobrescreve o botão de voltar padrão do Shell (a seta no canto superior esquerdo): o pop
+      relativo padrão ("..") não é confiável aqui - depois de criar/abrir um cofre com
+      NavigateToRootAsync (que reseta a pilha até o Unlock), a seta do Shell ainda conseguia cair
+      de volta numa tela intermediária já concluída (ex.: criar cofre). Forçar sempre GoHomeAsync
+      (volta pro Unlock do zero) cobre tanto a seta quanto o botão físico/gesto de voltar do
+      Android, então os dois se comportam igual.
+    -->
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BindingContext.GoHomeCommand, Source={x:Reference ThisPage}}" />
+    </Shell.BackButtonBehavior>
 
     <ContentPage.Resources>
         <DataTemplate x:Key="SecretBoxCardTemplate">
@@ -103,12 +116,17 @@
         <Grid RowDefinitions="Auto,*" IsVisible="{Binding IsCompactLayout}">
 
             <VerticalStackLayout Grid.Row="0" Padding="18,16,18,10" Spacing="12" BackgroundColor="{StaticResource Tertiary}">
-                <Border BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
-                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
-                    <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
-                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                           BackgroundColor="Transparent" VerticalOptions="Center" />
-                </Border>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
+                            StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
+                        <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
+                               TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                               BackgroundColor="Transparent" VerticalOptions="Center" />
+                    </Border>
+                    <Button Grid.Column="1" Text="&#43;" FontSize="20" WidthRequest="44" HeightRequest="44" Padding="0"
+                            Style="{StaticResource PrimaryActionButtonStyle}"
+                            Command="{Binding AddNewItemCommand}" />
+                </Grid>
                 <HorizontalStackLayout Spacing="8">
                     <Button Text="Todos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterAllCommand}">
                         <Button.Triggers>
@@ -158,12 +176,17 @@
                 <VerticalStackLayout Grid.Row="0" Padding="18,20,18,14" Spacing="12" BackgroundColor="{StaticResource Tertiary}">
                     <Label Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="18"
                            TextColor="{StaticResource TextPrimaryDark}" />
-                    <Border BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
-                            StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="42">
-                        <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
-                               TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                               BackgroundColor="Transparent" VerticalOptions="Center" />
-                    </Border>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="42">
+                            <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
+                                   TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                   BackgroundColor="Transparent" VerticalOptions="Center" />
+                        </Border>
+                        <Button Grid.Column="1" Text="&#43;" FontSize="18" WidthRequest="42" HeightRequest="42" Padding="0"
+                                Style="{StaticResource PrimaryActionButtonStyle}"
+                                Command="{Binding AddNewItemCommand}" />
+                    </Grid>
                     <HorizontalStackLayout Spacing="8">
                         <Button Text="Todos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterAllCommand}">
                             <Button.Triggers>
@@ -193,10 +216,10 @@
                      Color="{StaticResource BorderDark}" />
 
             <Grid Grid.Column="1" Padding="44">
-                <ScrollView IsVisible="{Binding HasSelectedItem}">
+                <ScrollView IsVisible="{Binding ShowItemEditor}">
                     <views:ItemEditorView MaximumWidthRequest="560" HorizontalOptions="Start" />
                 </ScrollView>
-                <Label Text="Selecione um item na lista ao lado" IsVisible="{Binding HasNoSelection}"
+                <Label Text="Selecione um item na lista ao lado ou crie um novo" IsVisible="{Binding ShowEmptyState}"
                        TextColor="{StaticResource TextSecondaryDark}" FontSize="14"
                        HorizontalOptions="Center" VerticalOptions="Center" />
             </Grid>
