@@ -3,10 +3,9 @@
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
-		<!-- Em Linux (Claude Code on the web / CI) só o Android compila: iOS e MacCatalyst exigem macOS.
+		<!-- Em Linux (CI) só o Android compila: iOS e MacCatalyst exigem macOS.
 		     Passe -p:GdsbAndroidOnly=true para restringir a compilação ao Android. Não afeta o build
-		     normal em Windows/macOS, onde a propriedade não é definida.
-		     Veja .claude/scripts/setup-android-build.sh para preparar o ambiente. -->
+		     normal em Windows/macOS, onde a propriedade não é definida. -->
 		<TargetFrameworks Condition="'$(GdsbAndroidOnly)' == 'true'">net10.0-android</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
@@ -89,6 +88,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\GDSB.Domain\GDSB.Domain.csproj" />
 	  <ProjectReference Include="..\GDSB.Infrastructure\GDSB.Infrastructure.csproj" />
+	  <ProjectReference Include="..\GDSB.MAUI.ViewModels\GDSB.MAUI.ViewModels.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

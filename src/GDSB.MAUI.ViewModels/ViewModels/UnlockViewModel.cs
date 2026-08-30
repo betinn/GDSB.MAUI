@@ -3,11 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Interfaces;
 using GDSB.MAUI.Interfaces;
 using GDSB.MAUI.Services;
-using Microsoft.Maui.Storage;
 using System.Security.Cryptography;
 using System.Text;
 
-// VaultPage vive no namespace raiz GDSB.MAUI (namespace mãe deste), resolvida sem using extra.
+// UnlockPage/VaultPage/CreateVaultPage vivem no projeto GDSB.MAUI (host da UI) - este projeto não
+// os referencia (senão viraria uma dependência circular), então as rotas do Shell são passadas
+// como string literal, não nameof(...). Precisam continuar batendo com os nomes registrados em
+// AppShell.xaml.cs.
 namespace GDSB.MAUI.ViewModels
 {
     public partial class UnlockViewModel : ObservableObject
@@ -22,18 +24,21 @@ namespace GDSB.MAUI.ViewModels
         private readonly IFilePickerService _filePickerService;
         private readonly INavigationService _navigationService;
         private readonly IBiometricUnlockService _biometricUnlockService;
+        private readonly IPreferencesService _preferencesService;
 
         public UnlockViewModel(
             IProfileFileService profileFileService,
             IFilePickerService filePickerService,
             INavigationService navigationService,
             IBiometricUnlockService biometricUnlockService,
+            IPreferencesService preferencesService,
             BiometricOptInCoordinator biometricOptIn)
         {
             _profileFileService = profileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
             _biometricUnlockService = biometricUnlockService;
+            _preferencesService = preferencesService;
             BiometricOptIn = biometricOptIn;
         }
 
@@ -77,7 +82,7 @@ namespace GDSB.MAUI.ViewModels
         private void ToggleShowPassword() => IsPasswordHidden = !IsPasswordHidden;
 
         [RelayCommand]
-        private Task GoToCreateVaultAsync() => _navigationService.NavigateToAsync(nameof(CreateVaultPage));
+        private Task GoToCreateVaultAsync() => _navigationService.NavigateToAsync("CreateVaultPage");
 
         public void ClearPassword()
         {
@@ -108,7 +113,7 @@ namespace GDSB.MAUI.ViewModels
         // falhou, pra não entrar em loop disparando o sensor de novo sozinha.
         private async Task RefreshBiometricAvailabilityAsync()
         {
-            var lastLocation = Preferences.Default.Get<string?>(BiometricOptInCoordinator.LastLocationPreferenceKey, null);
+            var lastLocation = _preferencesService.GetString(BiometricOptInCoordinator.LastLocationPreferenceKey, null);
             if (string.IsNullOrEmpty(lastLocation))
             {
                 CanUseBiometric = false;
@@ -119,7 +124,7 @@ namespace GDSB.MAUI.ViewModels
                 && await _biometricUnlockService.IsEnabledAsync();
 
             if (CanUseBiometric)
-                BiometricVaultName = Preferences.Default.Get(BiometricOptInCoordinator.LastVaultNamePreferenceKey, string.Empty);
+                BiometricVaultName = _preferencesService.GetString(BiometricOptInCoordinator.LastVaultNamePreferenceKey, string.Empty) ?? string.Empty;
         }
 
         [RelayCommand(CanExecute = nameof(CanUnlock))]
@@ -153,7 +158,7 @@ namespace GDSB.MAUI.ViewModels
         [RelayCommand(CanExecute = nameof(CanUnlock))]
         private async Task UnlockWithBiometricAsync()
         {
-            var lastLocation = Preferences.Default.Get<string?>(BiometricOptInCoordinator.LastLocationPreferenceKey, null);
+            var lastLocation = _preferencesService.GetString(BiometricOptInCoordinator.LastLocationPreferenceKey, null);
             if (string.IsNullOrEmpty(lastLocation))
                 return;
 
@@ -203,14 +208,14 @@ namespace GDSB.MAUI.ViewModels
                 if (result.WasLegacyFormat)
                     await Task.Run(() => _profileFileService.Save(location, result.Profile, enteredPassword));
 
-                BiometricOptInCoordinator.RememberVault(location, result.Profile.Nome);
+                BiometricOptIn.RememberVault(location, result.Profile.Nome);
 
                 if (offerBiometricOptIn)
                     await BiometricOptIn.MaybeOfferAsync(enteredPassword);
 
                 ClearPassword();
 
-                await _navigationService.NavigateToRootAsync(nameof(VaultPage), new Dictionary<string, object>
+                await _navigationService.NavigateToRootAsync("VaultPage", new Dictionary<string, object>
                 {
                     ["Profile"] = result.Profile,
                     ["Location"] = location,
@@ -245,7 +250,7 @@ namespace GDSB.MAUI.ViewModels
             {
             }
 
-            BiometricOptInCoordinator.ForgetVault();
+            BiometricOptIn.ForgetVault();
 
             CanUseBiometric = false;
             BiometricVaultName = string.Empty;

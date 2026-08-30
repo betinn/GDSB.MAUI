@@ -5,7 +5,9 @@ using GDSB.Domain.Interfaces;
 using GDSB.MAUI.Interfaces;
 using GDSB.MAUI.Services;
 
-// VaultPage vive no namespace raiz GDSB.MAUI (namespace mãe deste), resolvida sem using extra.
+// VaultPage vive no projeto GDSB.MAUI (host da UI) - este projeto não o referencia (senão viraria
+// uma dependência circular), então a rota do Shell é passada como string literal, não nameof(...).
+// Precisa continuar batendo com o nome registrado em AppShell.xaml.cs.
 namespace GDSB.MAUI.ViewModels
 {
     public partial class CreateVaultViewModel : ObservableObject
@@ -116,11 +118,11 @@ namespace GDSB.MAUI.ViewModels
                 {
                 }
 
-                BiometricOptInCoordinator.ForgetVault();
-                BiometricOptInCoordinator.RememberVault(location, profile.Nome);
+                BiometricOptIn.ForgetVault();
+                BiometricOptIn.RememberVault(location, profile.Nome);
                 await BiometricOptIn.MaybeOfferAsync(enteredPassword);
 
-                await _navigationService.NavigateToRootAsync(nameof(VaultPage), new Dictionary<string, object>
+                await _navigationService.NavigateToRootAsync("VaultPage", new Dictionary<string, object>
                 {
                     ["Profile"] = profile,
                     ["Location"] = location,
