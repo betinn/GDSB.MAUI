@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              x:Class="GDSB.MAUI.VaultPage"
              Title="{Binding VaultName}"
              BackgroundColor="{StaticResource SurfaceDark}">
@@ -21,7 +22,8 @@
                             <Label Text="{Binding BoxName}" FontFamily="OpenSansSemibold" FontSize="15"
                                    TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" />
                             <Label Text="{Binding Url}" FontSize="12.5" TextColor="{StaticResource PrimaryDark}"
-                                   IsVisible="{Binding HasUrl}" LineBreakMode="TailTruncation">
+                                   IsVisible="{Binding HasUrl}" LineBreakMode="TailTruncation"
+                                   behaviors:HoverCursor.IsHand="True">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenUrlCommand}"
@@ -61,7 +63,8 @@
         </DataTemplate>
 
         <DataTemplate x:Key="SecretBoxRowTemplate">
-            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="12" Margin="0,0,0,8">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="12" Margin="0,0,0,8"
+                  behaviors:HoverCursor.IsHand="True">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer
                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenEditorCommand}"
@@ -133,8 +136,10 @@
 
         </Grid>
 
-        <!-- Overlay do editor em bottom-sheet (celular) -->
-        <Grid IsVisible="{Binding IsEditorOpen}" BackgroundColor="#99000000">
+        <!-- Overlay do editor em bottom-sheet (só no layout compacto - no layout largo o editor já
+             aparece no painel lateral; sem o IsCompactLayout aqui, isso vazava por cima do painel
+             lateral esticado até o fim da janela quando IsEditorOpen ficava true no modo tablet). -->
+        <Grid IsVisible="{Binding IsCompactEditorOpen}" BackgroundColor="#99000000">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding CloseEditorCommand}" />
             </Grid.GestureRecognizers>
@@ -197,6 +202,15 @@
             </Grid>
 
         </Grid>
+
+        <!-- Toast de feedback (copiar usuário/senha etc.) - controlado via ToastRequested no code-behind. -->
+        <Border x:Name="ToastBorder" BackgroundColor="{StaticResource SurfaceCardDark}"
+                Stroke="{StaticResource BorderDarkBrush}" StrokeShape="RoundRectangle 12"
+                Padding="18,12" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,28"
+                Opacity="0" InputTransparent="True">
+            <Label x:Name="ToastLabel" TextColor="{StaticResource TextPrimaryDark}" FontSize="14"
+                   FontFamily="OpenSansSemibold" />
+        </Border>
 
     </Grid>
 </ContentPage>

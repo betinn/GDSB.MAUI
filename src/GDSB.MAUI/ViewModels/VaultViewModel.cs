@@ -20,6 +20,10 @@ namespace GDSB.MAUI.ViewModels
             _alertService = alertService;
         }
 
+        // A View anima um toast quando isso dispara - decidido por evento (não por uma propriedade
+        // IsVisible) porque a duração/fade é responsabilidade de apresentação, não de estado.
+        public event EventHandler<string>? ToastRequested;
+
         public ObservableCollection<SecretBoxItemViewModel> Items { get; } = new();
 
         [ObservableProperty]
@@ -60,6 +64,10 @@ namespace GDSB.MAUI.ViewModels
 
         public bool IsCompactLayout => !IsWideLayout;
 
+        // O bottom-sheet do editor só existe no layout compacto (celular): no layout largo (tablet)
+        // o mesmo editor já aparece no painel lateral, indexado por HasSelectedItem.
+        public bool IsCompactEditorOpen => IsEditorOpen && IsCompactLayout;
+
         public bool IsAllFilterSelected => !FilterFavoritesOnly;
 
         public bool HasSelectedItem => SelectedItem is not null;
@@ -86,7 +94,13 @@ namespace GDSB.MAUI.ViewModels
             RefreshItems();
         }
 
-        partial void OnIsWideLayoutChanged(bool value) => OnPropertyChanged(nameof(IsCompactLayout));
+        partial void OnIsWideLayoutChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsCompactLayout));
+            OnPropertyChanged(nameof(IsCompactEditorOpen));
+        }
+
+        partial void OnIsEditorOpenChanged(bool value) => OnPropertyChanged(nameof(IsCompactEditorOpen));
 
         partial void OnSelectedItemChanged(SecretBoxItemViewModel? value)
         {
@@ -190,6 +204,7 @@ namespace GDSB.MAUI.ViewModels
                 return;
 
             await _clipboardService.SetTextAsync(item.User);
+            ToastRequested?.Invoke(this, "Usuário copiado");
         }
 
         [RelayCommand]
@@ -199,6 +214,7 @@ namespace GDSB.MAUI.ViewModels
                 return;
 
             await _clipboardService.SetTextAsync(item.Pass);
+            ToastRequested?.Invoke(this, "Senha copiada");
         }
 
         [RelayCommand]

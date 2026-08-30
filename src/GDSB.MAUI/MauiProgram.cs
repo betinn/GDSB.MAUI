@@ -30,6 +30,10 @@ namespace GDSB.MAUI
             RegisterViewModels(builder.Services);
             RegisterPages(builder.Services);
 
+#if WINDOWS
+            Platforms.Windows.CursorMappings.Apply();
+#endif
+
             return builder.Build();
         }
 
