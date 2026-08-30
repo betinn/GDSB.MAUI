@@ -104,6 +104,8 @@ O que ele faz: instala JDK 17; baixa do NuGet os manifests de workload (`android
 
 `-p:GdsbAndroidOnly=true` é um opt-in adicionado ao `csproj` que restringe os TFMs ao Android: **iOS e MacCatalyst só compilam em macOS**, e sem isso o restore falha. Em Windows/macOS nada disto é necessário — a propriedade não é definida e o build normal compila todos os TFMs.
 
-Resultado atual: build limpo do zero com **0 erros** e 6 warnings, **todos pré-existentes** (`LegacyV1FileDecryptionService.cs`, `Platforms/Android/MainActivity.cs`, `Platforms/Android/Services/FilePickerService.cs`) — nenhum vindo do código das Fases 2 e 3. Gera o APK assinado em `src/GDSB.MAUI/bin/Debug/net8.0-android/`.
+Resultado atual: build limpo do zero com **0 erros** e 6 warnings, **todos pré-existentes** (`LegacyV1FileDecryptionService.cs`, `Platforms/Android/MainActivity.cs`, `Platforms/Android/Services/FilePickerService.cs`) — nenhum vindo do código das Fases 2 e 3. Gera o APK assinado em `src/GDSB.MAUI/bin/Debug/net10.0-android/`.
+
+> Nota: o projeto migrou de `net8.0-*` para `net10.0-*` (o SDK/workloads MAUI pararam de suportar TFMs `net8.0-*` móveis). O script acima já reflete a banda `10.0.100`; se ele voltar a falhar por causa de `API_LEVEL`/`BUILD_TOOLS`, é porque o workload Android `36.1.69` pode exigir uma API level mais nova que 34 — ajustar essas constantes no script.
 
 **O que o build cobre e o que não cobre:** ele valida compilação de C#, o XAML (o XamlC roda e falharia com chave `StaticResource` inexistente ou tipo errado), recursos Android via aapt2, os wrappers Java e o empacotamento/assinatura. Não substitui **testar no emulador** — comportamento em tela, a troca de layout celular/tablet e a migração de um `.GDSBX` v1 real continuam precisando de teste manual.

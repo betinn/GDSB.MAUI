@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-SDK_BAND=8.0.100
+SDK_BAND=10.0.100
 ANDROID_SDK=/opt/android-sdk
 API_LEVEL=34
 BUILD_TOOLS=34.0.0
@@ -26,9 +26,9 @@ trap 'rm -rf "$WORK"' EXIT
 
 log() { printf '\n==> %s\n' "$1"; }
 
-log "1/6 .NET SDK 8"
+log "1/6 .NET SDK 10"
 if ! command -v dotnet >/dev/null 2>&1; then
-  sudo apt-get install -y -qq dotnet-sdk-8.0
+  sudo apt-get install -y -qq dotnet-sdk-10.0
 fi
 dotnet --version
 
@@ -55,10 +55,10 @@ install_manifest() {
   sudo mkdir -p "$dest"
   sudo cp -r "$WORK/x-$pkg/data/." "$dest/"
 }
-install_manifest "microsoft.net.sdk.android.manifest-$SDK_BAND"     34.0.154   microsoft.net.sdk.android
-install_manifest "microsoft.net.sdk.maui.manifest-$SDK_BAND"        8.0.100    microsoft.net.sdk.maui
-install_manifest "microsoft.net.sdk.ios.manifest-$SDK_BAND"         18.0.8319  microsoft.net.sdk.ios
-install_manifest "microsoft.net.sdk.maccatalyst.manifest-$SDK_BAND" 18.0.8319  microsoft.net.sdk.maccatalyst
+install_manifest "microsoft.net.sdk.android.manifest-$SDK_BAND"     36.1.69    microsoft.net.sdk.android
+install_manifest "microsoft.net.sdk.maui.manifest-$SDK_BAND"        10.0.20    microsoft.net.sdk.maui
+install_manifest "microsoft.net.sdk.ios.manifest-$SDK_BAND"         26.5.10301 microsoft.net.sdk.ios
+install_manifest "microsoft.net.sdk.maccatalyst.manifest-$SDK_BAND" 26.5.10301 microsoft.net.sdk.maccatalyst
 
 log "4/6 workload maui-android"
 # Sem sudo de propósito: com sudo o HOME muda e os packs vão parar num diretório que o
