@@ -82,12 +82,28 @@ Ao final de cada fase (PR aberto ou mergeado):
 - **Fase 2**: o decifrador antigo virou `Encryption/Legacy/LegacyV1FileDecryptionService` (marcado `[Obsolete]`, só leitura). `IProfileFileService`/`ProfileFileService` detectam o formato pelo magic `GDSB` nos 4 primeiros bytes, delegam pro leitor certo e **sempre gravam em v2**, com backup do original em `<arquivo>.v1.bak` antes da primeira sobrescrita. `ProfileOpenResult.WasLegacyFormat` dispara a migração automática logo após o open.
 - **Fase 3**: DI unificado em `MauiProgram.cs` (o `ServiceProvider` estático paralelo do `App.xaml.cs` foi removido — só existe um container agora). `FileFinderDecrypter` → `UnlockPage`, `MainPage` → `VaultPage`, ambas Views finas sobre `UnlockViewModel`/`VaultViewModel` (CommunityToolkit.Mvvm 8.3.2). `ItemEditorView.xaml` é o mesmo formulário nos dois layouts. `VaultPage.OnSizeAllocated` compara a largura com `ResponsiveBreakpoints.TabletMinWidth` (700dp) e alterna lista+bottom-sheet ↔ mestre-detalhe — por largura, nunca por `DeviceIdiom`. Novos `IClipboardService`/`IAlertService`/`INavigationService` isolam as APIs estáticas do MAUI. Removidos `IFileDataService`/`FileDataService`, sem uso depois do refactor.
 
-Testes: `dotnet test tests/GDSB.Infrastructure.Tests` → **10/10 passando** (4 da Fase 1 + 6 novos da Fase 2: leitura de um `.GDSBX` v1 fabricado pelo algoritmo legado, senha errada, flag de formato no `Open`, migração completa e idempotência do `.v1.bak`). Build de `GDSB.Domain`/`GDSB.Infrastructure` limpo, com o mesmo warning pré-existente do arquivo legado.
+Testes: `dotnet test tests/GDSB.Infrastructure.Tests` → **10/10 passando** (4 da Fase 1 + 6 novos da Fase 2: leitura de um `.GDSBX` v1 fabricado pelo algoritmo legado, senha errada, flag de formato no `Open`, migração completa e idempotência do `.v1.bak`).
 
-### Pendência conhecida: build do projeto MAUI
+Build: **o app Android compila limpo do zero** (0 erros), incluindo XAML e empacotamento — veja a seção seguinte para preparar o ambiente. Falta apenas o teste manual no emulador.
 
-O ambiente do Claude Code on the web **não consegue instalar os workloads MAUI** (`dotnet workload search maui`/`android` não retorna nada; o restore falha com `NETSDK1139: target platform identifier android was not recognized`). Então `GDSB.MAUI.csproj` não foi compilado em nenhuma sessão até aqui — mesma limitação já registrada no PR da Fase 1, mas agora ela pesa mais, porque a Fase 3 mexeu de verdade no projeto MAUI.
+## Como compilar o app Android neste ambiente
 
-Para compensar, a Fase 3 foi validada assim: os três ViewModels compilam **limpos, 0 warnings**, contra o `CommunityToolkit.Mvvm` 8.3.2 real (com os tipos do MAUI stubados), e **todos os bindings do XAML foram conferidos por reflexão** contra os membros que os geradores efetivamente produzem, além de checagem de XML bem-formado e de todas as chaves `StaticResource`. Isso cobre os geradores e os nomes, mas **não substitui um build real**: falta rodar `dotnet build -f net8.0-android` e testar no emulador (duas larguras) antes do merge.
+**O build do `GDSB.MAUI.csproj` funciona aqui** — mas exige uma preparação, porque o SDK .NET que vem do apt do Ubuntu não traz os manifests de workload do Android/MAUI e o proxy de saída bloqueia `dl.google.com` (nada de `dotnet workload install maui` nem download do Android SDK pelo caminho normal).
 
-Se for útil numa próxima sessão, o hook `.claude/hooks/session-start.sh` já instala o SDK .NET 8 automaticamente (foi o que permitiu rodar os testes aqui).
+O script `.claude/scripts/setup-android-build.sh` resolve isso usando só hosts liberados (NuGet, arquivo do Ubuntu, `raw.githubusercontent.com`). Ele é idempotente e leva alguns minutos na primeira vez:
+
+```bash
+.claude/scripts/setup-android-build.sh
+
+dotnet build src/GDSB.MAUI/GDSB.MAUI.csproj -p:GdsbAndroidOnly=true \
+  -p:AndroidSdkDirectory=/opt/android-sdk \
+  -p:JavaSdkDirectory=/usr/lib/jvm/java-17-openjdk-amd64
+```
+
+O que ele faz: instala JDK 17; baixa do NuGet os manifests de workload (`android`, `maui`, `ios`, `maccatalyst` — os quatro, porque o do MAUI referencia os outros); instala o workload `maui-android`; pega `zipalign`/`apksigner` do pacote `android-sdk-build-tools` do Ubuntu; e monta um Android SDK mínimo em `/opt/android-sdk` com o `android.jar` oficial da API 34 (de um espelho no GitHub, já que `dl.google.com` está bloqueado). O `aapt2` real já vem dentro do pack do workload.
+
+`-p:GdsbAndroidOnly=true` é um opt-in adicionado ao `csproj` que restringe os TFMs ao Android: **iOS e MacCatalyst só compilam em macOS**, e sem isso o restore falha. Em Windows/macOS nada disto é necessário — a propriedade não é definida e o build normal compila todos os TFMs.
+
+Resultado atual: build limpo do zero com **0 erros** e 6 warnings, **todos pré-existentes** (`LegacyV1FileDecryptionService.cs`, `Platforms/Android/MainActivity.cs`, `Platforms/Android/Services/FilePickerService.cs`) — nenhum vindo do código das Fases 2 e 3. Gera o APK assinado em `src/GDSB.MAUI/bin/Debug/net8.0-android/`.
+
+**O que o build cobre e o que não cobre:** ele valida compilação de C#, o XAML (o XamlC roda e falharia com chave `StaticResource` inexistente ou tipo errado), recursos Android via aapt2, os wrappers Java e o empacotamento/assinatura. Não substitui **testar no emulador** — comportamento em tela, a troca de layout celular/tablet e a migração de um `.GDSBX` v1 real continuam precisando de teste manual.
