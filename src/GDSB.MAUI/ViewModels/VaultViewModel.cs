@@ -13,16 +13,22 @@ namespace GDSB.MAUI.ViewModels
         private readonly IClipboardService _clipboardService;
         private readonly IAlertService _alertService;
         private readonly IProfileFileService _profileFileService;
+        private readonly INavigationService _navigationService;
 
         private Profile? _profile;
         private string? _location;
         private string? _password;
 
-        public VaultViewModel(IClipboardService clipboardService, IAlertService alertService, IProfileFileService profileFileService)
+        public VaultViewModel(
+            IClipboardService clipboardService,
+            IAlertService alertService,
+            IProfileFileService profileFileService,
+            INavigationService navigationService)
         {
             _clipboardService = clipboardService;
             _alertService = alertService;
             _profileFileService = profileFileService;
+            _navigationService = navigationService;
         }
 
         // A View anima um toast quando isso dispara - decidido por evento (não por uma propriedade
@@ -221,6 +227,9 @@ namespace GDSB.MAUI.ViewModels
             if (SelectedItem is null && IsEditorOpen && !IsEditingItem)
                 CloseEditor();
         }
+
+        [RelayCommand]
+        private Task GoHomeAsync() => _navigationService.GoHomeAsync();
 
         private async Task PersistAsync()
         {

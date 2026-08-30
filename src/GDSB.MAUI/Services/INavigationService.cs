@@ -9,6 +9,11 @@ namespace GDSB.MAUI.Services
         // já concluída (ex.: a de criar cofre depois que ele já foi criado), sempre na home zerada.
         Task NavigateToRootAsync(string route, IDictionary<string, object>? parameters = null);
 
+        // Volta direto pra tela de desbloqueio, descartando toda a pilha. Usado pelo botão de
+        // voltar do cofre: o pop relativo padrão do Shell ("..") não é confiável ali (ver
+        // VaultPage.xaml/Shell.BackButtonBehavior) - isso sempre cai na home zerada.
+        Task GoHomeAsync();
+
         Task GoBackAsync();
     }
 }

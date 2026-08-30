@@ -21,6 +21,17 @@ public partial class VaultPage : ContentPage
         _viewModel.OnSizeChanged(width);
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+#if ANDROID
+        // O teclado virtual pode continuar aberto do Entry de senha da tela anterior
+        // (Unlock/CreateVault) - fecha explicitamente ao entrar no cofre.
+        Platforms.Android.KeyboardDismissal.Hide();
+#endif
+    }
+
     private async void OnToastRequested(object? sender, string message)
     {
         _toastCts?.Cancel();

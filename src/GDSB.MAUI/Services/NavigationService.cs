@@ -17,6 +17,8 @@ namespace GDSB.MAUI.Services
                 : Shell.Current.GoToAsync(absoluteRoute, parameters);
         }
 
+        public Task GoHomeAsync() => Shell.Current.GoToAsync($"//{nameof(UnlockPage)}");
+
         public Task GoBackAsync() => Shell.Current.GoToAsync("..");
     }
 }

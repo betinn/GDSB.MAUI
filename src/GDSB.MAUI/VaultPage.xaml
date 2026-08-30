@@ -4,8 +4,21 @@
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              x:Class="GDSB.MAUI.VaultPage"
+             x:Name="ThisPage"
              Title="{Binding VaultName}"
              BackgroundColor="{StaticResource SurfaceDark}">
+
+    <!--
+      Sobrescreve o botão de voltar padrão do Shell (a seta no canto superior esquerdo): o pop
+      relativo padrão ("..") não é confiável aqui - depois de criar/abrir um cofre com
+      NavigateToRootAsync (que reseta a pilha até o Unlock), a seta do Shell ainda conseguia cair
+      de volta numa tela intermediária já concluída (ex.: criar cofre). Forçar sempre GoHomeAsync
+      (volta pro Unlock do zero) cobre tanto a seta quanto o botão físico/gesto de voltar do
+      Android, então os dois se comportam igual.
+    -->
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BindingContext.GoHomeCommand, Source={x:Reference ThisPage}}" />
+    </Shell.BackButtonBehavior>
 
     <ContentPage.Resources>
         <DataTemplate x:Key="SecretBoxCardTemplate">
