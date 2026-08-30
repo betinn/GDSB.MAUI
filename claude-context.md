@@ -46,7 +46,7 @@ Estes três links têm todo o detalhe que não está reproduzido aqui — leia-o
 | # | Fase | Status |
 |---|------|--------|
 | 0 | Diagnóstico e decisões | ✅ Concluída |
-| 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | ⏭️ Próxima |
+| 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | 🚧 PR aberto: [#4](https://github.com/betinn/GDSB.MAUI/pull/4) |
 | 2 | Leitor legado (v1) + migração automática ao salvar | Planejada |
 | 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | Planejada |
 | 4 | CRUD completo (criar cofre, insert/update/delete, save) | Planejada |
@@ -59,8 +59,11 @@ Fora de escopo: reescrita do app desktop para o formato v2 — projeto futuro se
 
 - Uma branch por fase, criada a partir da `main` (ex.: `fase-1-criptografia-nova`).
 - Um PR por fase. Use a tabela de arquivos e o "Pronto quando" da seção correspondente no plano de execução como checklist do PR.
+- Ao terminar a implementação da fase (código pronto e commitado), **abra o PR automaticamente, sem perguntar antes** — isso é parte padrão do fluxo, não uma ação que precisa de confirmação. O PR fica aberto para review do usuário; não é para fazer merge sozinho.
+- Não fique monitorando o PR por conta própria depois de aberto — isso gasta token à toa. Se precisar de ajuste, o usuário avisa.
 - Não pule fases: a 2 depende da 1, a 3 depende da 2 (o `IProfileFileService` unificado), a 4 depende da 3 (ViewModels prontos), a 5 e a 6 podem ser paralelas entre si depois da 4.
 - Nenhuma fase deve reintroduzir o comportamento antigo de criptografia (IV fixo, senha ciclada) nem em teste nem em fallback.
+- Ao abrir o PR da fase, sempre inclua um comentário (descrição do PR) explicando as atualizações feitas e o objetivo da implementação — não abrir PR "mudo", mesmo quando o título já é autoexplicativo.
 
 ## Como manter este arquivo
 
@@ -73,4 +76,4 @@ Ao final de cada fase (PR aberto ou mergeado):
 
 ## Estado atual
 
-Fase 0 concluída (diagnóstico, decisões 1-7, protótipo e planos publicados). Nenhuma fase de implementação foi iniciada ainda. Próximo passo: Fase 1.
+Fase 0 concluída (diagnóstico, decisões 1-7, protótipo e planos publicados). Fase 1 em andamento na branch `fase-1-criptografia-nova`: implementados `IFileCryptoServiceV2`, `InvalidPasswordOrCorruptFileException`, `GdsbFileHeader` (layout v2) e `AesGcmFileCryptoService` (PBKDF2-HMAC-SHA256 + AES-GCM), com o projeto de testes `tests/GDSB.Infrastructure.Tests` cobrindo round-trip, senha errada, ciphertext adulterado e salt/nonce distintos por chamada. Nenhuma classe da `GDSB.MAUI` foi tocada. PR aberto para review: https://github.com/betinn/GDSB.MAUI/pull/4. `dotnet build` (GDSB.Domain, GDSB.Infrastructure) e `dotnet test tests/GDSB.Infrastructure.Tests` confirmados nesta sessão: build limpo (só um warning pré-existente no `FileDecryptionService.cs` legado) e 4/4 testes passando. Falta apenas review/merge do PR.
