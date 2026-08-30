@@ -49,7 +49,7 @@ Estes três links têm todo o detalhe que não está reproduzido aqui — leia-o
 | 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | ✅ Concluída — PR [#4](https://github.com/betinn/GDSB.MAUI/pull/4) mergeado |
 | 2 | Leitor legado (v1) + migração automática ao salvar | ✅ Concluída — PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5) |
 | 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | ✅ Concluída — PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5) |
-| 4 | CRUD completo (criar cofre, insert/update/delete, save) + acesso a arquivo com suporte real a sync (Android) | ✅ Concluída |
+| 4 | CRUD completo (criar cofre, insert/update/delete, save) + acesso a arquivo com suporte real a sync (Android) | ✅ Concluída — PR [#6](https://github.com/betinn/GDSB.MAUI/pull/6) |
 | 5 | Segurança de uso real (auto-lock, clipboard, biometria) | Próxima |
 | 6 | Polimento geral (remover Newtonsoft, testes, README) | Planejada |
 
