@@ -1,0 +1,12 @@
+using GDSB.Domain.Entities;
+
+namespace GDSB.Domain.Interfaces
+{
+    // Ponto único de acesso a arquivo .GDSBX: esconde do resto do app se o arquivo lido é v1 (legado)
+    // ou v2, e garante que tudo que é salvo vai sempre no formato novo (AES-GCM + PBKDF2).
+    public interface IProfileFileService
+    {
+        ProfileOpenResult Open(string path, string password);
+        void Save(string path, Profile profile, string password);
+    }
+}
