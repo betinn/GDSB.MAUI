@@ -50,7 +50,7 @@ Estes três links têm todo o detalhe que não está reproduzido aqui — leia-o
 | 2 | Leitor legado (v1) + migração automática ao salvar | ✅ Concluída — PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5) |
 | 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | ✅ Concluída — PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5) |
 | 4 | CRUD completo (criar cofre, insert/update/delete, save) + acesso a arquivo com suporte real a sync (Android) | ✅ Concluída — PR [#6](https://github.com/betinn/GDSB.MAUI/pull/6) |
-| 5 | Segurança de uso real (auto-lock, clipboard, biometria) | ✅ Concluída — nesta branch |
+| 5 | Segurança de uso real (auto-lock, clipboard, biometria) | ✅ Concluída — PR [#7](https://github.com/betinn/GDSB.MAUI/pull/7) |
 | 6 | Polimento geral (remover Newtonsoft, testes, README) | Próxima |
 
 Fora de escopo: reescrita do app desktop para o formato v2 — projeto futuro separado.
@@ -76,7 +76,7 @@ Ao final de cada fase (PR aberto ou mergeado):
 
 ## Estado atual
 
-**Fases 0 a 5 concluídas.** A Fase 1 foi mergeada na `main` (PR #4). As Fases 2 e 3 foram mergeadas via PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5). A Fase 4 foi mergeada via PR [#6](https://github.com/betinn/GDSB.MAUI/pull/6). A Fase 5 está nesta branch.
+**Fases 0 a 5 concluídas.** A Fase 1 foi mergeada na `main` (PR #4). As Fases 2 e 3 foram mergeadas via PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5). A Fase 4 foi mergeada via PR [#6](https://github.com/betinn/GDSB.MAUI/pull/6). A Fase 5 está nesta branch, PR [#7](https://github.com/betinn/GDSB.MAUI/pull/7).
 
 ### Fase 5 — segurança de uso real
 
