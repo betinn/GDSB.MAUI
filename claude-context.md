@@ -47,8 +47,8 @@ Estes três links têm todo o detalhe que não está reproduzido aqui — leia-o
 |---|------|--------|
 | 0 | Diagnóstico e decisões | ✅ Concluída |
 | 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | ✅ Concluída — PR [#4](https://github.com/betinn/GDSB.MAUI/pull/4) mergeado |
-| 2 | Leitor legado (v1) + migração automática ao salvar | ✅ Concluída |
-| 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | ✅ Concluída |
+| 2 | Leitor legado (v1) + migração automática ao salvar | ✅ Concluída — PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5) |
+| 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | ✅ Concluída — PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5) |
 | 4 | CRUD completo (criar cofre, insert/update/delete, save) | Planejada |
 | 5 | Segurança de uso real (auto-lock, clipboard, biometria) | Planejada |
 | 6 | Polimento geral (remover Newtonsoft, testes, README) | Planejada |
@@ -76,7 +76,7 @@ Ao final de cada fase (PR aberto ou mergeado):
 
 ## Estado atual
 
-**Fases 0, 1, 2 e 3 concluídas.** A Fase 1 foi mergeada na `main` (PR #4). As Fases 2 e 3 estão na branch `claude/projeto-fases-2-3-87afz1`, aguardando review.
+**Fases 0, 1, 2 e 3 concluídas.** A Fase 1 foi mergeada na `main` (PR #4). As Fases 2 e 3 estão na branch `claude/projeto-fases-2-3-87afz1`, aguardando review no PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5).
 
 - **Fase 1** (mergeada): `IFileCryptoServiceV2`, `InvalidPasswordOrCorruptFileException`, `GdsbFileHeader` (layout v2) e `AesGcmFileCryptoService` (PBKDF2-HMAC-SHA256 + AES-GCM).
 - **Fase 2**: o decifrador antigo virou `Encryption/Legacy/LegacyV1FileDecryptionService` (marcado `[Obsolete]`, só leitura). `IProfileFileService`/`ProfileFileService` detectam o formato pelo magic `GDSB` nos 4 primeiros bytes, delegam pro leitor certo e **sempre gravam em v2**, com backup do original em `<arquivo>.v1.bak` antes da primeira sobrescrita. `ProfileOpenResult.WasLegacyFormat` dispara a migração automática logo após o open.
