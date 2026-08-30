@@ -86,9 +86,6 @@
                                            FontFamily="OpenSansSemibold" FontSize="14"
                                            TextColor="{StaticResource TextPrimaryDark}"
                                            LineBreakMode="TailTruncation" />
-                                    <Label Text="{Binding BiometricVaultPath}"
-                                           FontSize="11" TextColor="{StaticResource TextMutedDark}"
-                                           LineBreakMode="MiddleTruncation" />
                                 </VerticalStackLayout>
                             </Border>
 

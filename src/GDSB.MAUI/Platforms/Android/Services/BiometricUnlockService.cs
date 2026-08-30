@@ -162,8 +162,15 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
         // Devolve o Cipher já autorizado (mesma instância passada em CryptoObject) depois de uma
         // biometria bem-sucedida, ou null se o usuário cancelar/errar ou o prompt der erro.
-        private static Task<Cipher?> AuthenticateAsync(FragmentActivity activity, Cipher cipher, string subtitle)
+        private static async Task<Cipher?> AuthenticateAsync(FragmentActivity activity, Cipher cipher, string subtitle)
         {
+            // BiometricPrompt.Authenticate chamado antes da janela ter foco (ex.: disparado sozinho
+            // assim que a UnlockPage aparece, seja na abertura do app ou voltando de background)
+            // falha silenciosamente ou nunca chega a aparecer - só funcionava de verdade quando o
+            // usuário tocava no botão manualmente, porque a essa altura a janela já tinha foco há
+            // tempo. Esperar aqui cobre os dois casos com o mesmo código.
+            await WaitForWindowFocusAsync(activity);
+
             var tcs = new TaskCompletionSource<Cipher?>();
 
             activity.RunOnUiThread(() =>
@@ -181,7 +188,34 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 prompt.Authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
             });
 
-            return tcs.Task;
+            return await tcs.Task;
+        }
+
+        private static readonly TimeSpan WindowFocusTimeout = TimeSpan.FromSeconds(5);
+
+        // Se a janela já está em foco (o caso comum: usuário tocou no botão), retorna na hora.
+        // Senão, espera o próximo MainActivity.WindowFocusChanged(true) - com um teto de 5s pra
+        // nunca travar pra sempre num cenário inesperado (nesse caso o prompt tenta aparecer sem
+        // foco garantido mesmo, o mesmo comportamento de antes dessa correção).
+        private static Task WaitForWindowFocusAsync(FragmentActivity activity)
+        {
+            if (activity.HasWindowFocus)
+                return Task.CompletedTask;
+
+            var tcs = new TaskCompletionSource();
+            Action<bool>? handler = null;
+            handler = hasFocus =>
+            {
+                if (!hasFocus)
+                    return;
+
+                MainActivity.WindowFocusChanged -= handler;
+                tcs.TrySetResult();
+            };
+            MainActivity.WindowFocusChanged += handler;
+
+            return Task.WhenAny(tcs.Task, Task.Delay(WindowFocusTimeout))
+                .ContinueWith(_ => MainActivity.WindowFocusChanged -= handler, TaskScheduler.Default);
         }
 
         private sealed class AuthCallback : BiometricPrompt.AuthenticationCallback

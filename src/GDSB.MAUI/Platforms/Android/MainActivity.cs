@@ -21,6 +21,18 @@ namespace GDSB.MAUI
         public static void RegisterDocumentPickCallback(int requestCode, Action<Result, Intent?> callback) =>
             PendingDocumentPicks[requestCode] = callback;
 
+        // Ponte pro BiometricUnlockService: chamar BiometricPrompt.Authenticate antes da janela
+        // ganhar foco (ex.: logo no OnCreate/primeiro OnResume, ou disparado de código nosso
+        // assim que a página aparece) faz o prompt do sistema falhar silenciosamente ou nem
+        // aparecer - o serviço espera esse evento com foco=true antes de chamar Authenticate.
+        public static event Action<bool>? WindowFocusChanged;
+
+        public override void OnWindowFocusChanged(bool hasFocus)
+        {
+            base.OnWindowFocusChanged(hasFocus);
+            WindowFocusChanged?.Invoke(hasFocus);
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);

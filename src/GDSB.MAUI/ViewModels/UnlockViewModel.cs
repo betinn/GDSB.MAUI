@@ -59,9 +59,6 @@ namespace GDSB.MAUI.ViewModels
         [ObservableProperty]
         private string biometricVaultName = string.Empty;
 
-        [ObservableProperty]
-        private string biometricVaultPath = string.Empty;
-
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         public bool CanInteract => !IsBusy;
@@ -89,20 +86,24 @@ namespace GDSB.MAUI.ViewModels
             IsPasswordHidden = true;
         }
 
-        // Chamado no OnAppearing da UnlockPage: atualiza se o atalho de biometria deve aparecer e,
-        // se sim, já dispara o desbloqueio sozinho - o usuário não precisa tocar em nada. O botão
-        // "Desbloquear com biometria" continua visível mesmo assim (ver UnlockPage.xaml), pra quando
-        // o usuário cancelar o prompt do sistema sem querer (ou ele falhar por qualquer motivo) e
-        // precisar tentar de novo manualmente.
+        // Chamado sempre que a UnlockPage passa a ser a tela mostrada - no OnAppearing (abrir o
+        // app, voltar de outra tela) e também a cada Window.Resumed (o app volta de background,
+        // com ou sem a página ter saído de "appeared" nesse meio-tempo). Atualiza se o atalho de
+        // biometria deve aparecer e, se sim, já dispara o desbloqueio sozinho - o usuário não
+        // precisa tocar em nada. O botão "Desbloquear com biometria" continua visível mesmo assim
+        // (ver UnlockPage.xaml), pra quando o usuário cancelar o prompt do sistema sem querer (ou
+        // ele falhar por qualquer motivo) e precisar tentar de novo manualmente. O guard CanUnlock()
+        // evita disparar de novo por cima de uma tentativa já em andamento (ex.: OnAppearing e um
+        // Window.Resumed quase simultâneo na abertura do app).
         public async Task InitializeAsync()
         {
             await RefreshBiometricAvailabilityAsync();
 
-            if (CanUseBiometric)
+            if (CanUseBiometric && CanUnlock())
                 await UnlockWithBiometricAsync();
         }
 
-        // Só reavalia o estado (disponível/habilitado + nome e path do cofre-alvo) - não dispara
+        // Só reavalia o estado (disponível/habilitado + nome do cofre-alvo) - não dispara
         // biometria sozinha. Usado tanto pelo InitializeAsync quanto depois de uma tentativa que
         // falhou, pra não entrar em loop disparando o sensor de novo sozinha.
         private async Task RefreshBiometricAvailabilityAsync()
@@ -118,10 +119,7 @@ namespace GDSB.MAUI.ViewModels
                 && await _biometricUnlockService.IsEnabledAsync();
 
             if (CanUseBiometric)
-            {
                 BiometricVaultName = Preferences.Default.Get(BiometricOptInCoordinator.LastVaultNamePreferenceKey, string.Empty);
-                BiometricVaultPath = lastLocation;
-            }
         }
 
         [RelayCommand(CanExecute = nameof(CanUnlock))]
@@ -251,7 +249,6 @@ namespace GDSB.MAUI.ViewModels
 
             CanUseBiometric = false;
             BiometricVaultName = string.Empty;
-            BiometricVaultPath = string.Empty;
         }
 
         private bool CanUnlock() => !IsBusy;
