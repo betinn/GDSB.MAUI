@@ -11,7 +11,7 @@
 
             <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
                 <Border WidthRequest="84" HeightRequest="84" StrokeShape="RoundRectangle 42"
-                        Background="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDark}"
+                        BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
                         HorizontalOptions="Center">
                     <Label Text="&#128274;" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
@@ -26,7 +26,7 @@
 
                     <VerticalStackLayout Spacing="8">
                         <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
-                        <Border Background="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDark}"
+                        <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                 StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
                                 <Entry Grid.Column="0"
@@ -56,19 +56,10 @@
                            FontSize="13"
                            IsVisible="{Binding HasErrorMessage}" />
 
-                    <Grid HeightRequest="50">
-                        <Button Text="Abrir cofre"
-                                Style="{StaticResource PrimaryActionButtonStyle}"
-                                Command="{Binding UnlockCommand}"
-                                IsEnabled="{Binding CanInteract}" />
-                        <HorizontalStackLayout IsVisible="{Binding IsBusy}"
-                                               HorizontalOptions="Center" VerticalOptions="Center" Spacing="8"
-                                               InputTransparent="True">
-                            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{StaticResource White}"
-                                               WidthRequest="18" HeightRequest="18" />
-                            <Label Text="Abrindo..." TextColor="{StaticResource White}" FontFamily="OpenSansSemibold" />
-                        </HorizontalStackLayout>
-                    </Grid>
+                    <Button Text="{Binding UnlockButtonText}"
+                            Style="{StaticResource PrimaryActionButtonStyle}"
+                            Command="{Binding UnlockCommand}"
+                            IsEnabled="{Binding CanInteract}" />
 
                 </VerticalStackLayout>
             </Border>

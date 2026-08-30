@@ -427,8 +427,8 @@
     <!-- Fase 3: estilos reutilizáveis do visual novo (cofre/editor), reaproveitando os tokens acima -->
 
     <Style x:Key="CardBorderStyle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource SurfaceCardDark}" />
-        <Setter Property="Stroke" Value="{StaticResource BorderDark}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceCardDark}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderDarkBrush}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="Padding" Value="14" />
@@ -445,7 +445,7 @@
     </Style>
 
     <Style x:Key="SecondaryActionButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="TextColor" Value="{StaticResource TextSecondaryDark}" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="14" />

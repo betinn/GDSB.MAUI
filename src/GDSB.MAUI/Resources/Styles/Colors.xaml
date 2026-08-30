@@ -47,6 +47,11 @@
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
     <SolidColorBrush x:Key="FavoriteGoldBrush" Color="{StaticResource FavoriteGold}"/>
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}"/>
+    <!-- Stroke/Background de Border são Brush, não Color: estes existem pra não depender de conversão implícita -->
+    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{StaticResource SurfaceDark}"/>
+    <SolidColorBrush x:Key="SurfaceCardDarkBrush" Color="{StaticResource SurfaceCardDark}"/>
+    <SolidColorBrush x:Key="BorderDarkBrush" Color="{StaticResource BorderDark}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
     <LinearGradientBrush x:Key="PrimaryGradientBrush" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
         <GradientStop Color="{StaticResource Tertiary}" Offset="1.0" />

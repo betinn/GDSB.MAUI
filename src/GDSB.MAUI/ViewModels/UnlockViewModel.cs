@@ -45,6 +45,8 @@ namespace GDSB.MAUI.ViewModels
 
         public bool CanInteract => !IsBusy;
 
+        public string UnlockButtonText => IsBusy ? "Abrindo..." : "Abrir cofre";
+
         public string EyeGlyph => IsPasswordHidden ? "👁" : "🙈";
 
         [RelayCommand]
@@ -116,6 +118,7 @@ namespace GDSB.MAUI.ViewModels
         {
             UnlockCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(CanInteract));
+            OnPropertyChanged(nameof(UnlockButtonText));
         }
 
         partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasErrorMessage));

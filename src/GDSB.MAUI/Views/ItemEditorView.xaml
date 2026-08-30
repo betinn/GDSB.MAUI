@@ -12,7 +12,7 @@
 
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
             <Border Grid.Column="0" WidthRequest="56" HeightRequest="56" StrokeShape="RoundRectangle 16"
-                    Background="{StaticResource Tertiary}" StrokeThickness="0">
+                    BackgroundColor="{StaticResource Tertiary}" StrokeThickness="0">
                 <Label Text="{Binding SelectedItem.Initial}" TextColor="{StaticResource White}"
                        FontSize="22" FontFamily="OpenSansSemibold"
                        HorizontalOptions="Center" VerticalOptions="Center" />
@@ -70,8 +70,8 @@
             </VerticalStackLayout>
         </Border>
 
-        <Border IsVisible="{Binding IsConfirmingDelete}" Background="#26E5484D"
-                Stroke="{StaticResource Danger}" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16">
+        <Border IsVisible="{Binding IsConfirmingDelete}" BackgroundColor="#26E5484D"
+                Stroke="{StaticResource DangerBrush}" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16">
             <VerticalStackLayout Spacing="12">
                 <Label Text="{Binding ConfirmDeleteMessage}" TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
                 <HorizontalStackLayout Spacing="10">
