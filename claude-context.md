@@ -59,6 +59,7 @@ Fora de escopo: reescrita do app desktop para o formato v2 — projeto futuro se
 
 - Uma branch por fase, criada a partir da `main` (ex.: `fase-1-criptografia-nova`).
 - Um PR por fase. Use a tabela de arquivos e o "Pronto quando" da seção correspondente no plano de execução como checklist do PR.
+- Ao terminar a implementação da fase (código pronto e commitado), **abra o PR automaticamente, sem perguntar antes** — isso é parte padrão do fluxo, não uma ação que precisa de confirmação. O PR fica aberto para review do usuário; não é para fazer merge sozinho.
 - Não pule fases: a 2 depende da 1, a 3 depende da 2 (o `IProfileFileService` unificado), a 4 depende da 3 (ViewModels prontos), a 5 e a 6 podem ser paralelas entre si depois da 4.
 - Nenhuma fase deve reintroduzir o comportamento antigo de criptografia (IV fixo, senha ciclada) nem em teste nem em fallback.
 - Ao abrir o PR da fase, sempre inclua um comentário (descrição do PR) explicando as atualizações feitas e o objetivo da implementação — não abrir PR "mudo", mesmo quando o título já é autoexplicativo.
