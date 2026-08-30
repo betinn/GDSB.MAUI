@@ -17,6 +17,6 @@ public partial class UnlockPage : ContentPage
     {
         base.OnAppearing();
         _viewModel.ClearPassword();
-        await _viewModel.RefreshBiometricAvailabilityAsync();
+        await _viewModel.InitializeAsync();
     }
 }

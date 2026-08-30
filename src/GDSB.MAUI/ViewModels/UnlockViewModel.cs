@@ -20,10 +20,12 @@ namespace GDSB.MAUI.ViewModels
         private const string BiometricUnavailableMessage = "Não foi possível usar a biometria. Digite a senha mestra.";
 
         // Amarrado ao último cofre aberto: não existe seleção de perfil, um uso real é um cofre
-        // por aparelho, então guardar só a última location basta. Preferences é usado direto aqui
-        // (sem uma interface própria) pelo mesmo motivo de Launcher em VaultViewModel.OpenUrlAsync:
-        // é um detalhe de sessão, não algo que precisa de mock nos fluxos já cobertos por teste.
+        // por aparelho, então guardar a última location (+ o nome do cofre, só pra exibição) já
+        // basta. Preferences é usado direto aqui (sem uma interface própria) pelo mesmo motivo de
+        // Launcher em VaultViewModel.OpenUrlAsync: é um detalhe de sessão, não algo que precisa de
+        // mock nos fluxos já cobertos por teste.
         private const string LastLocationPreferenceKey = "gdsb.lastVaultLocation";
+        private const string LastVaultNamePreferenceKey = "gdsb.lastVaultName";
         private const string BiometricPromptedPreferenceKey = "gdsb.biometricPrompted";
 
         private readonly IProfileFileService _profileFileService;
@@ -31,6 +33,10 @@ namespace GDSB.MAUI.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IAlertService _alertService;
         private readonly IBiometricUnlockService _biometricUnlockService;
+
+        // Resolvida quando o usuário responde ao overlay de opt-in (Aceitar/Agora não) - ver
+        // AcceptBiometricOptIn/DeclineBiometricOptIn.
+        private TaskCompletionSource<bool>? _biometricOptInResponse;
 
         public UnlockViewModel(
             IProfileFileService profileFileService,
@@ -61,6 +67,15 @@ namespace GDSB.MAUI.ViewModels
         [ObservableProperty]
         private bool canUseBiometric;
 
+        [ObservableProperty]
+        private string biometricVaultName = string.Empty;
+
+        [ObservableProperty]
+        private string biometricVaultPath = string.Empty;
+
+        [ObservableProperty]
+        private bool isBiometricOptInVisible;
+
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         public bool CanInteract => !IsBusy;
@@ -82,10 +97,23 @@ namespace GDSB.MAUI.ViewModels
             IsPasswordHidden = true;
         }
 
-        // Chamado no OnAppearing da UnlockPage - decide se mostra o atalho de biometria: precisa
-        // de sensor disponível, de já estar habilitado (StoreKeyAsync feito numa sessão anterior)
-        // e de haver uma location de cofre pra reabrir.
-        public async Task RefreshBiometricAvailabilityAsync()
+        // Chamado no OnAppearing da UnlockPage: atualiza se o atalho de biometria deve aparecer e,
+        // se sim, já dispara o desbloqueio sozinho - o usuário não precisa tocar em nada. O botão
+        // "Desbloquear com biometria" continua visível mesmo assim (ver UnlockPage.xaml), pra quando
+        // o usuário cancelar o prompt do sistema sem querer (ou ele falhar por qualquer motivo) e
+        // precisar tentar de novo manualmente.
+        public async Task InitializeAsync()
+        {
+            await RefreshBiometricAvailabilityAsync();
+
+            if (CanUseBiometric)
+                await UnlockWithBiometricAsync();
+        }
+
+        // Só reavalia o estado (disponível/habilitado + nome e path do cofre-alvo) - não dispara
+        // biometria sozinha. Usado tanto pelo InitializeAsync quanto depois de uma tentativa que
+        // falhou, pra não entrar em loop disparando o sensor de novo sozinha.
+        private async Task RefreshBiometricAvailabilityAsync()
         {
             var lastLocation = Preferences.Default.Get<string?>(LastLocationPreferenceKey, null);
             if (string.IsNullOrEmpty(lastLocation))
@@ -96,6 +124,12 @@ namespace GDSB.MAUI.ViewModels
 
             CanUseBiometric = await _biometricUnlockService.IsAvailableAsync()
                 && await _biometricUnlockService.IsEnabledAsync();
+
+            if (CanUseBiometric)
+            {
+                BiometricVaultName = Preferences.Default.Get(LastVaultNamePreferenceKey, string.Empty);
+                BiometricVaultPath = lastLocation;
+            }
         }
 
         [RelayCommand(CanExecute = nameof(CanUnlock))]
@@ -180,6 +214,7 @@ namespace GDSB.MAUI.ViewModels
                     await Task.Run(() => _profileFileService.Save(location, result.Profile, enteredPassword));
 
                 Preferences.Default.Set(LastLocationPreferenceKey, location);
+                Preferences.Default.Set(LastVaultNamePreferenceKey, result.Profile.Nome);
 
                 if (offerBiometricOptIn)
                     await MaybeOfferBiometricOptInAsync(enteredPassword);
@@ -208,7 +243,8 @@ namespace GDSB.MAUI.ViewModels
 
         // Só pergunta uma vez na vida do app (por dispositivo) - nem repete a pergunta se o
         // usuário recusar. Chamado só depois de um Open manual bem-sucedido, nunca a partir do
-        // próprio atalho de biometria.
+        // próprio atalho de biometria. O overlay (ver UnlockPage.xaml) substitui um DisplayAlert
+        // nativo justamente pra poder usar as cores/estilos do app em vez do diálogo do sistema.
         private async Task MaybeOfferBiometricOptInAsync(string password)
         {
             if (Preferences.Default.Get(BiometricPromptedPreferenceKey, false))
@@ -219,11 +255,9 @@ namespace GDSB.MAUI.ViewModels
 
             Preferences.Default.Set(BiometricPromptedPreferenceKey, true);
 
-            var accepted = await _alertService.DisplayConfirmAsync(
-                "Desbloqueio rápido",
-                "Usar biometria para abrir este cofre da próxima vez? A senha mestra continua funcionando normalmente.",
-                "Usar biometria",
-                "Agora não");
+            _biometricOptInResponse = new TaskCompletionSource<bool>();
+            IsBiometricOptInVisible = true;
+            var accepted = await _biometricOptInResponse.Task;
 
             if (!accepted)
                 return;
@@ -239,6 +273,20 @@ namespace GDSB.MAUI.ViewModels
             {
                 CryptographicOperations.ZeroMemory(secret);
             }
+        }
+
+        [RelayCommand]
+        private void AcceptBiometricOptIn()
+        {
+            IsBiometricOptInVisible = false;
+            _biometricOptInResponse?.TrySetResult(true);
+        }
+
+        [RelayCommand]
+        private void DeclineBiometricOptIn()
+        {
+            IsBiometricOptInVisible = false;
+            _biometricOptInResponse?.TrySetResult(false);
         }
 
         private bool CanUnlock() => !IsBusy;

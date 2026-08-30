@@ -6,84 +6,143 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
 
-    <Grid RowDefinitions="*,Auto,*" Padding="32">
+    <Grid>
 
-        <VerticalStackLayout Grid.Row="1" Spacing="32">
+        <Grid RowDefinitions="*,Auto,*" Padding="32">
 
-            <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
-                <Border WidthRequest="84" HeightRequest="84" StrokeShape="RoundRectangle 42"
-                        BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
-                        HorizontalOptions="Center">
-                    <Label Text="&#128274;" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center" />
+            <VerticalStackLayout Grid.Row="1" Spacing="32">
+
+                <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+                    <Border WidthRequest="84" HeightRequest="84" StrokeShape="RoundRectangle 42"
+                            BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
+                            HorizontalOptions="Center">
+                        <Label Text="&#128274;" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Text="GDSB" FontSize="26" FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
+                    <Label Text="Seu cofre de senhas" FontSize="13"
+                           TextColor="{StaticResource TextSecondaryDark}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
+                    <VerticalStackLayout Spacing="16">
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                    StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                    <Entry Grid.Column="0"
+                                           Placeholder="Digite sua senha mestra"
+                                           Text="{Binding Password}"
+                                           IsPassword="{Binding IsPasswordHidden}"
+                                           TextColor="{StaticResource TextPrimaryDark}"
+                                           PlaceholderColor="{StaticResource TextMutedDark}"
+                                           BackgroundColor="Transparent"
+                                           ReturnCommand="{Binding UnlockCommand}"
+                                           VerticalOptions="Center" />
+                                    <Button Grid.Column="1"
+                                            Text="{Binding EyeGlyph}"
+                                            Command="{Binding ToggleShowPasswordCommand}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{StaticResource TextSecondaryDark}"
+                                            FontSize="16"
+                                            Padding="0"
+                                            WidthRequest="36"
+                                            HeightRequest="36" />
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Label Text="{Binding ErrorMessage}"
+                               TextColor="{StaticResource Danger}"
+                               FontSize="13"
+                               IsVisible="{Binding HasErrorMessage}" />
+
+                        <Button Text="{Binding UnlockButtonText}"
+                                Style="{StaticResource PrimaryActionButtonStyle}"
+                                Command="{Binding UnlockCommand}"
+                                IsEnabled="{Binding CanInteract}" />
+
+                        <!-- Ao abrir a UnlockPage, a biometria já dispara sozinha quando disponível
+                             (UnlockViewModel.InitializeAsync) - este bloco fica visível mesmo assim,
+                             indicando pra qual cofre ela está mirando e servindo de retry manual se
+                             o usuário cancelar o prompt do sistema sem querer. -->
+                        <VerticalStackLayout Spacing="10" IsVisible="{Binding CanUseBiometric}">
+                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                    StrokeShape="RoundRectangle 12" Padding="14,10">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="BIOMETRIA CONFIGURADA PARA" Style="{StaticResource FieldLabelStyle}" />
+                                    <Label Text="{Binding BiometricVaultName}"
+                                           FontFamily="OpenSansSemibold" FontSize="14"
+                                           TextColor="{StaticResource TextPrimaryDark}"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding BiometricVaultPath}"
+                                           FontSize="11" TextColor="{StaticResource TextMutedDark}"
+                                           LineBreakMode="MiddleTruncation" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Button Text="&#128272; Desbloquear com biometria"
+                                    Command="{Binding UnlockWithBiometricCommand}"
+                                    IsEnabled="{Binding CanInteract}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource PrimaryDark}"
+                                    FontSize="14" />
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
                 </Border>
-                <Label Text="GDSB" FontSize="26" FontFamily="OpenSansSemibold"
-                       TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
-                <Label Text="Seu cofre de senhas" FontSize="13"
-                       TextColor="{StaticResource TextSecondaryDark}" HorizontalOptions="Center" />
+
+                <Label Text="Criar um cofre novo"
+                       TextColor="{StaticResource PrimaryDark}"
+                       FontSize="13"
+                       HorizontalOptions="Center"
+                       behaviors:HoverCursor.IsHand="True">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToCreateVaultCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+
             </VerticalStackLayout>
 
-            <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
-                <VerticalStackLayout Spacing="16">
+        </Grid>
+
+        <!-- Overlay de opt-in de biometria: dialog no lugar de um DisplayAlert nativo, pra manter
+             as cores/estilos do app (o alerta do sistema não pode ser tematizado). -->
+        <Grid IsVisible="{Binding IsBiometricOptInVisible}" BackgroundColor="#CC141414" Padding="32">
+            <Border Style="{StaticResource CardBorderStyle}" Padding="26" StrokeShape="RoundRectangle 20"
+                    VerticalOptions="Center" MaximumWidthRequest="360">
+                <VerticalStackLayout Spacing="20">
+
+                    <Border WidthRequest="64" HeightRequest="64" StrokeShape="RoundRectangle 32"
+                            BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
+                            HorizontalOptions="Center">
+                        <Label Text="&#128272;" FontSize="26" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
 
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
-                        <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                                <Entry Grid.Column="0"
-                                       Placeholder="Digite sua senha mestra"
-                                       Text="{Binding Password}"
-                                       IsPassword="{Binding IsPasswordHidden}"
-                                       TextColor="{StaticResource TextPrimaryDark}"
-                                       PlaceholderColor="{StaticResource TextMutedDark}"
-                                       BackgroundColor="Transparent"
-                                       ReturnCommand="{Binding UnlockCommand}"
-                                       VerticalOptions="Center" />
-                                <Button Grid.Column="1"
-                                        Text="{Binding EyeGlyph}"
-                                        Command="{Binding ToggleShowPasswordCommand}"
-                                        BackgroundColor="Transparent"
-                                        TextColor="{StaticResource TextSecondaryDark}"
-                                        FontSize="16"
-                                        Padding="0"
-                                        WidthRequest="36"
-                                        HeightRequest="36" />
-                            </Grid>
-                        </Border>
+                        <Label Text="Desbloqueio por biometria"
+                               FontFamily="OpenSansSemibold" FontSize="18"
+                               TextColor="{StaticResource TextPrimaryDark}"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Da próxima vez, use sua digital ou rosto pra abrir este cofre sem digitar a senha. A senha mestra continua funcionando normalmente quando você quiser."
+                               FontSize="13.5" TextColor="{StaticResource TextSecondaryDark}"
+                               HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
 
-                    <Label Text="{Binding ErrorMessage}"
-                           TextColor="{StaticResource Danger}"
-                           FontSize="13"
-                           IsVisible="{Binding HasErrorMessage}" />
-
-                    <Button Text="{Binding UnlockButtonText}"
-                            Style="{StaticResource PrimaryActionButtonStyle}"
-                            Command="{Binding UnlockCommand}"
-                            IsEnabled="{Binding CanInteract}" />
-
-                    <Button Text="&#128272; Desbloquear com biometria"
-                            Command="{Binding UnlockWithBiometricCommand}"
-                            IsVisible="{Binding CanUseBiometric}"
-                            IsEnabled="{Binding CanInteract}"
-                            BackgroundColor="Transparent"
-                            TextColor="{StaticResource PrimaryDark}"
-                            FontSize="14" />
+                    <VerticalStackLayout Spacing="10">
+                        <Button Text="Ativar biometria"
+                                Style="{StaticResource PrimaryActionButtonStyle}"
+                                Command="{Binding AcceptBiometricOptInCommand}" />
+                        <Button Text="Agora não"
+                                Style="{StaticResource SecondaryActionButtonStyle}"
+                                Command="{Binding DeclineBiometricOptInCommand}" />
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
             </Border>
-
-            <Label Text="Criar um cofre novo"
-                   TextColor="{StaticResource PrimaryDark}"
-                   FontSize="13"
-                   HorizontalOptions="Center"
-                   behaviors:HoverCursor.IsHand="True">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding GoToCreateVaultCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
-
-        </VerticalStackLayout>
+        </Grid>
 
     </Grid>
 </ContentPage>
