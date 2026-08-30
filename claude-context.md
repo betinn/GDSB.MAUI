@@ -46,7 +46,7 @@ Estes três links têm todo o detalhe que não está reproduzido aqui — leia-o
 | # | Fase | Status |
 |---|------|--------|
 | 0 | Diagnóstico e decisões | ✅ Concluída |
-| 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | 🚧 Em andamento |
+| 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | 🚧 PR aberto: [#4](https://github.com/betinn/GDSB.MAUI/pull/4) |
 | 2 | Leitor legado (v1) + migração automática ao salvar | Planejada |
 | 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | Planejada |
 | 4 | CRUD completo (criar cofre, insert/update/delete, save) | Planejada |
@@ -75,4 +75,4 @@ Ao final de cada fase (PR aberto ou mergeado):
 
 ## Estado atual
 
-Fase 0 concluída (diagnóstico, decisões 1-7, protótipo e planos publicados). Fase 1 em andamento na branch `fase-1-criptografia-nova`: implementados `IFileCryptoServiceV2`, `InvalidPasswordOrCorruptFileException`, `GdsbFileHeader` (layout v2) e `AesGcmFileCryptoService` (PBKDF2-HMAC-SHA256 + AES-GCM), com o projeto de testes `tests/GDSB.Infrastructure.Tests` cobrindo round-trip, senha errada, ciphertext adulterado e salt/nonce distintos por chamada. Nenhuma classe da `GDSB.MAUI` foi tocada. Falta abrir o PR (com o comentário de objetivo/atualizações) e, se possível, rodar `dotnet test` localmente/CI para confirmar — o ambiente desta sessão não tem o SDK do .NET disponível para build.
+Fase 0 concluída (diagnóstico, decisões 1-7, protótipo e planos publicados). Fase 1 em andamento na branch `fase-1-criptografia-nova`: implementados `IFileCryptoServiceV2`, `InvalidPasswordOrCorruptFileException`, `GdsbFileHeader` (layout v2) e `AesGcmFileCryptoService` (PBKDF2-HMAC-SHA256 + AES-GCM), com o projeto de testes `tests/GDSB.Infrastructure.Tests` cobrindo round-trip, senha errada, ciphertext adulterado e salt/nonce distintos por chamada. Nenhuma classe da `GDSB.MAUI` foi tocada. PR aberto para review: https://github.com/betinn/GDSB.MAUI/pull/4. Falta apenas rodar `dotnet test` localmente/CI para confirmar — o ambiente desta sessão não tem o SDK do .NET disponível para build.
