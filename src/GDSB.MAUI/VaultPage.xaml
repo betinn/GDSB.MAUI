@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             x:Class="GDSB.MAUI.VaultPage"
+             Title="{Binding VaultName}"
+             BackgroundColor="{StaticResource SurfaceDark}">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="SecretBoxCardTemplate">
+            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,10">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Border Grid.Column="0" WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 12"
+                                Background="{StaticResource Tertiary}" StrokeThickness="0">
+                            <Label Text="{Binding Initial}" TextColor="{StaticResource White}"
+                                   FontFamily="OpenSansSemibold" FontSize="15"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                            <Label Text="{Binding BoxName}" FontFamily="OpenSansSemibold" FontSize="15"
+                                   TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding Url}" FontSize="12.5" TextColor="{StaticResource PrimaryDark}"
+                                   IsVisible="{Binding HasUrl}" LineBreakMode="TailTruncation">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenUrlCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2" Text="&#9733;" FontSize="18" Padding="0"
+                                BackgroundColor="Transparent" TextColor="{StaticResource TextMutedDark}"
+                                WidthRequest="40" HeightRequest="40"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleFavoriteCommand}"
+                                CommandParameter="{Binding .}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding Favorito}" Value="True">
+                                    <Setter Property="TextColor" Value="{StaticResource FavoriteGold}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </Grid>
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Usuário" FontSize="12.5" HeightRequest="36" HorizontalOptions="FillAndExpand"
+                                BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
+                                IsVisible="{Binding HasUser}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CopyUserCommand}"
+                                CommandParameter="{Binding .}" />
+                        <Button Text="Senha" FontSize="12.5" HeightRequest="36" HorizontalOptions="FillAndExpand"
+                                BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CopyPasswordCommand}"
+                                CommandParameter="{Binding .}" />
+                        <Button Text="&#9998;" FontSize="14" WidthRequest="38" HeightRequest="36" Padding="0"
+                                BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextSecondaryDark}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenEditorCommand}"
+                                CommandParameter="{Binding .}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SecretBoxRowTemplate">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="12" Margin="0,0,0,8">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenEditorCommand}"
+                        CommandParameter="{Binding .}" />
+                </Grid.GestureRecognizers>
+                <Border Grid.Column="0" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 11"
+                        Background="{StaticResource Tertiary}" StrokeThickness="0">
+                    <Label Text="{Binding Initial}" TextColor="{StaticResource White}"
+                           FontFamily="OpenSansSemibold" FontSize="14"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                    <Label Text="{Binding BoxName}" FontFamily="OpenSansSemibold" FontSize="14.5"
+                           TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" />
+                    <Label Text="{Binding Url}" FontSize="12" TextColor="{StaticResource TextSecondaryDark}"
+                           IsVisible="{Binding HasUrl}" LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+                <Button Grid.Column="2" Text="&#9733;" FontSize="17" Padding="0"
+                        BackgroundColor="Transparent" TextColor="{StaticResource TextMutedDark}"
+                        WidthRequest="36" HeightRequest="36"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleFavoriteCommand}"
+                        CommandParameter="{Binding .}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Favorito}" Value="True">
+                            <Setter Property="TextColor" Value="{StaticResource FavoriteGold}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid>
+
+        <!-- Layout compacto (celular, largura < 700dp): lista cheia + editor em bottom-sheet -->
+        <Grid RowDefinitions="Auto,*" IsVisible="{Binding IsCompactLayout}">
+
+            <VerticalStackLayout Grid.Row="0" Padding="18,16,18,10" Spacing="12" BackgroundColor="{StaticResource Tertiary}">
+                <Border Background="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDark}"
+                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
+                    <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
+                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                           BackgroundColor="Transparent" VerticalOptions="Center" />
+                </Border>
+                <HorizontalStackLayout Spacing="8">
+                    <Button Text="Todos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterAllCommand}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsAllFilterSelected}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="Favoritos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterFavoritesCommand}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding FilterFavoritesOnly}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <CollectionView Grid.Row="1" Margin="16,10" ItemsSource="{Binding Items}"
+                             ItemTemplate="{StaticResource SecretBoxCardTemplate}" />
+
+        </Grid>
+
+        <!-- Overlay do editor em bottom-sheet (celular) -->
+        <Grid IsVisible="{Binding IsEditorOpen}" BackgroundColor="#99000000">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CloseEditorCommand}" />
+            </Grid.GestureRecognizers>
+            <Border VerticalOptions="End" BackgroundColor="{StaticResource SurfaceCardDark}"
+                    StrokeShape="RoundRectangle 22,22,0,0" StrokeThickness="0" Padding="20" MaximumHeightRequest="620">
+                <ScrollView>
+                    <views:ItemEditorView />
+                </ScrollView>
+            </Border>
+        </Grid>
+
+        <!-- Layout largo (tablet, largura >= 700dp): mestre-detalhe -->
+        <Grid ColumnDefinitions="360,*" IsVisible="{Binding IsWideLayout}">
+
+            <Grid Grid.Column="0" RowDefinitions="Auto,*" BackgroundColor="{StaticResource SurfaceDark}">
+                <VerticalStackLayout Grid.Row="0" Padding="18,20,18,14" Spacing="12" BackgroundColor="{StaticResource Tertiary}">
+                    <Label Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="18"
+                           TextColor="{StaticResource TextPrimaryDark}" />
+                    <Border Background="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDark}"
+                            StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="42">
+                        <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
+                               TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                               BackgroundColor="Transparent" VerticalOptions="Center" />
+                    </Border>
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Todos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterAllCommand}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsAllFilterSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="TextColor" Value="{StaticResource White}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Text="Favoritos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterFavoritesCommand}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding FilterFavoritesOnly}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="TextColor" Value="{StaticResource White}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <CollectionView Grid.Row="1" Margin="12,10" ItemsSource="{Binding Items}"
+                                 ItemTemplate="{StaticResource SecretBoxRowTemplate}" />
+            </Grid>
+
+            <BoxView Grid.Column="0" HorizontalOptions="End" WidthRequest="1"
+                     Color="{StaticResource BorderDark}" />
+
+            <Grid Grid.Column="1" Padding="44">
+                <ScrollView IsVisible="{Binding HasSelectedItem}">
+                    <views:ItemEditorView MaximumWidthRequest="560" HorizontalOptions="Start" />
+                </ScrollView>
+                <Label Text="Selecione um item na lista ao lado" IsVisible="{Binding HasNoSelection}"
+                       TextColor="{StaticResource TextSecondaryDark}" FontSize="14"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</ContentPage>

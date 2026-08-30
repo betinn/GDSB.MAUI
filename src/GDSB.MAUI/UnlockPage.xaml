@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GDSB.MAUI.UnlockPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource SurfaceDark}">
+
+    <Grid RowDefinitions="*,Auto,*" Padding="32">
+
+        <VerticalStackLayout Grid.Row="1" Spacing="32">
+
+            <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+                <Border WidthRequest="84" HeightRequest="84" StrokeShape="RoundRectangle 42"
+                        Background="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDark}"
+                        HorizontalOptions="Center">
+                    <Label Text="&#128274;" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Label Text="GDSB" FontSize="26" FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
+                <Label Text="Seu cofre de senhas" FontSize="13"
+                       TextColor="{StaticResource TextSecondaryDark}" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
+                <VerticalStackLayout Spacing="16">
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+                        <Border Background="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDark}"
+                                StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                <Entry Grid.Column="0"
+                                       Placeholder="Digite sua senha mestra"
+                                       Text="{Binding Password}"
+                                       IsPassword="{Binding IsPasswordHidden}"
+                                       TextColor="{StaticResource TextPrimaryDark}"
+                                       PlaceholderColor="{StaticResource TextMutedDark}"
+                                       BackgroundColor="Transparent"
+                                       ReturnCommand="{Binding UnlockCommand}"
+                                       VerticalOptions="Center" />
+                                <Button Grid.Column="1"
+                                        Text="{Binding EyeGlyph}"
+                                        Command="{Binding ToggleShowPasswordCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource TextSecondaryDark}"
+                                        FontSize="16"
+                                        Padding="0"
+                                        WidthRequest="36"
+                                        HeightRequest="36" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{StaticResource Danger}"
+                           FontSize="13"
+                           IsVisible="{Binding HasErrorMessage}" />
+
+                    <Grid HeightRequest="50">
+                        <Button Text="Abrir cofre"
+                                Style="{StaticResource PrimaryActionButtonStyle}"
+                                Command="{Binding UnlockCommand}"
+                                IsEnabled="{Binding CanInteract}" />
+                        <HorizontalStackLayout IsVisible="{Binding IsBusy}"
+                                               HorizontalOptions="Center" VerticalOptions="Center" Spacing="8"
+                                               InputTransparent="True">
+                            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{StaticResource White}"
+                                               WidthRequest="18" HeightRequest="18" />
+                            <Label Text="Abrindo..." TextColor="{StaticResource White}" FontFamily="OpenSansSemibold" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

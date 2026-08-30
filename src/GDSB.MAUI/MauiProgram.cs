@@ -1,7 +1,10 @@
-﻿using GDSB.Domain.Interfaces;
-using GDSB.Infrastructure.Encryption;
+using GDSB.Domain.Interfaces;
+using GDSB.Infrastructure;
+using GDSB.Infrastructure.Encryption.Legacy;
+using GDSB.Infrastructure.Encryption.V2;
 using GDSB.MAUI.Interfaces;
 using GDSB.MAUI.Services;
+using GDSB.MAUI.ViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace GDSB.MAUI
@@ -20,22 +23,46 @@ namespace GDSB.MAUI
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
-            //builder.Services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
-//#if ANDROID
-//            builder.Services.AddSingleton<IFilePickerService, Platforms.Android.Services.FilePickerService>();
-//#elif WINDOWS
-//            builder.Services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
-//#endif
 
-            //builder.Services.AddSingleton<IFileDataService, FileDataService>();
-            //builder.Services.AddSingleton<IFileDecryptionService, FileDecryptionService>();
-
-            //builder.Services.AddSingleton<AppShell>();
-            //builder.Services.AddTransient<FileFinderDecrypter>();
+            RegisterServices(builder.Services);
+            RegisterViewModels(builder.Services);
+            RegisterPages(builder.Services);
 
             return builder.Build();
+        }
+
+        private static void RegisterServices(IServiceCollection services)
+        {
+#if ANDROID
+            services.AddSingleton<IFilePickerService, Platforms.Android.Services.FilePickerService>();
+#elif WINDOWS
+            services.AddSingleton<IFilePickerService, Platforms.Windows.Services.FilePickerService>();
+#endif
+
+#pragma warning disable CS0618 // leitor legado obsoleto, usado só por trás de IProfileFileService
+            services.AddSingleton<IFileDecryptionService, LegacyV1FileDecryptionService>();
+#pragma warning restore CS0618
+            services.AddSingleton<IFileCryptoServiceV2, AesGcmFileCryptoService>();
+            services.AddSingleton<IProfileFileService, ProfileFileService>();
+
+            services.AddSingleton<IClipboardService, ClipboardService>();
+            services.AddSingleton<IAlertService, AlertService>();
+            services.AddSingleton<INavigationService, NavigationService>();
+        }
+
+        private static void RegisterViewModels(IServiceCollection services)
+        {
+            services.AddTransient<UnlockViewModel>();
+            services.AddTransient<VaultViewModel>();
+        }
+
+        private static void RegisterPages(IServiceCollection services)
+        {
+            services.AddTransient<UnlockPage>();
+            services.AddTransient<VaultPage>();
+            services.AddTransient<AppShell>();
         }
     }
 }
