@@ -46,9 +46,9 @@ Estes três links têm todo o detalhe que não está reproduzido aqui — leia-o
 | # | Fase | Status |
 |---|------|--------|
 | 0 | Diagnóstico e decisões | ✅ Concluída |
-| 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | 🚧 PR aberto: [#4](https://github.com/betinn/GDSB.MAUI/pull/4) |
-| 2 | Leitor legado (v1) + migração automática ao salvar | Planejada |
-| 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | Planejada |
+| 1 | Fundação de criptografia nova (Domain + Infrastructure, AES-256-GCM + PBKDF2/Argon2id, formato v2) | ✅ Concluída — PR [#4](https://github.com/betinn/GDSB.MAUI/pull/4) mergeado |
+| 2 | Leitor legado (v1) + migração automática ao salvar | ✅ Concluída |
+| 3 | Refactor MVVM + nova UI (Android primeiro) + breakpoint responsivo | ✅ Concluída |
 | 4 | CRUD completo (criar cofre, insert/update/delete, save) | Planejada |
 | 5 | Segurança de uso real (auto-lock, clipboard, biometria) | Planejada |
 | 6 | Polimento geral (remover Newtonsoft, testes, README) | Planejada |
@@ -76,4 +76,18 @@ Ao final de cada fase (PR aberto ou mergeado):
 
 ## Estado atual
 
-Fase 0 concluída (diagnóstico, decisões 1-7, protótipo e planos publicados). Fase 1 em andamento na branch `fase-1-criptografia-nova`: implementados `IFileCryptoServiceV2`, `InvalidPasswordOrCorruptFileException`, `GdsbFileHeader` (layout v2) e `AesGcmFileCryptoService` (PBKDF2-HMAC-SHA256 + AES-GCM), com o projeto de testes `tests/GDSB.Infrastructure.Tests` cobrindo round-trip, senha errada, ciphertext adulterado e salt/nonce distintos por chamada. Nenhuma classe da `GDSB.MAUI` foi tocada. PR aberto para review: https://github.com/betinn/GDSB.MAUI/pull/4. `dotnet build` (GDSB.Domain, GDSB.Infrastructure) e `dotnet test tests/GDSB.Infrastructure.Tests` confirmados nesta sessão: build limpo (só um warning pré-existente no `FileDecryptionService.cs` legado) e 4/4 testes passando. Falta apenas review/merge do PR.
+**Fases 0, 1, 2 e 3 concluídas.** A Fase 1 foi mergeada na `main` (PR #4). As Fases 2 e 3 estão na branch `claude/projeto-fases-2-3-87afz1`, aguardando review.
+
+- **Fase 1** (mergeada): `IFileCryptoServiceV2`, `InvalidPasswordOrCorruptFileException`, `GdsbFileHeader` (layout v2) e `AesGcmFileCryptoService` (PBKDF2-HMAC-SHA256 + AES-GCM).
+- **Fase 2**: o decifrador antigo virou `Encryption/Legacy/LegacyV1FileDecryptionService` (marcado `[Obsolete]`, só leitura). `IProfileFileService`/`ProfileFileService` detectam o formato pelo magic `GDSB` nos 4 primeiros bytes, delegam pro leitor certo e **sempre gravam em v2**, com backup do original em `<arquivo>.v1.bak` antes da primeira sobrescrita. `ProfileOpenResult.WasLegacyFormat` dispara a migração automática logo após o open.
+- **Fase 3**: DI unificado em `MauiProgram.cs` (o `ServiceProvider` estático paralelo do `App.xaml.cs` foi removido — só existe um container agora). `FileFinderDecrypter` → `UnlockPage`, `MainPage` → `VaultPage`, ambas Views finas sobre `UnlockViewModel`/`VaultViewModel` (CommunityToolkit.Mvvm 8.3.2). `ItemEditorView.xaml` é o mesmo formulário nos dois layouts. `VaultPage.OnSizeAllocated` compara a largura com `ResponsiveBreakpoints.TabletMinWidth` (700dp) e alterna lista+bottom-sheet ↔ mestre-detalhe — por largura, nunca por `DeviceIdiom`. Novos `IClipboardService`/`IAlertService`/`INavigationService` isolam as APIs estáticas do MAUI. Removidos `IFileDataService`/`FileDataService`, sem uso depois do refactor.
+
+Testes: `dotnet test tests/GDSB.Infrastructure.Tests` → **10/10 passando** (4 da Fase 1 + 6 novos da Fase 2: leitura de um `.GDSBX` v1 fabricado pelo algoritmo legado, senha errada, flag de formato no `Open`, migração completa e idempotência do `.v1.bak`). Build de `GDSB.Domain`/`GDSB.Infrastructure` limpo, com o mesmo warning pré-existente do arquivo legado.
+
+### Pendência conhecida: build do projeto MAUI
+
+O ambiente do Claude Code on the web **não consegue instalar os workloads MAUI** (`dotnet workload search maui`/`android` não retorna nada; o restore falha com `NETSDK1139: target platform identifier android was not recognized`). Então `GDSB.MAUI.csproj` não foi compilado em nenhuma sessão até aqui — mesma limitação já registrada no PR da Fase 1, mas agora ela pesa mais, porque a Fase 3 mexeu de verdade no projeto MAUI.
+
+Para compensar, a Fase 3 foi validada assim: os três ViewModels compilam **limpos, 0 warnings**, contra o `CommunityToolkit.Mvvm` 8.3.2 real (com os tipos do MAUI stubados), e **todos os bindings do XAML foram conferidos por reflexão** contra os membros que os geradores efetivamente produzem, além de checagem de XML bem-formado e de todas as chaves `StaticResource`. Isso cobre os geradores e os nomes, mas **não substitui um build real**: falta rodar `dotnet build -f net8.0-android` e testar no emulador (duas larguras) antes do merge.
+
+Se for útil numa próxima sessão, o hook `.claude/hooks/session-start.sh` já instala o SDK .NET 8 automaticamente (foi o que permitiu rodar os testes aqui).
