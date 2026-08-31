@@ -21,11 +21,12 @@
             <VerticalStackLayout Grid.Row="1" Spacing="28">
 
                 <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
-                    <Border WidthRequest="72" HeightRequest="72" StrokeShape="RoundRectangle 36"
-                            BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
-                            HorizontalOptions="Center">
-                        <Label Text="&#128273;" FontSize="30" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Border>
+                    <!-- A mesma marca da tela de desbloqueio, com a haste erguida: lá o cofre
+                         está selado e você vai abri-lo; aqui ele ainda não existe. Mesmo
+                         desenho, estados opostos - ver BrandMarkDrawable.Open. Antes era o
+                         emoji 🔑, que muda de desenho a cada plataforma. -->
+                    <GraphicsView x:Name="BrandMark" WidthRequest="72" HeightRequest="72"
+                                  HorizontalOptions="Center" />
                     <Label Text="Novo cofre" FontSize="22" FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
                     <Label Text="Escolha onde guardar e defina a senha mestra" FontSize="13"

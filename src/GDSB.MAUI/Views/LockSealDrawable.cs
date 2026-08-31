@@ -12,8 +12,15 @@ public sealed class BrandMarkDrawable : IDrawable
     /// <summary>Desenha o disco navy atrás da marca. Desligue sobre superfície já escura.</summary>
     public bool ShowBadge { get; set; } = true;
 
+    /// <summary>
+    /// Desenha a haste erguida, como um cadeado aberto. É a mesma marca - só o estado muda -
+    /// e serve para a tela de criar cofre: um cofre novo ainda não foi selado. A tela de
+    /// desbloqueio usa a marca fechada, então as duas se opõem sem virar símbolos diferentes.
+    /// </summary>
+    public bool Open { get; set; }
+
     public void Draw(ICanvas canvas, RectF dirtyRect)
-        => LockSealDrawable.DrawStaticMark(canvas, dirtyRect, ShowBadge);
+        => LockSealDrawable.DrawStaticMark(canvas, dirtyRect, ShowBadge, Open);
 }
 
 /// <summary>Qual momento o selo está confirmando.</summary>
@@ -118,7 +125,7 @@ public sealed class LockSealDrawable : IDrawable
     /// A marca completa e parada, no mesmo enquadramento das animações. Usada pelo
     /// <see cref="BrandMarkDrawable"/>.
     /// </summary>
-    internal static void DrawStaticMark(ICanvas canvas, RectF dirtyRect, bool withBadge)
+    internal static void DrawStaticMark(ICanvas canvas, RectF dirtyRect, bool withBadge, bool open = false)
     {
         var size = Math.Min(dirtyRect.Width, dirtyRect.Height);
         if (size <= 0)
@@ -133,9 +140,35 @@ public sealed class LockSealDrawable : IDrawable
         if (withBadge)
             DrawBadge(canvas, 1f, 1f, Pink, 0.34f);
 
-        DrawMarkFull(canvas);
+        if (open)
+        {
+            // Mesma haste, erguida e girada no ponto onde o rabo do G encosta no corpo -
+            // é o mesmo movimento com que ela destrava na animação de exclusão, parado no
+            // início. Só o corpo e a fechadura ficam no lugar.
+            canvas.SaveState();
+            canvas.Translate(0f, -OpenShackleLift);
+            canvas.Rotate(OpenShackleAngle, 84f, 48f);
+            SetShackleStroke(canvas, Pink);
+            canvas.DrawPath(FullShacklePath);
+            canvas.RestoreState();
+
+            canvas.FillColor = OffWhite;
+            canvas.FillPath(BodyPath);
+            DrawKeyhole(canvas, Navy);
+        }
+        else
+        {
+            DrawMarkFull(canvas);
+        }
+
         canvas.RestoreState();
     }
+
+    // Quanto a haste sobe e gira na marca aberta. Valores escolhidos renderizando a marca
+    // com o limite do quadro à vista: acima de 18 de elevação o topo do G começa a ser
+    // cortado, e abaixo disso a diferença para a marca fechada não se lê a 72px.
+    private const float OpenShackleLift = 18f;
+    private const float OpenShackleAngle = -32f;
 
     // ---------------------------------------------------------------- criação
 
