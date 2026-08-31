@@ -65,11 +65,17 @@ public partial class VaultPage : ContentPage
     /// </summary>
     private async void OnSecretCreated(object? sender, EventArgs e)
     {
-        _sealCts?.Cancel();
-        this.AbortAnimation(SealAnimationName);
-
+        // Troca o token source antes de cancelar o anterior: com o await do CancelAsync no
+        // meio, assumir o overlay primeiro evita que duas criações quase simultâneas se
+        // intercalem entre o cancelamento e a atribuição.
+        var previous = _sealCts;
         var cts = new CancellationTokenSource();
         _sealCts = cts;
+
+        if (previous is not null)
+            await previous.CancelAsync();
+
+        this.AbortAnimation(SealAnimationName);
 
         _sealDrawable.Progress = 0f;
         SealView.Invalidate();
