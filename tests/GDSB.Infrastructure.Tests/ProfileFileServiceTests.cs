@@ -13,6 +13,14 @@ namespace GDSB.Infrastructure.Tests
 
         private readonly ProfileFileService _sut = new(new LegacyV1FileDecryptionService(), new AesGcmFileCryptoService(), new LocalFileSystem());
 
+        // Espelha LocalFileSystem.GetBackupLocation: prefixo "bkp_" no nome do arquivo, não sufixo
+        // no fim do path inteiro - ver o porquê no comentário daquele método.
+        private static string BackupPathFor(string path, string suffix)
+        {
+            var directory = Path.GetDirectoryName(path)!;
+            return Path.Combine(directory, "bkp_" + Path.GetFileName(path) + suffix);
+        }
+
         private static Profile CreateSampleProfile() => new()
         {
             Nome = "Cofre de teste",
@@ -67,7 +75,7 @@ namespace GDSB.Infrastructure.Tests
         public void Save_OverwritingV1File_MigratesToV2AndCreatesBackup()
         {
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var backupPath = path + ".v1.bak";
+            var backupPath = BackupPathFor(path, ".v1.bak");
             try
             {
                 var profile = CreateSampleProfile();
@@ -94,7 +102,7 @@ namespace GDSB.Infrastructure.Tests
         public void Save_CalledTwiceAfterMigration_DoesNotOverwriteBackupAgain()
         {
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var backupPath = path + ".v1.bak";
+            var backupPath = BackupPathFor(path, ".v1.bak");
             try
             {
                 var profile = CreateSampleProfile();
@@ -121,7 +129,7 @@ namespace GDSB.Infrastructure.Tests
         public void Save_OverwritingV2File_CreatesRollingBakOfPreviousVersion()
         {
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var backupPath = path + ".bak";
+            var backupPath = BackupPathFor(path, ".bak");
             try
             {
                 var profile = CreateSampleProfile();
@@ -154,8 +162,8 @@ namespace GDSB.Infrastructure.Tests
             // FileSavePicker.PickSaveFileAsync cria o arquivo de destino vazio (0 bytes); no Android,
             // ActionCreateDocument via SAF faz o mesmo. Um arquivo vazio não é um cofre v1 a migrar.
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var v1BackupPath = path + ".v1.bak";
-            var bakPath = path + ".bak";
+            var v1BackupPath = BackupPathFor(path, ".v1.bak");
+            var bakPath = BackupPathFor(path, ".bak");
             try
             {
                 File.WriteAllBytes(path, Array.Empty<byte>());

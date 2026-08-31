@@ -34,7 +34,10 @@ offset  tamanho  campo
 
 Arquivos `.GDSBX` antigos (v1) continuam abrindo normalmente: o formato é detectado automaticamente
 e, ao salvar pela primeira vez, o arquivo é migrado para v2 de forma transparente, com o original
-preservado em um backup `.v1.bak` ao lado.
+preservado em um backup `bkp_<nome-do-cofre>.GDSBX.v1.bak` ao lado (o prefixo `bkp_`, e não um
+sufixo no fim do nome, é o que deixa o backup reconhecível mesmo com o nome do cofre truncado numa
+listagem de arquivos de tela pequena). O mesmo prefixo vale para o `.bak` "rolante" gravado a cada
+save seguinte.
 
 ## Funcionalidades
 

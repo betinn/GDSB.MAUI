@@ -76,7 +76,12 @@ Ao final de cada fase (PR aberto ou mergeado):
 
 ## Estado atual
 
-**Fases 0 a 6 concluídas.** A Fase 1 foi mergeada na `main` (PR #4). As Fases 2 e 3 foram mergeadas via PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5). A Fase 4 foi mergeada via PR [#6](https://github.com/betinn/GDSB.MAUI/pull/6). A Fase 5 foi mergeada via PR [#7](https://github.com/betinn/GDSB.MAUI/pull/7). A Fase 6 está nesta branch, PR [#10](https://github.com/betinn/GDSB.MAUI/pull/10).
+**Fases 0 a 6 concluídas e mergeadas na `main`** (Fase 1: PR #4; Fases 2 e 3: PR [#5](https://github.com/betinn/GDSB.MAUI/pull/5); Fase 4: PR [#6](https://github.com/betinn/GDSB.MAUI/pull/6); Fase 5: PR [#7](https://github.com/betinn/GDSB.MAUI/pull/7); Fase 6: PR [#10](https://github.com/betinn/GDSB.MAUI/pull/10)).
+
+### Melhorias de UX pós-Fase-6 (fora do roadmap de fases)
+
+- **Ordem invertida no Unlock (sem biometria)**: `UnlockViewModel.UnlockAsync` pedia a senha mestra antes de abrir o seletor de arquivo, o que o usuário achou confuso — normalmente é o arquivo que identifica qual cofre está sendo aberto, não a senha. Invertido: agora escolhe o arquivo primeiro e só valida/usa a senha depois (o campo de senha continua sempre visível na tela, só a ordem das duas verificações no código mudou). Fluxo de biometria não muda (já não depende dessa ordem — usa a location lembrada direto).
+- **Prefixo `bkp_` nos arquivos de backup**: `LocalFileSystem.GetBackupLocation`/`AndroidSafFileSystem.GetBackupLocation` (caminho local, fora do content://) geravam o backup só com um sufixo no fim (`<cofre>.GDSBX.bak`/`.v1.bak`) — numa listagem de arquivos com pouco espaço horizontal (celular), um nome de cofre médio/grande já trunca antes de mostrar o sufixo, e o backup fica indistinguível do arquivo real. Mudou pra prefixo no início do nome do arquivo (`bkp_<cofre>.GDSBX.bak`), sempre visível independente de truncamento. Aplicado também ao nome baseado em hash usado no armazenamento privado do Android para location `content://` (esse não é visível ao usuário, mas mantém consistência). `ProfileFileServiceTests` ajustado (helper `BackupPathFor`) pro novo formato.
 
 ### Fase 6 — polimento geral
 

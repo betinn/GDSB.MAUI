@@ -132,12 +132,8 @@ namespace GDSB.MAUI.ViewModels
         {
             ErrorMessage = null;
 
-            if (string.IsNullOrEmpty(Password))
-            {
-                ErrorMessage = EmptyPasswordMessage;
-                return;
-            }
-
+            // Escolher o arquivo primeiro (e só depois cobrar a senha) é mais natural do que o
+            // inverso: o usuário identifica o cofre pelo arquivo, não decorando a ordem dos campos.
             string? location;
             try
             {
@@ -151,6 +147,12 @@ namespace GDSB.MAUI.ViewModels
 
             if (string.IsNullOrEmpty(location))
                 return;
+
+            if (string.IsNullOrEmpty(Password))
+            {
+                ErrorMessage = EmptyPasswordMessage;
+                return;
+            }
 
             await OpenAndNavigateAsync(location, Password, offerBiometricOptIn: true);
         }

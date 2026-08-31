@@ -12,6 +12,15 @@ namespace GDSB.Infrastructure
 
         public void WriteAllBytes(string location, byte[] data) => File.WriteAllBytes(location, data);
 
-        public string GetBackupLocation(string location, string suffix) => location + suffix;
+        // O prefixo "bkp_" (em vez de só um sufixo no fim) é de propósito: numa listagem de
+        // arquivos com pouco espaço horizontal (celular), um nome de cofre médio/grande já
+        // trunca o final antes de mostrar ".bak"/.".v1.bak", e o backup fica indistinguível do
+        // arquivo real. No início do nome, a marca aparece sempre, truncamento ou não.
+        public string GetBackupLocation(string location, string suffix)
+        {
+            var directory = Path.GetDirectoryName(location);
+            var backupFileName = "bkp_" + Path.GetFileName(location) + suffix;
+            return string.IsNullOrEmpty(directory) ? backupFileName : Path.Combine(directory, backupFileName);
+        }
     }
 }
