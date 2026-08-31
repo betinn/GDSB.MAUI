@@ -5,8 +5,14 @@
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              x:Class="GDSB.MAUI.VaultPage"
              x:Name="ThisPage"
-             Title="{Binding VaultName}"
              BackgroundColor="{StaticResource SurfaceDark}">
+
+    <!--
+      Sem Title de propósito: o nome do cofre já aparece no cabeçalho da página, nos dois
+      layouts. Com o Title do Shell também ligado ao VaultName, o layout largo mostrava o
+      nome duas vezes no canto superior esquerdo. A barra do Shell fica só com a seta de
+      voltar.
+    -->
 
     <!--
       Sobrescreve o botão de voltar padrão do Shell (a seta no canto superior esquerdo): o pop
@@ -116,6 +122,11 @@
         <Grid RowDefinitions="Auto,*" IsVisible="{Binding IsCompactLayout}">
 
             <VerticalStackLayout Grid.Row="0" Padding="18,16,18,10" Spacing="12" BackgroundColor="{StaticResource Tertiary}">
+                <!-- O nome do cofre vive no cabeçalho da página, não no Title do Shell: com os
+                     dois, o layout largo mostrava o nome duas vezes. Aqui ele acompanha o
+                     layout largo, que já fazia assim. -->
+                <Label Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="18"
+                       TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" />
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                             StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
@@ -234,6 +245,25 @@
             <Label x:Name="ToastLabel" TextColor="{StaticResource TextPrimaryDark}" FontSize="14"
                    FontFamily="OpenSansSemibold" />
         </Border>
+
+        <!--
+          Selo de confirmação: a marca animada em três gestos - cadeado que fecha ao criar,
+          anel que completa a volta ao editar, marca que estilhaça ao excluir. Disparado por
+          SecretCreated / SecretUpdated / SecretDeleted, que só ocorrem quando a gravação no
+          arquivo deu certo - ver LockSealDrawable.
+          InputTransparent porque é puramente ilustrativo: não deve prender o toque do
+          usuário durante o segundo em que aparece.
+        -->
+        <Grid x:Name="SealOverlay" IsVisible="False" Opacity="0" InputTransparent="True"
+              BackgroundColor="#B3060B24">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="18">
+                <GraphicsView x:Name="SealView" WidthRequest="132" HeightRequest="132"
+                              HorizontalOptions="Center" />
+                <Label x:Name="SealLabel" HorizontalOptions="Center"
+                       TextColor="{StaticResource TextPrimaryDark}" FontSize="15"
+                       FontFamily="OpenSansSemibold" />
+            </VerticalStackLayout>
+        </Grid>
 
     </Grid>
 </ContentPage>

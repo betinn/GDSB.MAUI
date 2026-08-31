@@ -14,11 +14,11 @@
             <VerticalStackLayout Grid.Row="1" Spacing="32">
 
                 <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
-                    <Border WidthRequest="84" HeightRequest="84" StrokeShape="RoundRectangle 42"
-                            BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
-                            HorizontalOptions="Center">
-                        <Label Text="&#128274;" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Border>
+                    <!-- A marca de verdade, desenhada pelo BrandMarkDrawable a partir da mesma
+                         geometria das animações e do ícone do app. Antes era o emoji 🔒, que muda
+                         de desenho a cada plataforma e não aceita a cor da marca. -->
+                    <GraphicsView x:Name="BrandMark" WidthRequest="92" HeightRequest="92"
+                                  HorizontalOptions="Center" />
                     <Label Text="GDSB" FontSize="26" FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
                     <Label Text="Seu cofre de senhas" FontSize="13"
@@ -89,10 +89,27 @@
                                 </VerticalStackLayout>
                             </Border>
 
-                            <Button Text="&#128272; Desbloquear com biometria"
-                                    Style="{StaticResource PrimaryActionButtonStyle}"
-                                    Command="{Binding UnlockWithBiometricCommand}"
-                                    IsEnabled="{Binding CanInteract}" />
+                            <!-- Button do MAUI não aceita conteúdo vetorial, então o ícone e o
+                                 rótulo ficam sobrepostos num Grid: o Button segue responsável
+                                 pelo toque, comando e estado, e a camada de cima é
+                                 InputTransparent (cascateia para os filhos). O texto sai do
+                                 Button para não aparecer duplicado. -->
+                            <Grid>
+                                <Button Style="{StaticResource PrimaryActionButtonStyle}"
+                                        Command="{Binding UnlockWithBiometricCommand}"
+                                        IsEnabled="{Binding CanInteract}"
+                                        SemanticProperties.Description="Desbloquear com biometria" />
+                                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center"
+                                                       Spacing="9" InputTransparent="True">
+                                    <GraphicsView x:Name="BiometricButtonIcon"
+                                                  WidthRequest="18" HeightRequest="18"
+                                                  VerticalOptions="Center" />
+                                    <Label Text="Desbloquear com biometria"
+                                           TextColor="{StaticResource White}"
+                                           FontFamily="OpenSansSemibold" FontSize="15"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Grid>
 
                             <Button Text="Trocar cofre"
                                     Style="{StaticResource SecondaryActionButtonStyle}"

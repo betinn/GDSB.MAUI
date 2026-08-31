@@ -38,6 +38,25 @@ namespace GDSB.MAUI.ViewModels
         // IsVisible) porque a duração/fade é responsabilidade de apresentação, não de estado.
         public event EventHandler<string>? ToastRequested;
 
+        /// <summary>
+        /// Disparado só quando um item NOVO acabou de ser gravado no arquivo com sucesso -
+        /// nunca em edição de item existente, e nunca se o Save falhou. A view usa isso para
+        /// a animação de cadeado fechando; comemorar uma gravação que não aconteceu seria
+        /// pior do que não ter animação nenhuma.
+        /// </summary>
+        public event EventHandler? SecretCreated;
+
+        /// <summary>
+        /// Disparado quando um item EXISTENTE foi alterado e gravado com sucesso. Mesma regra
+        /// do SecretCreated: nada de animar uma gravação que falhou.
+        /// </summary>
+        public event EventHandler? SecretUpdated;
+
+        /// <summary>
+        /// Disparado quando um item foi removido e o cofre gravado com sucesso.
+        /// </summary>
+        public event EventHandler? SecretDeleted;
+
         public ObservableCollection<SecretBoxItemViewModel> Items { get; } = new();
 
         [ObservableProperty]
@@ -234,10 +253,11 @@ namespace GDSB.MAUI.ViewModels
         [RelayCommand]
         private Task GoHomeAsync() => _navigationService.GoHomeAsync();
 
-        private async Task PersistAsync()
+        /// <summary>Devolve true só se o cofre foi realmente gravado em disco.</summary>
+        private async Task<bool> PersistAsync()
         {
             if (_profile is null || _location is null || _password is null)
-                return;
+                return false;
 
             IsBusy = true;
             try
@@ -246,10 +266,12 @@ namespace GDSB.MAUI.ViewModels
                 var password = _password;
                 var profile = _profile;
                 await Task.Run(() => _profileFileService.Save(location, profile, password));
+                return true;
             }
             catch (Exception)
             {
                 await _alertService.DisplayAlertAsync(null, "Não foi possível salvar o cofre. Tente novamente.", "Ok");
+                return false;
             }
             finally
             {
@@ -341,6 +363,8 @@ namespace GDSB.MAUI.ViewModels
 
             ValidationError = null;
 
+            var isNewItem = SelectedItem is null;
+
             if (SelectedItem is null)
             {
                 var box = new SecretBox
@@ -365,11 +389,21 @@ namespace GDSB.MAUI.ViewModels
                 box.Favorito = EditFavorito;
             }
 
-            await PersistAsync();
+            var saved = await PersistAsync();
 
             IsEditingItem = false;
             IsEditorOpen = false;
             RefreshItems();
+
+            // Depois do RefreshItems: a animação passa por cima da lista já atualizada,
+            // então o item novo aparece atrás do cadeado fechando.
+            if (!saved)
+                return;
+
+            if (isNewItem)
+                SecretCreated?.Invoke(this, EventArgs.Empty);
+            else
+                SecretUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         private bool CanSaveItem() => !IsBusy;
@@ -409,8 +443,11 @@ namespace GDSB.MAUI.ViewModels
             IsConfirmingDelete = false;
             IsEditorOpen = false;
 
-            await PersistAsync();
+            var saved = await PersistAsync();
             RefreshItems();
+
+            if (saved)
+                SecretDeleted?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]

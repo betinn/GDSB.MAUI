@@ -14,7 +14,9 @@
                 <Border WidthRequest="64" HeightRequest="64" StrokeShape="RoundRectangle 32"
                         BackgroundColor="{StaticResource Tertiary}" Stroke="{StaticResource PrimaryDarkBrush}"
                         HorizontalOptions="Center">
-                    <Label Text="&#128272;" FontSize="26" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <!-- Impressão digital vetorial no lugar do emoji 🔐 - ver FingerprintDrawable. -->
+                    <GraphicsView x:Name="BiometricIcon" WidthRequest="30" HeightRequest="30"
+                                  HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
 
                 <VerticalStackLayout Spacing="8">

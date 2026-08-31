@@ -1,4 +1,5 @@
 using GDSB.MAUI.ViewModels;
+using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
 
@@ -11,6 +12,15 @@ public partial class UnlockPage : ContentPage
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
+        BrandMark.Drawable = new BrandMarkDrawable();
+        // No botão a digital é branca e sem a crista curta, como no protótipo: em 18px
+        // ela vira um risco solto.
+        BiometricButtonIcon.Drawable = new FingerprintDrawable
+        {
+            Stroke = Colors.White,
+            StrokeWidth = 1.7f,
+            Compact = true,
+        };
     }
 
     protected override async void OnAppearing()

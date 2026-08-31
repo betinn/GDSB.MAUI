@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="456" height="456" fill="#512BD4" />
+<!-- Fundo do ícone. Mesmas dimensões do appiconfg.svg de propósito: com o fundo em
+     456x456 e o primeiro plano em 128x128, o resizetizer compõe duas caixas de tamanhos
+     diferentes e a marca sai deformada (achatada nos tiles do Windows). -->
+<svg width="128" height="128" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="128" height="128" fill="#00186E" />
 </svg>
