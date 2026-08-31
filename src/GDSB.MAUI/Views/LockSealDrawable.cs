@@ -2,6 +2,20 @@ using Microsoft.Maui.Graphics;
 
 namespace GDSB.MAUI.Views;
 
+/// <summary>
+/// A marca GDSB parada, para uso decorativo na interface (o emblema da tela de desbloqueio).
+/// Reaproveita a geometria do <see cref="LockSealDrawable"/> em vez de duplicá-la, então a
+/// marca da tela e a das animações não podem divergir.
+/// </summary>
+public sealed class BrandMarkDrawable : IDrawable
+{
+    /// <summary>Desenha o disco navy atrás da marca. Desligue sobre superfície já escura.</summary>
+    public bool ShowBadge { get; set; } = true;
+
+    public void Draw(ICanvas canvas, RectF dirtyRect)
+        => LockSealDrawable.DrawStaticMark(canvas, dirtyRect, ShowBadge);
+}
+
 /// <summary>Qual momento o selo está confirmando.</summary>
 public enum LockSealMode
 {
@@ -100,6 +114,29 @@ public sealed class LockSealDrawable : IDrawable
         canvas.RestoreState();
     }
 
+    /// <summary>
+    /// A marca completa e parada, no mesmo enquadramento das animações. Usada pelo
+    /// <see cref="BrandMarkDrawable"/>.
+    /// </summary>
+    internal static void DrawStaticMark(ICanvas canvas, RectF dirtyRect, bool withBadge)
+    {
+        var size = Math.Min(dirtyRect.Width, dirtyRect.Height);
+        if (size <= 0)
+            return;
+
+        canvas.SaveState();
+        canvas.Translate(
+            dirtyRect.X + (dirtyRect.Width - size) / 2f,
+            dirtyRect.Y + (dirtyRect.Height - size) / 2f);
+        canvas.Scale(size / 128f, size / 128f);
+
+        if (withBadge)
+            DrawBadge(canvas, 1f, 1f, Pink, 0.34f);
+
+        DrawMarkFull(canvas);
+        canvas.RestoreState();
+    }
+
     // ---------------------------------------------------------------- criação
 
     private static void DrawCreateSeal(ICanvas canvas, float p)
@@ -131,7 +168,7 @@ public sealed class LockSealDrawable : IDrawable
             ScaleAbout(canvas, 64f, 64f, 0.86f + 0.14f * body);
 
             canvas.FillColor = OffWhite;
-            canvas.FillPath(BuildBody());
+            canvas.FillPath(BodyPath);
 
             var keyhole = EaseOutCubic(Segment(p, 0.46f, 0.70f));
             if (keyhole > 0f)
@@ -177,10 +214,10 @@ public sealed class LockSealDrawable : IDrawable
         ScaleAbout(canvas, 64f, 64f, 1f + 0.055f * MathF.Sin(MathF.PI * Segment(p, 0.58f, 0.86f)));
 
         SetShackleStroke(canvas, Pink);
-        canvas.DrawPath(BuildShackle(1f));
+        canvas.DrawPath(FullShacklePath);
 
         canvas.FillColor = OffWhite;
-        canvas.FillPath(BuildBody());
+        canvas.FillPath(BodyPath);
 
         DrawKeyhole(canvas, Navy);
 
@@ -303,6 +340,8 @@ public sealed class LockSealDrawable : IDrawable
             canvas.Alpha = appear * crack * 0.85f;
 
             // As fraturas não chegam ao centro: 16 linhas convergindo viravam um borrão.
+            // Todas num único PathF: um por linha eram 16 alocações por frame.
+            var cracks = new PathF();
             foreach (var s in Shards)
             {
                 var rad = s.StartDeg * MathF.PI / 180f;
@@ -310,11 +349,11 @@ public sealed class LockSealDrawable : IDrawable
                 var outer = Math.Min(s.OuterRadius, 58f);
                 var tip = inner + (outer - inner) * crack;
 
-                var line = new PathF();
-                line.MoveTo(BurstX + inner * MathF.Cos(rad), BurstY + inner * MathF.Sin(rad));
-                line.LineTo(BurstX + tip * MathF.Cos(rad), BurstY + tip * MathF.Sin(rad));
-                canvas.DrawPath(line);
+                cracks.MoveTo(BurstX + inner * MathF.Cos(rad), BurstY + inner * MathF.Sin(rad));
+                cracks.LineTo(BurstX + tip * MathF.Cos(rad), BurstY + tip * MathF.Sin(rad));
             }
+
+            canvas.DrawPath(cracks);
 
             // A fratura circular que separa o miolo da borda.
             canvas.Alpha = appear * crack * 0.5f;
@@ -332,8 +371,14 @@ public sealed class LockSealDrawable : IDrawable
     /// </summary>
     private static void DrawShards(ICanvas canvas, float burstT, float burst, float appear)
     {
-        foreach (var s in Shards)
+        for (var i = 0; i < Shards.Length; i++)
         {
+            var s = Shards[i];
+
+            var alpha = appear * (1f - EaseInCubic(Segment(burstT, 0f, s.Life)));
+            if (alpha <= 0.004f)
+                continue; // caco já apagado: nada a desenhar
+
             var rad = (s.MidDeg + s.Deviation) * MathF.PI / 180f;
             var midRad = s.MidDeg * MathF.PI / 180f;
 
@@ -346,7 +391,7 @@ public sealed class LockSealDrawable : IDrawable
             var cy = BurstY + pivot * MathF.Sin(midRad);
 
             canvas.SaveState();
-            canvas.Alpha = appear * (1f - EaseInCubic(Segment(burstT, 0f, s.Life)));
+            canvas.Alpha = alpha;
             canvas.Translate(dx, dy);
             canvas.Rotate(s.Spin * burst, cx, cy);
 
@@ -355,7 +400,7 @@ public sealed class LockSealDrawable : IDrawable
             canvas.Scale(shrink, shrink);
             canvas.Translate(-cx, -cy);
 
-            canvas.ClipPath(BuildSector(s), WindingMode.NonZero);
+            canvas.ClipPath(SectorPaths[i], WindingMode.NonZero);
             DrawMarkFull(canvas);
             canvas.RestoreState();
         }
@@ -371,6 +416,15 @@ public sealed class LockSealDrawable : IDrawable
 
     private static readonly Shard[] Shards = BuildShards();
     private static readonly DebrisBit[] DebrisTable = BuildDebris();
+
+    // Geometria que não muda de frame para frame, construída uma vez. Reconstruir estes
+    // caminhos a cada frame custava ~238 KB por frame só na exclusão (16 cacos, cada um
+    // redesenhando a marca inteira) - lixo suficiente para o coletor pausar no meio da
+    // animação e ela parecer travada.
+    private static readonly PathF FullShacklePath = BuildShackle(1f);
+    private static readonly PathF BodyPath = BuildBody();
+    private static readonly PathF KeyholeTailPath = BuildKeyholeTail();
+    private static readonly PathF[] SectorPaths = BuildSectorPaths();
 
     /// <summary>
     /// Sorteio determinístico (não Random): a animação roda igual toda vez, o que a torna
@@ -463,10 +517,10 @@ public sealed class LockSealDrawable : IDrawable
     private static void DrawMarkFull(ICanvas canvas)
     {
         SetShackleStroke(canvas, Pink);
-        canvas.DrawPath(BuildShackle(1f));
+        canvas.DrawPath(FullShacklePath);
 
         canvas.FillColor = OffWhite;
-        canvas.FillPath(BuildBody());
+        canvas.FillPath(BodyPath);
 
         DrawKeyhole(canvas, Navy);
     }
@@ -479,11 +533,23 @@ public sealed class LockSealDrawable : IDrawable
         canvas.StrokeColor = color;
         canvas.StrokeSize = 6.5f;
         canvas.StrokeLineCap = LineCap.Round;
+        canvas.DrawPath(KeyholeTailPath);
+    }
 
+    private static PathF BuildKeyholeTail()
+    {
         var tail = new PathF();
         tail.MoveTo(64f, 86f);
         tail.CurveTo(57.5f, 89.5f, 57.5f, 96f, 64f, 99.5f);
-        canvas.DrawPath(tail);
+        return tail;
+    }
+
+    private static PathF[] BuildSectorPaths()
+    {
+        var paths = new PathF[Shards.Length];
+        for (var i = 0; i < paths.Length; i++)
+            paths[i] = BuildSector(Shards[i]);
+        return paths;
     }
 
     private static void SetShackleStroke(ICanvas canvas, Color color)

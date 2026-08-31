@@ -48,7 +48,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#00186E" />
+		<!-- BaseSize explícito: sem ele o resizetizer deduz a caixa de cada SVG, e fundo e
+		     primeiro plano com dimensões diferentes saem desalinhados/achatados no Windows. -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg"
+		          Color="#00186E" BaseSize="128,128" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#00186E" BaseSize="128,128" />

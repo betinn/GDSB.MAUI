@@ -1,4 +1,5 @@
 using GDSB.MAUI.ViewModels;
+using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
 
@@ -11,6 +12,7 @@ public partial class UnlockPage : ContentPage
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
+        BrandMark.Drawable = new BrandMarkDrawable();
     }
 
     protected override async void OnAppearing()
