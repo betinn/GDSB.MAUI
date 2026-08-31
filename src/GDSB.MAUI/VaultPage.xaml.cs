@@ -19,6 +19,8 @@ public partial class VaultPage : ContentPage
         BindingContext = _viewModel;
         _viewModel.ToastRequested += OnToastRequested;
         _viewModel.SecretCreated += OnSecretCreated;
+        _viewModel.SecretUpdated += OnSecretUpdated;
+        _viewModel.SecretDeleted += OnSecretDeleted;
         SealView.Drawable = _sealDrawable;
     }
 
@@ -59,14 +61,25 @@ public partial class VaultPage : ContentPage
         }
     }
 
-    /// <summary>
-    /// Cadeado da marca fechando, por cima da lista já atualizada. Só chega aqui quando o
-    /// item é novo e a gravação no arquivo deu certo - ver VaultViewModel.SecretCreated.
-    /// </summary>
+    // Os três selos, por cima da lista já atualizada. Só chegam aqui quando a gravação no
+    // arquivo deu certo - ver os eventos correspondentes no VaultViewModel.
     private async void OnSecretCreated(object? sender, EventArgs e)
+        => await PlaySealAsync(LockSealMode.Create, "Segredo guardado", 760);
+
+    private async void OnSecretUpdated(object? sender, EventArgs e)
+        => await PlaySealAsync(LockSealMode.Update, "Alterações salvas", 620);
+
+    private async void OnSecretDeleted(object? sender, EventArgs e)
+        => await PlaySealAsync(LockSealMode.Delete, "Segredo excluído", 740);
+
+    /// <summary>
+    /// Duração por modo: a edição é mais curta por ser o evento menor, e a exclusão precisa
+    /// de um pouco mais para os cacos saírem de cena.
+    /// </summary>
+    private async Task PlaySealAsync(LockSealMode mode, string label, uint length)
     {
         // Troca o token source antes de cancelar o anterior: com o await do CancelAsync no
-        // meio, assumir o overlay primeiro evita que duas criações quase simultâneas se
+        // meio, assumir o overlay primeiro evita que duas ações quase simultâneas se
         // intercalem entre o cancelamento e a atribuição.
         var previous = _sealCts;
         var cts = new CancellationTokenSource();
@@ -77,7 +90,9 @@ public partial class VaultPage : ContentPage
 
         this.AbortAnimation(SealAnimationName);
 
+        _sealDrawable.Mode = mode;
         _sealDrawable.Progress = 0f;
+        SealLabel.Text = label;
         SealView.Invalidate();
         SealOverlay.Opacity = 0;
         SealOverlay.IsVisible = true;
@@ -85,17 +100,17 @@ public partial class VaultPage : ContentPage
         try
         {
             await SealOverlay.FadeToAsync(1, 90);
-            await RunSealAnimationAsync();
+            await RunSealAnimationAsync(length);
             await Task.Delay(420, cts.Token);
             await SealOverlay.FadeToAsync(0, 200);
 
-            // Se outra criação assumiu o overlay durante o fade, quem esconde é ela.
+            // Se outro selo assumiu o overlay durante o fade, quem esconde é ele.
             if (_sealCts == cts)
                 SealOverlay.IsVisible = false;
         }
         catch (TaskCanceledException)
         {
-            // Outra criação chegou antes do fim - a chamada nova assume o overlay.
+            // Outro selo chegou antes do fim - a chamada nova assume o overlay.
         }
     }
 
@@ -103,7 +118,7 @@ public partial class VaultPage : ContentPage
     /// Linear de propósito: o escalonamento de cada fase (queda da haste, repique, anel)
     /// já está no LockSealDrawable, que precisa receber o tempo cru para compô-las.
     /// </summary>
-    private Task RunSealAnimationAsync()
+    private Task RunSealAnimationAsync(uint length)
     {
         var tcs = new TaskCompletionSource();
 
@@ -113,7 +128,7 @@ public partial class VaultPage : ContentPage
                     _sealDrawable.Progress = (float)v;
                     SealView.Invalidate();
                 }, 0d, 1d)
-            .Commit(this, SealAnimationName, length: 760, easing: Easing.Linear,
+            .Commit(this, SealAnimationName, length: length, easing: Easing.Linear,
                 finished: (_, _) => tcs.TrySetResult());
 
         return tcs.Task;

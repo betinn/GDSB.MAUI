@@ -46,6 +46,17 @@ namespace GDSB.MAUI.ViewModels
         /// </summary>
         public event EventHandler? SecretCreated;
 
+        /// <summary>
+        /// Disparado quando um item EXISTENTE foi alterado e gravado com sucesso. Mesma regra
+        /// do SecretCreated: nada de animar uma gravação que falhou.
+        /// </summary>
+        public event EventHandler? SecretUpdated;
+
+        /// <summary>
+        /// Disparado quando um item foi removido e o cofre gravado com sucesso.
+        /// </summary>
+        public event EventHandler? SecretDeleted;
+
         public ObservableCollection<SecretBoxItemViewModel> Items { get; } = new();
 
         [ObservableProperty]
@@ -386,8 +397,13 @@ namespace GDSB.MAUI.ViewModels
 
             // Depois do RefreshItems: a animação passa por cima da lista já atualizada,
             // então o item novo aparece atrás do cadeado fechando.
-            if (isNewItem && saved)
+            if (!saved)
+                return;
+
+            if (isNewItem)
                 SecretCreated?.Invoke(this, EventArgs.Empty);
+            else
+                SecretUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         private bool CanSaveItem() => !IsBusy;
@@ -427,8 +443,11 @@ namespace GDSB.MAUI.ViewModels
             IsConfirmingDelete = false;
             IsEditorOpen = false;
 
-            await PersistAsync();
+            var saved = await PersistAsync();
             RefreshItems();
+
+            if (saved)
+                SecretDeleted?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]
