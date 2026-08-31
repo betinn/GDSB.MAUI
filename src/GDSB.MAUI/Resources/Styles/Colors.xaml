@@ -29,16 +29,24 @@
     <Color x:Key="Gray950">#141414</Color>
 
     <!-- Fase 3: aprovadas junto com o protótipo visual (favorito / ações destrutivas) -->
-    <Color x:Key="FavoriteGold">#F5B93E</Color>
-    <Color x:Key="Danger">#E5484D</Color>
+    <Color x:Key="FavoriteGold">#FFC53D</Color>
+    <Color x:Key="Danger">#FF5A6A</Color>
+
+    <!-- Brand colors - nova identidade visual -->
+    <Color x:Key="BrandNavy">#00186E</Color>
+    <Color x:Key="BrandViolet">#400880</Color>
+    <Color x:Key="BrandPink">#D936D3</Color>
+    <Color x:Key="BrandWhite">#FCFCFC</Color>
+    <Color x:Key="BrandPinkContrast">#C21FBC</Color>
+    <Color x:Key="BrandPinkText">#F27BEB</Color>
 
     <!-- Aliases da superfície escura usada no protótipo (tela de desbloqueio, lista, editor) -->
-    <Color x:Key="SurfaceDark">#141414</Color>
-    <Color x:Key="SurfaceCardDark">#1f1f1f</Color>
-    <Color x:Key="BorderDark">#2b2b2b</Color>
-    <Color x:Key="TextPrimaryDark">#F7F5FC</Color>
-    <Color x:Key="TextSecondaryDark">#919191</Color>
-    <Color x:Key="TextMutedDark">#6E6E6E</Color>
+    <Color x:Key="SurfaceDark">#060B24</Color>
+    <Color x:Key="SurfaceCardDark">#0E1540</Color>
+    <Color x:Key="BorderDark">#232B63</Color>
+    <Color x:Key="TextPrimaryDark">#FCFCFC</Color>
+    <Color x:Key="TextSecondaryDark">#A9B0D6</Color>
+    <Color x:Key="TextMutedDark">#6E77A8</Color>
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
@@ -65,4 +73,16 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- Brand brushes -->
+    <SolidColorBrush x:Key="BrandNavyBrush" Color="{StaticResource BrandNavy}"/>
+    <SolidColorBrush x:Key="BrandVioletBrush" Color="{StaticResource BrandViolet}"/>
+    <SolidColorBrush x:Key="BrandPinkBrush" Color="{StaticResource BrandPink}"/>
+    <SolidColorBrush x:Key="BrandWhiteBrush" Color="{StaticResource BrandWhite}"/>
+    <SolidColorBrush x:Key="BrandPinkContrastBrush" Color="{StaticResource BrandPinkContrast}"/>
+    <SolidColorBrush x:Key="BrandPinkTextBrush" Color="{StaticResource BrandPinkText}"/>
+    <LinearGradientBrush x:Key="BrandGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource BrandViolet}" Offset="0.0" />
+        <GradientStop Color="{StaticResource BrandPinkContrast}" Offset="1.0" />
+    </LinearGradientBrush>
 </ResourceDictionary>
