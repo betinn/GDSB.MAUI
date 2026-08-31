@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#D936D3</color>
-    <color name="colorPrimaryDark">#400880</color>
+    <!-- Navy da marca: a barra de status encosta no topo da página, que abre
+         em #00186E dissolvendo no fundo #060B24. Magenta aqui brigaria com o
+         gradiente de ação dos botões. -->
+    <color name="colorPrimary">#00186E</color>
+    <color name="colorPrimaryDark">#00186E</color>
+    <!-- Ação: o mesmo #C21FBC do Primary/chip selecionado (4.85:1 com texto branco) -->
     <color name="colorAccent">#C21FBC</color>
 </resources>

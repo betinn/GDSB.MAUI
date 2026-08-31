@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <!-- G arc (magenta) -->
-  <path d="M 297.36,149.4 A 85.5,85.5 0 1 0 299.64,297.15 L 299.64,220.5 L 252.75,220.5" fill="none" stroke="#D936D3" stroke-width="39.375" stroke-linecap="round" stroke-linejoin="round"/>
-
-  <!-- Body (D deitado) with lock cutout mask -->
-  <defs>
-    <mask id="lockMask" maskUnits="userSpaceOnUse" x="0" y="0" width="456" height="456">
-      <rect width="456" height="456" fill="white"/>
-      <!-- Keyhole cutout: circle + shaft -->
-      <circle cx="228" cy="281.25" r="28.5" fill="black"/>
-      <path d="M 228,309.75 C 204.75,327 204.75,358.5 228,375.75" fill="none" stroke="black" stroke-width="23.25" stroke-linecap="round"/>
-    </mask>
-  </defs>
-
-  <!-- D-shaped body (semicircle at bottom) with mask applied -->
-  <path d="M 78.75,228 L 357.75,228 A 149.25,149.25 0 0 1 78.75,228 Z" fill="#FCFCFC" mask="url(#lockMask)"/>
+<svg width="128" height="128" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- Marca GDSB: arco do G (cadeado) sobre o D deitado, com a fechadura recortada.
+         Sem <mask> e sem gradiente de proposito: o resizetizer do MAUI rasteriza via
+         SkiaSharp e o recorte por fill-rule="evenodd" e o unico que sobrevive intacto
+         em todas as densidades. Conteudo escalado para caber na zona segura de 66%
+         do icone adaptativo do Android. -->
+    <g transform="translate(64,64) scale(0.74) translate(-64,-58.9)">
+        <path d="M83.2,27.6 A24,24 0 1 0 84.1,55.1 L84.1,45 L71,45"
+              fill="none" stroke="#D936D3" stroke-width="11"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <path fill-rule="evenodd" fill="#FCFCFC"
+              d="M22,64 h84 a42,42 0 0 1 -84,0 z
+                 M56,79 a8,8 0 1 1 16,0 a8,8 0 1 1 -16,0 z
+                 M60.5,86.5 C54,90.5 55,97 61,100.5 L64.5,98.5 C60,96 59.5,92 64,88.5 Z"/>
+    </g>
 </svg>
