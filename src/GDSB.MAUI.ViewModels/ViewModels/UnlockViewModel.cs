@@ -35,22 +35,21 @@ namespace GDSB.MAUI.ViewModels
         private readonly IVaultSessionService _vaultSessionService;
 
         public UnlockViewModel(
-            IProfileFileService profileFileService,
+            VaultAccess vaultAccess,
             IFilePickerService filePickerService,
             INavigationService navigationService,
             IBiometricUnlockService biometricUnlockService,
             IPreferencesService preferencesService,
             IAlertService alertService,
-            IVaultSessionService vaultSessionService,
             BiometricOptInCoordinator biometricOptIn)
         {
-            _profileFileService = profileFileService;
+            _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
             _biometricUnlockService = biometricUnlockService;
             _preferencesService = preferencesService;
             _alertService = alertService;
-            _vaultSessionService = vaultSessionService;
+            _vaultSessionService = vaultAccess.VaultSessionService;
             BiometricOptIn = biometricOptIn;
         }
 

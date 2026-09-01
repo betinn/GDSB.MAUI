@@ -37,20 +37,19 @@ namespace GDSB.MAUI.ViewModels
         private string? _password;
 
         public VaultSettingsViewModel(
-            IProfileFileService profileFileService,
+            VaultAccess vaultAccess,
             IFilePickerService filePickerService,
             INavigationService navigationService,
             IBiometricUnlockService biometricUnlockService,
-            IVaultSessionService vaultSessionService,
             IVaultBackupStore backupStore,
             IAlertService alertService,
             BiometricOptInCoordinator biometricOptIn)
         {
-            _profileFileService = profileFileService;
+            _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
             _biometricUnlockService = biometricUnlockService;
-            _vaultSessionService = vaultSessionService;
+            _vaultSessionService = vaultAccess.VaultSessionService;
             _backupStore = backupStore;
             _alertService = alertService;
             BiometricOptIn = biometricOptIn;
@@ -111,6 +110,12 @@ namespace GDSB.MAUI.ViewModels
 
         private string? _pendingNewLocation;
 
+        // S2325 ("make static") é falso positivo aqui: essas quatro propriedades leem estado por
+        // instância (via as propriedades geradas pelo [ObservableProperty] acima) e não podem virar
+        // static sem quebrar o binding do XAML. O mesmo padrão já existe, sem supressão, em todos
+        // os outros ViewModels (CanInteract => !IsBusy, etc.) - só não é reportado ali porque é
+        // código antigo, fora da janela de "New Code" do Sonar.
+#pragma warning disable S2325
         public bool HasNameErrorMessage => !string.IsNullOrEmpty(NameErrorMessage);
 
         public bool HasPasswordErrorMessage => !string.IsNullOrEmpty(PasswordErrorMessage);
@@ -118,6 +123,7 @@ namespace GDSB.MAUI.ViewModels
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         public bool CanInteract => !IsBusy;
+#pragma warning restore S2325
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
@@ -241,8 +247,8 @@ namespace GDSB.MAUI.ViewModels
                     return;
                 }
 
-                var newPassword = NewPassword;
-                await Task.Run(() => _profileFileService.Save(_location, _profile, newPassword));
+                var enteredNewPassword = NewPassword;
+                await Task.Run(() => _profileFileService.Save(_location, _profile, enteredNewPassword));
 
                 if (DeleteOldBackups)
                     _backupStore.DeleteAllFor(_location);
@@ -251,7 +257,7 @@ namespace GDSB.MAUI.ViewModels
                 {
                     await _biometricUnlockService.DisableAsync();
 
-                    var secret = Encoding.UTF8.GetBytes(newPassword);
+                    var secret = Encoding.UTF8.GetBytes(enteredNewPassword);
                     try
                     {
                         var reselado = await _biometricUnlockService.StoreKeyAsync(secret);
@@ -264,7 +270,7 @@ namespace GDSB.MAUI.ViewModels
                     }
                 }
 
-                _password = newPassword;
+                _password = enteredNewPassword;
                 CurrentPassword = string.Empty;
                 NewPassword = string.Empty;
                 ConfirmNewPassword = string.Empty;

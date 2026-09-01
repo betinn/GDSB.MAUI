@@ -1,5 +1,6 @@
 using GDSB.Domain.Entities;
 using GDSB.Domain.Exceptions;
+using GDSB.MAUI.Services;
 using GDSB.MAUI.Tests.Fakes;
 using GDSB.MAUI.ViewModels;
 using Xunit;
@@ -33,11 +34,10 @@ namespace GDSB.MAUI.Tests
             {
                 var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
                 ViewModel = new VaultSettingsViewModel(
-                    ProfileFileService,
+                    new VaultAccess(ProfileFileService, VaultSessionService),
                     FilePickerService,
                     NavigationService,
                     BiometricUnlockService,
-                    VaultSessionService,
                     BackupStore,
                     AlertService,
                     biometricOptIn);
