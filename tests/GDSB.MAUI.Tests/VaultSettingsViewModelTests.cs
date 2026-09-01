@@ -67,6 +67,8 @@ namespace GDSB.MAUI.Tests
             var sut = new Sut();
             sut.Load();
             sut.ViewModel.VaultName = "Novo nome";
+            var settingsSavedCount = 0;
+            sut.ViewModel.SettingsSaved += (_, _) => settingsSavedCount++;
 
             await sut.ViewModel.SaveNameCommand.ExecuteAsync(null);
 
@@ -74,6 +76,30 @@ namespace GDSB.MAUI.Tests
             Assert.Equal("Novo nome", save.Profile.Nome);
             Assert.True(sut.ViewModel.ShowSaveAsNewFileOffer);
             Assert.Empty(sut.NavigationService.NavigateToRootCalls);
+            Assert.Equal(1, settingsSavedCount);
+        }
+
+        [Fact]
+        public void SelectClipboardClearSecondsCommand_ParsesStringParameter()
+        {
+            // O CommandParameter do XAML sempre chega como string ao comando - regressão do bug
+            // em que os seletores de tempo pareciam não reagir a clique nenhum (a tela de editar
+            // cofre nem tinha esses comandos implementados).
+            var sut = new Sut();
+
+            sut.ViewModel.SelectClipboardClearSecondsCommand.Execute("45");
+
+            Assert.Equal(45, sut.ViewModel.ClipboardClearSeconds);
+        }
+
+        [Fact]
+        public void SelectAutoLockMinutesCommand_ParsesStringParameter()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectAutoLockMinutesCommand.Execute("15");
+
+            Assert.Equal(15, sut.ViewModel.AutoLockMinutes);
         }
 
         [Fact]
@@ -83,6 +109,8 @@ namespace GDSB.MAUI.Tests
             sut.Load();
             sut.ViewModel.ClipboardClearEnabled = false;
             sut.ViewModel.AutoLockMinutes = 15;
+            var settingsSavedCount = 0;
+            sut.ViewModel.SettingsSaved += (_, _) => settingsSavedCount++;
 
             await sut.ViewModel.SaveProtectionsCommand.ExecuteAsync(null);
 
@@ -92,6 +120,7 @@ namespace GDSB.MAUI.Tests
             Assert.Equal(15, save.Profile.Settings.AutoLockMinutes);
             Assert.Same(save.Profile.Settings, sut.VaultSessionService.Settings);
             Assert.False(sut.ViewModel.ShowSaveAsNewFileOffer);
+            Assert.Equal(1, settingsSavedCount);
         }
 
         [Fact]
@@ -117,12 +146,15 @@ namespace GDSB.MAUI.Tests
             sut.ViewModel.CurrentPassword = VaultUnlockCode;
             sut.ViewModel.NewPassword = NewVaultUnlockCode;
             sut.ViewModel.ConfirmNewPassword = NewVaultUnlockCode;
+            var settingsSavedCount = 0;
+            sut.ViewModel.SettingsSaved += (_, _) => settingsSavedCount++;
 
             await sut.ViewModel.ChangePasswordCommand.ExecuteAsync(null);
 
             var save = Assert.Single(sut.ProfileFileService.SaveCalls);
             Assert.Equal(NewVaultUnlockCode, save.Password);
             Assert.True(sut.ViewModel.ShowSaveAsNewFileOffer);
+            Assert.Equal(1, settingsSavedCount);
             Assert.Null(sut.ViewModel.PasswordErrorMessage);
         }
 

@@ -65,11 +65,15 @@ namespace GDSB.MAUI.ViewModels
         [ObservableProperty]
         private int autoLockMinutes = 2;
 
+        // Recebe string, não int: o CommandParameter do XAML sempre chega como string (o binding
+        // não converte pro tipo do parâmetro do RelayCommand), e RelayCommand<int> lança
+        // InvalidCastException ao tentar converter esse valor - o clique simplesmente não fazia
+        // nada, sem erro visível.
         [RelayCommand]
-        private void SelectClipboardClearSeconds(int seconds) => ClipboardClearSeconds = seconds;
+        private void SelectClipboardClearSeconds(string seconds) => ClipboardClearSeconds = int.Parse(seconds);
 
         [RelayCommand]
-        private void SelectAutoLockMinutes(int minutes) => AutoLockMinutes = minutes;
+        private void SelectAutoLockMinutes(string minutes) => AutoLockMinutes = int.Parse(minutes);
 
         [ObservableProperty]
         private bool isBusy;

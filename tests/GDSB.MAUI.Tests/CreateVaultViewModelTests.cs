@@ -98,5 +98,27 @@ namespace GDSB.MAUI.Tests
             var started = Assert.Single(sut.VaultSessionService.StartCalls);
             Assert.Same(save.Profile.Settings, started);
         }
+
+        [Fact]
+        public void SelectClipboardClearSecondsCommand_ParsesStringParameter()
+        {
+            // O CommandParameter do XAML sempre chega como string ao comando - regressão do bug
+            // em que os seletores de tempo pareciam não reagir a clique nenhum.
+            var sut = new Sut();
+
+            sut.ViewModel.SelectClipboardClearSecondsCommand.Execute("45");
+
+            Assert.Equal(45, sut.ViewModel.ClipboardClearSeconds);
+        }
+
+        [Fact]
+        public void SelectAutoLockMinutesCommand_ParsesStringParameter()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectAutoLockMinutesCommand.Execute("15");
+
+            Assert.Equal(15, sut.ViewModel.AutoLockMinutes);
+        }
     }
 }

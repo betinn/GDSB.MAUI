@@ -57,6 +57,12 @@ namespace GDSB.MAUI.ViewModels
 
         public BiometricOptInCoordinator BiometricOptIn { get; }
 
+        /// <summary>
+        /// Disparado só quando nome, proteções ou senha são gravados com sucesso - mesmo selo de
+        /// confirmação (modo Update) da VaultPage, nunca numa gravação que falhou.
+        /// </summary>
+        public event EventHandler? SettingsSaved;
+
         public static IReadOnlyList<int> ClipboardClearSecondsOptions { get; } = new[] { 20, 45, 90 };
 
         public static IReadOnlyList<int> AutoLockMinutesOptions { get; } = new[] { 1, 2, 5, 15 };
@@ -170,6 +176,7 @@ namespace GDSB.MAUI.ViewModels
                 await Task.Run(() => _profileFileService.Save(_location, _profile, _password));
 
                 BiometricOptIn.RememberVault(_location, newName);
+                SettingsSaved?.Invoke(this, EventArgs.Empty);
                 OfferSaveAsNewFile();
             }
             catch (Exception)
@@ -181,6 +188,16 @@ namespace GDSB.MAUI.ViewModels
                 IsBusy = false;
             }
         }
+
+        // Recebe string, não int: o CommandParameter do XAML sempre chega como string (o binding
+        // não converte pro tipo do parâmetro do RelayCommand), e RelayCommand<int> lança
+        // InvalidCastException ao tentar converter esse valor - o clique simplesmente não fazia
+        // nada, sem erro visível.
+        [RelayCommand]
+        private void SelectClipboardClearSeconds(string seconds) => ClipboardClearSeconds = int.Parse(seconds);
+
+        [RelayCommand]
+        private void SelectAutoLockMinutes(string minutes) => AutoLockMinutes = int.Parse(minutes);
 
         [RelayCommand(CanExecute = nameof(CanInteract))]
         private async Task SaveProtectionsAsync()
@@ -201,6 +218,7 @@ namespace GDSB.MAUI.ViewModels
 
                 await Task.Run(() => _profileFileService.Save(_location, _profile, _password));
                 _vaultSessionService.Start(_profile.Settings);
+                SettingsSaved?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception)
             {
@@ -275,6 +293,7 @@ namespace GDSB.MAUI.ViewModels
                 NewPassword = string.Empty;
                 ConfirmNewPassword = string.Empty;
 
+                SettingsSaved?.Invoke(this, EventArgs.Empty);
                 OfferSaveAsNewFile();
             }
             catch (Exception)
