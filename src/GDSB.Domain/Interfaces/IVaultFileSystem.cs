@@ -10,10 +10,5 @@ namespace GDSB.Domain.Interfaces
         bool Exists(string location);
         byte[] ReadAllBytes(string location);
         void WriteAllBytes(string location, byte[] data);
-
-        // Onde guardar o backup de "location" antes de uma sobrescrita. Não é necessariamente
-        // "ao lado" do arquivo original — um content:// URI do Android não tem pasta-mãe acessível
-        // a partir de um documento avulso, então esse backup vive no armazenamento privado do app.
-        string GetBackupLocation(string location, string suffix);
     }
 }

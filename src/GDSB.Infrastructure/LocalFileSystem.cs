@@ -11,7 +11,5 @@ namespace GDSB.Infrastructure
         public byte[] ReadAllBytes(string location) => File.ReadAllBytes(location);
 
         public void WriteAllBytes(string location, byte[] data) => File.WriteAllBytes(location, data);
-
-        public string GetBackupLocation(string location, string suffix) => location + suffix;
     }
 }

@@ -1,16 +1,10 @@
-using System.Security.Cryptography;
-using System.Text;
 using GDSB.Domain.Interfaces;
-using Microsoft.Maui.Storage;
 
 namespace GDSB.MAUI.Platforms.Android.Services
 {
     // ProfileFileService (Infrastructure) só enxerga uma "location" opaca. Aqui ela é normalmente
     // um content:// URI do Storage Access Framework, escolhido/criado pelo FilePickerService deste
-    // projeto (ver lá o porquê). O backup (.bak/.v1.bak) de uma location content:// não pode morar
-    // "do lado" do arquivo original - SAF não dá acesso à pasta-mãe de um documento avulso - então
-    // fica no armazenamento privado do app, associado ao URI por um nome estável (hash), o que
-    // ainda assim sobrevive a saves seguintes do mesmo cofre.
+    // projeto (ver lá o porquê).
     public class AndroidSafFileSystem : IVaultFileSystem
     {
         private const string ContentScheme = "content://";
@@ -59,18 +53,6 @@ namespace GDSB.MAUI.Platforms.Android.Services
             using var stream = resolver.OpenOutputStream(uri!, "wt")
                 ?? throw new FileNotFoundException($"Não foi possível gravar o cofre em {location}.");
             stream.Write(data, 0, data.Length);
-        }
-
-        public string GetBackupLocation(string location, string suffix)
-        {
-            if (!IsContentUri(location))
-                return location + suffix;
-
-            var backupDir = Path.Combine(FileSystem.AppDataDirectory, "vault-backups");
-            Directory.CreateDirectory(backupDir);
-
-            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(location)));
-            return Path.Combine(backupDir, hash + suffix);
         }
 
         private static bool IsContentUri(string location) =>

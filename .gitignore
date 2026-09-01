@@ -256,6 +256,10 @@ Generated_Code/
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
+# Exceção: pastas de código-fonte do GDSB chamadas "Backup" (IVaultBackupStore e afins) - não são
+# backups de upgrade do Visual Studio.
+!src/GDSB.Infrastructure/Backup/
+!tests/GDSB.Infrastructure.Tests/Backup/
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/

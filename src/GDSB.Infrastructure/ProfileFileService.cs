@@ -10,10 +10,12 @@ namespace GDSB.Infrastructure
     // v1 é texto JSON, então nunca bate com o magic) e delega pro serviço certo. Save sempre
     // grava em v2. Toda leitura/gravação passa por IVaultFileSystem: esta classe nunca assume
     // que "location" é um caminho de arquivo de verdade (no Android pode ser um content:// URI).
+    // Backups vão sempre pro IVaultBackupStore (fora da pasta do cofre nas duas plataformas).
     public class ProfileFileService(
         IFileDecryptionService legacyFileDecryptionService,
         IFileCryptoServiceV2 fileCryptoServiceV2,
-        IVaultFileSystem fileSystem) : IProfileFileService
+        IVaultFileSystem fileSystem,
+        IVaultBackupStore backupStore) : IProfileFileService
     {
         private static readonly byte[] V2Magic = { (byte)'G', (byte)'D', (byte)'S', (byte)'B' };
 
@@ -40,14 +42,14 @@ namespace GDSB.Infrastructure
 
         public void Save(string location, Profile profile, string password)
         {
-            BackupBeforeOverwrite(location);
+            BackupBeforeOverwrite(location, profile.Nome);
 
             var json = JsonSerializer.Serialize(profile);
             var fileBytes = fileCryptoServiceV2.Encrypt(json, password);
             fileSystem.WriteAllBytes(location, fileBytes);
         }
 
-        private void BackupBeforeOverwrite(string location)
+        private void BackupBeforeOverwrite(string location, string vaultName)
         {
             if (!fileSystem.Exists(location))
                 return;
@@ -61,18 +63,11 @@ namespace GDSB.Infrastructure
             if (currentBytes.Length == 0)
                 return;
 
-            if (IsV2Format(currentBytes))
-            {
-                // Backup "corrente": sempre a versão de antes do último save, sobrescrito a cada vez.
-                var backupLocation = fileSystem.GetBackupLocation(location, ".bak");
-                fileSystem.WriteAllBytes(backupLocation, currentBytes);
-                return;
-            }
-
-            // Backup da migração v1 -> v2: preserva o original importado, nunca sobrescrito depois.
-            var legacyBackupLocation = fileSystem.GetBackupLocation(location, ".v1.bak");
-            if (!fileSystem.Exists(legacyBackupLocation))
-                fileSystem.WriteAllBytes(legacyBackupLocation, currentBytes);
+            // Rolling ("corrente", sempre a versão de antes do último save) ou LegacyV1 (o
+            // original importado) - qual das duas, e se ela sobrescreve uma já existente, é regra
+            // do próprio IVaultBackupStore.
+            var kind = IsV2Format(currentBytes) ? VaultBackupKind.Rolling : VaultBackupKind.LegacyV1;
+            backupStore.Store(location, vaultName, currentBytes, kind);
         }
 
         private static bool IsV2Format(byte[] fileBytes) =>

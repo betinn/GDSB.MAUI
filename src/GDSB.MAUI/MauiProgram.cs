@@ -1,11 +1,13 @@
 using GDSB.Domain.Interfaces;
 using GDSB.Infrastructure;
+using GDSB.Infrastructure.Backup;
 using GDSB.Infrastructure.Encryption.Legacy;
 using GDSB.Infrastructure.Encryption.V2;
 using GDSB.MAUI.Interfaces;
 using GDSB.MAUI.Services;
 using GDSB.MAUI.ViewModels;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Storage;
 
 namespace GDSB.MAUI
 {
@@ -53,6 +55,11 @@ namespace GDSB.MAUI
             services.AddSingleton<IFileDecryptionService, LegacyV1FileDecryptionService>();
 #pragma warning restore CS0618
             services.AddSingleton<IFileCryptoServiceV2, AesGcmFileCryptoService>();
+            // FileSystem.AppDataDirectory funciona igual em Android e Windows - é isso que
+            // equaliza o comportamento do backup nas duas plataformas (no Windows ele deixa de
+            // cair dentro da pasta sincronizada do Drive/OneDrive).
+            services.AddSingleton<IVaultBackupStore>(_ =>
+                new FileSystemVaultBackupStore(Path.Combine(FileSystem.AppDataDirectory, "vault-backups")));
             services.AddSingleton<IProfileFileService, ProfileFileService>();
 
             services.AddSingleton<IClipboardService, ClipboardService>();
