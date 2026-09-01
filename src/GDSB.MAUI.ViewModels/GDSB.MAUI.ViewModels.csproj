@@ -13,6 +13,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GDSB.Domain\GDSB.Domain.csproj" />
+    <!-- Só pra VaultBackupNaming.IsBackupName (UnlockViewModel) - GDSB.Infrastructure não
+         referencia este projeto de volta, então não fecha ciclo (diferente de GDSB.MAUI). -->
+    <ProjectReference Include="..\GDSB.Infrastructure\GDSB.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
