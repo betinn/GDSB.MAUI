@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Interfaces;
+using GDSB.Infrastructure.Backup;
 using GDSB.MAUI.Interfaces;
 using GDSB.MAUI.Services;
 using System.Security.Cryptography;
@@ -19,12 +20,18 @@ namespace GDSB.MAUI.ViewModels
         private const string GenericErrorMessage = "Senha incorreta ou arquivo corrompido.";
         private const string EmptyPasswordMessage = "Digite a senha mestra do cofre.";
         private const string FilePickerErrorMessage = "Não foi possível abrir o seletor de arquivos.";
+        private const string BackupFileAlertTitle = "Isto é um backup";
+        private const string BackupFileAlertMessage =
+            "Este arquivo parece ser um backup gerado automaticamente pelo GDSB. Você ainda pode " +
+            "abri-lo normalmente com a senha mestra do cofre.";
+        private const string BackupFileAlertCancel = "Entendi";
 
         private readonly IProfileFileService _profileFileService;
         private readonly IFilePickerService _filePickerService;
         private readonly INavigationService _navigationService;
         private readonly IBiometricUnlockService _biometricUnlockService;
         private readonly IPreferencesService _preferencesService;
+        private readonly IAlertService _alertService;
 
         public UnlockViewModel(
             IProfileFileService profileFileService,
@@ -32,6 +39,7 @@ namespace GDSB.MAUI.ViewModels
             INavigationService navigationService,
             IBiometricUnlockService biometricUnlockService,
             IPreferencesService preferencesService,
+            IAlertService alertService,
             BiometricOptInCoordinator biometricOptIn)
         {
             _profileFileService = profileFileService;
@@ -39,12 +47,21 @@ namespace GDSB.MAUI.ViewModels
             _navigationService = navigationService;
             _biometricUnlockService = biometricUnlockService;
             _preferencesService = preferencesService;
+            _alertService = alertService;
             BiometricOptIn = biometricOptIn;
         }
 
         // Exposto pra UnlockPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
         // BiometricOptIn}") - ver GDSB.MAUI.ViewModels.BiometricOptInCoordinator.
         public BiometricOptInCoordinator BiometricOptIn { get; }
+
+        [ObservableProperty]
+        private string? selectedVaultLocation;
+
+        [ObservableProperty]
+        private string? selectedVaultFileName;
+
+        public bool HasSelectedVault => !string.IsNullOrEmpty(SelectedVaultLocation);
 
         [ObservableProperty]
         private string password = string.Empty;
@@ -89,6 +106,40 @@ namespace GDSB.MAUI.ViewModels
             Password = string.Empty;
             ErrorMessage = null;
             IsPasswordHidden = true;
+            SelectedVaultLocation = null;
+            SelectedVaultFileName = null;
+        }
+
+        // "Trocar arquivo": some do lugar do nome escolhido e volta ao estado inicial - mesmo
+        // efeito de reabrir a UnlockPage do zero.
+        [RelayCommand]
+        private void ClearSelectedVault() => ClearPassword();
+
+        [RelayCommand]
+        private async Task PickVaultAsync()
+        {
+            ErrorMessage = null;
+
+            PickedFile? picked;
+            try
+            {
+                picked = await _filePickerService.PickFileNameAsync();
+            }
+            catch (Exception)
+            {
+                ErrorMessage = FilePickerErrorMessage;
+                return;
+            }
+
+            if (picked is null)
+                return;
+
+            SelectedVaultLocation = picked.Location;
+            SelectedVaultFileName = picked.DisplayName;
+
+            // Um backup também é um cofre válido - o aviso é só informativo, nunca bloqueia.
+            if (VaultBackupNaming.IsBackupName(picked.DisplayName))
+                await _alertService.DisplayAlertAsync(BackupFileAlertTitle, BackupFileAlertMessage, BackupFileAlertCancel);
         }
 
         // Chamado sempre que a UnlockPage passa a ser a tela mostrada - no OnAppearing (abrir o
@@ -104,7 +155,7 @@ namespace GDSB.MAUI.ViewModels
         {
             await RefreshBiometricAvailabilityAsync();
 
-            if (CanUseBiometric && CanUnlock())
+            if (CanUseBiometric && CanUnlockWithBiometric())
                 await UnlockWithBiometricAsync();
         }
 
@@ -138,24 +189,13 @@ namespace GDSB.MAUI.ViewModels
                 return;
             }
 
-            string? location;
-            try
-            {
-                location = await _filePickerService.PickFileNameAsync();
-            }
-            catch (Exception)
-            {
-                ErrorMessage = FilePickerErrorMessage;
-                return;
-            }
-
-            if (string.IsNullOrEmpty(location))
+            if (!HasSelectedVault)
                 return;
 
-            await OpenAndNavigateAsync(location, Password, offerBiometricOptIn: true);
+            await OpenAndNavigateAsync(SelectedVaultLocation!, Password, offerBiometricOptIn: true);
         }
 
-        [RelayCommand(CanExecute = nameof(CanUnlock))]
+        [RelayCommand(CanExecute = nameof(CanUnlockWithBiometric))]
         private async Task UnlockWithBiometricAsync()
         {
             var lastLocation = _preferencesService.GetString(BiometricOptInCoordinator.LastLocationPreferenceKey, null);
@@ -256,7 +296,12 @@ namespace GDSB.MAUI.ViewModels
             BiometricVaultName = string.Empty;
         }
 
-        private bool CanUnlock() => !IsBusy;
+        // UnlockCommand exige um arquivo escolhido; UnlockWithBiometricCommand não - a biometria
+        // mira sempre o cofre lembrado em Preferences (LastLocationPreferenceKey), sem depender de
+        // nenhuma seleção manual feita nesta tela.
+        private bool CanUnlock() => !IsBusy && HasSelectedVault;
+
+        private bool CanUnlockWithBiometric() => !IsBusy;
 
         partial void OnIsBusyChanged(bool value)
         {
@@ -264,6 +309,12 @@ namespace GDSB.MAUI.ViewModels
             UnlockWithBiometricCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(CanInteract));
             OnPropertyChanged(nameof(UnlockButtonText));
+        }
+
+        partial void OnSelectedVaultLocationChanged(string? value)
+        {
+            OnPropertyChanged(nameof(HasSelectedVault));
+            UnlockCommand.NotifyCanExecuteChanged();
         }
 
         partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasErrorMessage));

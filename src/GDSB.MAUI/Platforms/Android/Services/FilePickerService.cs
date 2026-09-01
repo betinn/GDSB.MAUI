@@ -1,5 +1,7 @@
+using System.Linq;
 using Android.App;
 using Android.Content;
+using Android.Provider;
 using GDSB.MAUI.Interfaces;
 using Microsoft.Maui.ApplicationModel;
 
@@ -18,13 +20,51 @@ namespace GDSB.MAUI.Platforms.Android.Services
         private const int RequestCreateDocument = 41002;
         private const string GdsbMimeType = "application/octet-stream";
 
-        public Task<string> PickFileNameAsync()
+        public async Task<PickedFile?> PickFileNameAsync()
         {
             var intent = new Intent(Intent.ActionOpenDocument);
             intent.AddCategory(Intent.CategoryOpenable);
             intent.SetType("*/*");
             intent.PutExtra(Intent.ExtraMimeTypes, new[] { GdsbMimeType });
-            return LaunchAndAwaitAsync(intent, RequestOpenDocument);
+            var location = await LaunchAndAwaitAsync(intent, RequestOpenDocument);
+
+            if (string.IsNullOrEmpty(location))
+                return null;
+
+            return new PickedFile(location, GetDisplayName(location));
+        }
+
+        // OpenableColumns.DisplayName é o nome "de exibição" do documento, que pode não ter
+        // relação nenhuma com o último segmento do content:// URI (provedores como o Google Drive
+        // usam IDs opacos ali) - sem essa query não dá pra mostrar o nome escolhido na tela nem
+        // reconhecer que o arquivo é um backup.
+        private static string GetDisplayName(string location)
+        {
+            try
+            {
+                var resolver = Platform.CurrentActivity?.ContentResolver
+                    ?? global::Android.App.Application.Context.ContentResolver;
+                var uri = global::Android.Net.Uri.Parse(location);
+
+                using var cursor = resolver?.Query(uri!, new[] { OpenableColumns.DisplayName }, null, null, null);
+                if (cursor is not null && cursor.MoveToFirst())
+                {
+                    var columnIndex = cursor.GetColumnIndex(OpenableColumns.DisplayName);
+                    if (columnIndex >= 0)
+                    {
+                        var name = cursor.GetString(columnIndex);
+                        if (!string.IsNullOrEmpty(name))
+                            return name;
+                    }
+                }
+            }
+            catch
+            {
+                // Cai pro fallback abaixo - vale mais mostrar algo do que quebrar o fluxo de abrir
+                // o cofre por causa de um nome de exibição que não veio.
+            }
+
+            return location.Split('/').LastOrDefault() ?? location;
         }
 
         public Task<string> PickSaveLocationAsync(string suggestedName)

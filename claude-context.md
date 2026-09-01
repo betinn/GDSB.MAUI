@@ -118,15 +118,20 @@ Três frentes vindas do uso real:
 | # | Fase | Status | PR |
 |---|------|--------|-----|
 | 0 | Reset do contexto (este arquivo + artifact do plano) | ✅ Concluída | [#13](https://github.com/betinn/GDSB.MAUI/pull/13) |
-| 1 | Desbloqueio: arquivo antes da senha | 🔜 Próxima | — |
-| 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ⬜ Planejada | — |
-| 3 | Proteções configuráveis por cofre (`VaultSettings`) | ⬜ Planejada | — |
+| 1 | Desbloqueio: arquivo antes da senha | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
+| 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
+| 3 | Proteções configuráveis por cofre (`VaultSettings`) | 🔜 Próxima | — |
 | 4 | Tela de edição do cofre | ⬜ Planejada | — |
 | 5 | Recuperação de backup | ⬜ Planejada | — |
 | 6 | Fechamento (README, contexto, testes, build) | ⬜ Planejada | — |
 
 Dependências: **2 antes de 5** (a tela de recuperação lê o store criado na fase 2) e **3 antes de 4**
 (a tela de edição edita o `VaultSettings` criado na fase 3). A fase 1 é independente das demais.
+
+As fases 1 e 2 foram implementadas juntas no PR #15 porque a sessão que as fez foi configurada com
+uma única branch para as duas — não é o padrão daqui pra frente. Essa sessão não tinha Android SDK
+disponível (rede bloqueava `dl.google.com`); o build Android e o roteiro manual da fase 1 ficaram
+pendentes de verificação antes do merge — ver o PR para detalhes.
 
 ### Decisões já fechadas com o usuário
 

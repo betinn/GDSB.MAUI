@@ -1,5 +1,6 @@
 using GDSB.Domain.Entities;
 using GDSB.Domain.Exceptions;
+using GDSB.MAUI.Interfaces;
 using GDSB.MAUI.Tests.Fakes;
 using GDSB.MAUI.ViewModels;
 using System.Text;
@@ -31,6 +32,7 @@ namespace GDSB.MAUI.Tests
                     NavigationService,
                     BiometricUnlockService,
                     PreferencesService,
+                    AlertService,
                     biometricOptIn);
             }
         }
@@ -50,34 +52,87 @@ namespace GDSB.MAUI.Tests
         }
 
         [Fact]
-        public async Task UnlockAsync_FilePickerThrows_SetsGenericFilePickerError()
+        public async Task UnlockAsync_PasswordWithoutVaultSelected_DoesNotUnlock()
         {
             var sut = new Sut();
             sut.ViewModel.Password = Password;
-            sut.FilePickerService.PickFileNameException = new InvalidOperationException("boom");
 
             await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
 
-            Assert.Equal("Não foi possível abrir o seletor de arquivos.", sut.ViewModel.ErrorMessage);
+            Assert.False(sut.ViewModel.HasSelectedVault);
+            Assert.Empty(sut.NavigationService.NavigateToRootCalls);
         }
 
         [Fact]
-        public async Task UnlockAsync_FilePickerCancelled_DoesNothing()
+        public async Task PickVaultAsync_Success_SelectsVaultAndEnablesUnlock()
         {
             var sut = new Sut();
-            sut.ViewModel.Password = Password;
-            sut.FilePickerService.PickFileNameResult = string.Empty;
+            sut.FilePickerService.PickFileNameResult = new PickedFile(Location, "cofre.GDSBX");
 
-            await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
+
+            Assert.True(sut.ViewModel.HasSelectedVault);
+            Assert.Equal(Location, sut.ViewModel.SelectedVaultLocation);
+            Assert.Equal("cofre.GDSBX", sut.ViewModel.SelectedVaultFileName);
+            Assert.True(sut.ViewModel.UnlockCommand.CanExecute(null));
+            Assert.Empty(sut.AlertService.Calls);
+        }
+
+        [Fact]
+        public async Task PickVaultAsync_BackupFile_ShowsInformativeAlertButStillAllowsSelection()
+        {
+            var sut = new Sut();
+            sut.FilePickerService.PickFileNameResult = new PickedFile(Location, "BKP - cofre.GDSBX.bak");
+
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
+
+            Assert.True(sut.ViewModel.HasSelectedVault);
+            Assert.Single(sut.AlertService.Calls);
+        }
+
+        [Fact]
+        public async Task PickVaultAsync_Throws_SetsGenericFilePickerError()
+        {
+            var sut = new Sut();
+            sut.FilePickerService.PickFileNameException = new InvalidOperationException("boom");
+
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
+
+            Assert.Equal("Não foi possível abrir o seletor de arquivos.", sut.ViewModel.ErrorMessage);
+            Assert.False(sut.ViewModel.HasSelectedVault);
+        }
+
+        [Fact]
+        public async Task PickVaultAsync_Cancelled_DoesNothing()
+        {
+            var sut = new Sut();
+            sut.FilePickerService.PickFileNameResult = null;
+
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
 
             Assert.Null(sut.ViewModel.ErrorMessage);
-            Assert.Empty(sut.NavigationService.NavigateToRootCalls);
+            Assert.False(sut.ViewModel.HasSelectedVault);
+        }
+
+        [Fact]
+        public async Task ClearSelectedVaultAsync_ResetsSelectionAndPassword()
+        {
+            var sut = new Sut();
+            sut.FilePickerService.PickFileNameResult = new PickedFile(Location, "cofre.GDSBX");
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
+            sut.ViewModel.Password = Password;
+
+            sut.ViewModel.ClearSelectedVaultCommand.Execute(null);
+
+            Assert.False(sut.ViewModel.HasSelectedVault);
+            Assert.Equal(string.Empty, sut.ViewModel.Password);
         }
 
         [Fact]
         public async Task UnlockAsync_WrongPassword_SetsGenericErrorMessage()
         {
             var sut = new Sut();
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
             sut.ViewModel.Password = "senha-errada";
             sut.ProfileFileService.OpenHandler = (_, _) => throw new InvalidPasswordOrCorruptFileException();
 
@@ -91,6 +146,7 @@ namespace GDSB.MAUI.Tests
         {
             var sut = new Sut();
             var profile = SampleProfile();
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
             sut.ViewModel.Password = Password;
             sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: false);
 
@@ -113,6 +169,7 @@ namespace GDSB.MAUI.Tests
         {
             var sut = new Sut();
             var profile = SampleProfile();
+            await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
             sut.ViewModel.Password = Password;
             sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: true);
 

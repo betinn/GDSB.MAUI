@@ -1,4 +1,6 @@
 using GDSB.Domain.Entities;
+using GDSB.Domain.Interfaces;
+using GDSB.Infrastructure.Backup;
 using GDSB.Infrastructure.Encryption.Legacy;
 using GDSB.Infrastructure.Encryption.V2;
 using GDSB.Infrastructure.Tests.Legacy;
@@ -11,7 +13,15 @@ namespace GDSB.Infrastructure.Tests
     {
         private const string Password = "senha-do-cofre-123";
 
-        private readonly ProfileFileService _sut = new(new LegacyV1FileDecryptionService(), new AesGcmFileCryptoService(), new LocalFileSystem());
+        private readonly string _backupRoot = Path.Combine(Path.GetTempPath(), $"gdsb-backups-{Guid.NewGuid():N}");
+        private readonly IVaultBackupStore _backupStore;
+        private readonly ProfileFileService _sut;
+
+        public ProfileFileServiceTests()
+        {
+            _backupStore = new FileSystemVaultBackupStore(_backupRoot);
+            _sut = new(new LegacyV1FileDecryptionService(), new AesGcmFileCryptoService(), new LocalFileSystem(), _backupStore);
+        }
 
         private static Profile CreateSampleProfile() => new()
         {
@@ -67,7 +77,6 @@ namespace GDSB.Infrastructure.Tests
         public void Save_OverwritingV1File_MigratesToV2AndCreatesBackup()
         {
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var backupPath = path + ".v1.bak";
             try
             {
                 var profile = CreateSampleProfile();
@@ -76,8 +85,9 @@ namespace GDSB.Infrastructure.Tests
 
                 _sut.Save(path, profile, Password);
 
-                Assert.True(File.Exists(backupPath));
-                Assert.Equal(originalBytes, File.ReadAllBytes(backupPath));
+                var backup = Assert.Single(_backupStore.List(), b => b.OriginLocation == path);
+                Assert.Equal(VaultBackupKind.LegacyV1, backup.Kind);
+                Assert.Equal(originalBytes, _backupStore.Read(backup));
 
                 var reopened = _sut.Open(path, Password);
                 Assert.False(reopened.WasLegacyFormat);
@@ -86,7 +96,7 @@ namespace GDSB.Infrastructure.Tests
             finally
             {
                 File.Delete(path);
-                File.Delete(backupPath);
+                _backupStore.DeleteAllFor(path);
             }
         }
 
@@ -94,18 +104,23 @@ namespace GDSB.Infrastructure.Tests
         public void Save_CalledTwiceAfterMigration_DoesNotOverwriteBackupAgain()
         {
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var backupPath = path + ".v1.bak";
             try
             {
                 var profile = CreateSampleProfile();
                 LegacyV1FixtureBuilder.WriteV1File(path, profile, Password);
                 _sut.Save(path, profile, Password);
-                var backupAfterFirstSave = File.ReadAllBytes(backupPath);
+                var legacyBackup = Assert.Single(_backupStore.List(), b => b.OriginLocation == path);
+                var backupAfterFirstSave = _backupStore.Read(legacyBackup);
 
                 profile.Boxes[0].BoxName = "Netflix (editado)";
                 _sut.Save(path, profile, Password);
 
-                Assert.Equal(backupAfterFirstSave, File.ReadAllBytes(backupPath));
+                // O segundo Save já parte de um arquivo v2 (migrado no primeiro), então também
+                // cria um backup Rolling - o que importa aqui é que o LegacyV1 continua intacto.
+                var legacyBackupAfterSecondSave = Assert.Single(
+                    _backupStore.List(),
+                    b => b.OriginLocation == path && b.Kind == VaultBackupKind.LegacyV1);
+                Assert.Equal(backupAfterFirstSave, _backupStore.Read(legacyBackupAfterSecondSave));
 
                 var reopened = _sut.Open(path, Password);
                 Assert.Equal("Netflix (editado)", reopened.Profile.Boxes[0].BoxName);
@@ -113,7 +128,7 @@ namespace GDSB.Infrastructure.Tests
             finally
             {
                 File.Delete(path);
-                File.Delete(backupPath);
+                _backupStore.DeleteAllFor(path);
             }
         }
 
@@ -121,7 +136,6 @@ namespace GDSB.Infrastructure.Tests
         public void Save_OverwritingV2File_CreatesRollingBakOfPreviousVersion()
         {
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var backupPath = path + ".bak";
             try
             {
                 var profile = CreateSampleProfile();
@@ -130,20 +144,22 @@ namespace GDSB.Infrastructure.Tests
                 profile.Boxes[0].BoxName = "Netflix (editado)";
                 _sut.Save(path, profile, Password);
 
-                Assert.True(File.Exists(backupPath));
-                var backedUp = _sut.Open(backupPath, Password);
+                var backup = Assert.Single(_backupStore.List(), b => b.OriginLocation == path);
+                Assert.Equal(VaultBackupKind.Rolling, backup.Kind);
+                var backedUp = _sut.Open(backup.Id, Password);
                 Assert.Equal("Netflix", backedUp.Profile.Boxes[0].BoxName);
 
                 profile.Boxes[0].BoxName = "Netflix (editado de novo)";
                 _sut.Save(path, profile, Password);
 
-                var backedUpAgain = _sut.Open(backupPath, Password);
+                var backupAgain = Assert.Single(_backupStore.List(), b => b.OriginLocation == path);
+                var backedUpAgain = _sut.Open(backupAgain.Id, Password);
                 Assert.Equal("Netflix (editado)", backedUpAgain.Profile.Boxes[0].BoxName);
             }
             finally
             {
                 File.Delete(path);
-                File.Delete(backupPath);
+                _backupStore.DeleteAllFor(path);
             }
         }
 
@@ -154,16 +170,13 @@ namespace GDSB.Infrastructure.Tests
             // FileSavePicker.PickSaveFileAsync cria o arquivo de destino vazio (0 bytes); no Android,
             // ActionCreateDocument via SAF faz o mesmo. Um arquivo vazio não é um cofre v1 a migrar.
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
-            var v1BackupPath = path + ".v1.bak";
-            var bakPath = path + ".bak";
             try
             {
                 File.WriteAllBytes(path, Array.Empty<byte>());
 
                 _sut.Save(path, CreateSampleProfile(), Password);
 
-                Assert.False(File.Exists(v1BackupPath));
-                Assert.False(File.Exists(bakPath));
+                Assert.DoesNotContain(_backupStore.List(), b => b.OriginLocation == path);
 
                 var reopened = _sut.Open(path, Password);
                 Assert.False(reopened.WasLegacyFormat);
@@ -171,8 +184,7 @@ namespace GDSB.Infrastructure.Tests
             finally
             {
                 File.Delete(path);
-                File.Delete(v1BackupPath);
-                File.Delete(bakPath);
+                _backupStore.DeleteAllFor(path);
             }
         }
     }

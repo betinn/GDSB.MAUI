@@ -13,7 +13,7 @@ namespace GDSB.MAUI.Platforms.Windows.Services
     public class FilePickerService : IFilePickerService
     {
 
-        public async Task<string> PickFileNameAsync()
+        public async Task<PickedFile?> PickFileNameAsync()
         {
             var picker = new FileOpenPicker();
             picker.FileTypeFilter.Add(".GDSBX");
@@ -22,7 +22,7 @@ namespace GDSB.MAUI.Platforms.Windows.Services
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
             StorageFile file = await picker.PickSingleFileAsync();
-            return file?.Path ?? string.Empty;
+            return file is null ? null : new PickedFile(file.Path, file.Name);
         }
 
         public async Task<string> PickSaveLocationAsync(string suggestedName)

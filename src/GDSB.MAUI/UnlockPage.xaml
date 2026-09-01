@@ -3,9 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              x:Class="GDSB.MAUI.UnlockPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
+
+    <ContentPage.Resources>
+        <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        <converters:BoolToDimOpacityConverter x:Key="BoolToDimOpacityConverter" />
+    </ContentPage.Resources>
 
     <Grid>
 
@@ -34,31 +40,69 @@
                              mútua, dava pra abrir manualmente um cofre B com uma biometria ainda
                              selada com a senha do cofre A, e a tentativa seguinte por biometria
                              abria B com a senha errada (a de A). -->
-                        <VerticalStackLayout Spacing="8" IsVisible="{Binding ShowManualUnlock}">
-                            <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
-                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                    StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                                    <Entry Grid.Column="0"
-                                           Placeholder="Digite sua senha mestra"
-                                           Text="{Binding Password}"
-                                           IsPassword="{Binding IsPasswordHidden}"
-                                           TextColor="{StaticResource TextPrimaryDark}"
-                                           PlaceholderColor="{StaticResource TextMutedDark}"
-                                           BackgroundColor="Transparent"
-                                           ReturnCommand="{Binding UnlockCommand}"
-                                           VerticalOptions="Center" />
-                                    <Button Grid.Column="1"
-                                            Text="{Binding EyeGlyph}"
-                                            Command="{Binding ToggleShowPasswordCommand}"
-                                            BackgroundColor="Transparent"
-                                            TextColor="{StaticResource TextSecondaryDark}"
-                                            FontSize="16"
-                                            Padding="0"
-                                            WidthRequest="36"
-                                            HeightRequest="36" />
-                                </Grid>
-                            </Border>
+                        <VerticalStackLayout Spacing="16" IsVisible="{Binding ShowManualUnlock}">
+
+                            <!-- Escolher o arquivo vem antes da senha: só depois de um cofre
+                                 selecionado é que faz sentido digitar a senha dele. -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="ARQUIVO DO COFRE" Style="{StaticResource FieldLabelStyle}" />
+                                <Button Text="Escolher arquivo do cofre"
+                                        Style="{StaticResource SecondaryActionButtonStyle}"
+                                        Command="{Binding PickVaultCommand}"
+                                        IsVisible="{Binding HasSelectedVault, Converter={StaticResource InvertedBoolConverter}}"
+                                        IsEnabled="{Binding CanInteract}" />
+
+                                <Border IsVisible="{Binding HasSelectedVault}"
+                                        BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                        StrokeShape="RoundRectangle 12" Padding="14,10">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding SelectedVaultFileName}"
+                                               LineBreakMode="HeadTruncation"
+                                               MaxLines="1"
+                                               FontFamily="OpenSansSemibold" FontSize="14"
+                                               TextColor="{StaticResource TextPrimaryDark}"
+                                               VerticalOptions="Center" />
+                                        <Button Grid.Column="1"
+                                                Text="Trocar"
+                                                Command="{Binding ClearSelectedVaultCommand}"
+                                                BackgroundColor="Transparent"
+                                                TextColor="{StaticResource PrimaryDark}"
+                                                FontFamily="OpenSansSemibold" FontSize="13"
+                                                Padding="0" />
+                                    </Grid>
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+                                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48"
+                                        IsEnabled="{Binding HasSelectedVault}"
+                                        Opacity="{Binding HasSelectedVault, Converter={StaticResource BoolToDimOpacityConverter}}">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                        <Entry Grid.Column="0"
+                                               Placeholder="Digite sua senha mestra"
+                                               Text="{Binding Password}"
+                                               IsPassword="{Binding IsPasswordHidden}"
+                                               TextColor="{StaticResource TextPrimaryDark}"
+                                               PlaceholderColor="{StaticResource TextMutedDark}"
+                                               BackgroundColor="Transparent"
+                                               ReturnCommand="{Binding UnlockCommand}"
+                                               VerticalOptions="Center" />
+                                        <Button Grid.Column="1"
+                                                Text="{Binding EyeGlyph}"
+                                                Command="{Binding ToggleShowPasswordCommand}"
+                                                BackgroundColor="Transparent"
+                                                TextColor="{StaticResource TextSecondaryDark}"
+                                                FontSize="16"
+                                                Padding="0"
+                                                WidthRequest="36"
+                                                HeightRequest="36" />
+                                    </Grid>
+                                </Border>
+                            </VerticalStackLayout>
+
                         </VerticalStackLayout>
 
                         <Label Text="{Binding ErrorMessage}"
@@ -70,7 +114,8 @@
                                 Style="{StaticResource PrimaryActionButtonStyle}"
                                 Command="{Binding UnlockCommand}"
                                 IsVisible="{Binding ShowManualUnlock}"
-                                IsEnabled="{Binding CanInteract}" />
+                                IsEnabled="{Binding HasSelectedVault}"
+                                Opacity="{Binding HasSelectedVault, Converter={StaticResource BoolToDimOpacityConverter}}" />
 
                         <!-- Ao abrir a UnlockPage, a biometria já dispara sozinha quando disponível
                              (UnlockViewModel.InitializeAsync) - este bloco mostra pra qual cofre ela
