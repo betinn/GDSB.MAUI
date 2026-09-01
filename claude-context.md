@@ -120,9 +120,9 @@ Três frentes vindas do uso real:
 | 0 | Reset do contexto (este arquivo + artifact do plano) | ✅ Concluída | [#13](https://github.com/betinn/GDSB.MAUI/pull/13) |
 | 1 | Desbloqueio: arquivo antes da senha | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
 | 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
-| 3 | Proteções configuráveis por cofre (`VaultSettings`) | 🔜 Próxima | — |
-| 4 | Tela de edição do cofre | ⬜ Planejada | — |
-| 5 | Recuperação de backup | ⬜ Planejada | — |
+| 3 | Proteções configuráveis por cofre (`VaultSettings`) | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
+| 4 | Tela de edição do cofre | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
+| 5 | Recuperação de backup | 🔜 Próxima | — |
 | 6 | Fechamento (README, contexto, testes, build) | ⬜ Planejada | — |
 
 Dependências: **2 antes de 5** (a tela de recuperação lê o store criado na fase 2) e **3 antes de 4**
@@ -132,6 +132,14 @@ As fases 1 e 2 foram implementadas juntas no PR #15 porque a sessão que as fez 
 uma única branch para as duas — não é o padrão daqui pra frente. Essa sessão não tinha Android SDK
 disponível (rede bloqueava `dl.google.com`); o build Android e o roteiro manual da fase 1 ficaram
 pendentes de verificação antes do merge — ver o PR para detalhes.
+
+Pelo mesmo motivo (branch única configurada pra sessão), as fases 3 e 4 foram implementadas juntas
+no PR #16. Essa sessão instalou o .NET 10 SDK e o workload `maui-android` via `apt` (mirror do
+Ubuntu, que tem pacote `dotnet-sdk-10.0` — mais confiável aqui do que o `dotnet-install.sh`, que
+esbarra no mesmo bloqueio de rede), e as duas suítes de teste passaram (65 testes). Mas o Android SDK
+em si não foi instalável (mesmo bloqueio de `dl.google.com`), então o `dotnet build
+-p:GdsbAndroidOnly=true` e o roteiro manual da fase 4 ficaram pendentes de verificação antes do
+merge.
 
 ### Decisões já fechadas com o usuário
 
@@ -165,6 +173,42 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
 - **Não fique monitorando o PR** depois de aberto — gasta token à toa. Se precisar de ajuste, o
   usuário avisa.
 - Não pule fases nem inverta as dependências listadas acima.
+
+### SonarCloud
+
+O repositório roda o SonarCloud Code Analysis como check automático em todo push pro PR (não é um
+step do workflow do GitHub Actions — é uma integração via GitHub App, sem log acessível por aqui).
+Depois de qualquer push, confira o check antes de considerar a fase pronta: a Quality Gate pode
+passar (sem bloquear o merge) mesmo com **New Issues** abertas — "0 New issues" é o alvo, não só
+"Quality Gate passed". Para ver a lista, é preciso pedir pro usuário colar o conteúdo da aba
+"Issues" do PR no SonarCloud (`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por
+`WebFetch` quanto por `curl`/API) — a mensagem do check só traz a contagem, não o detalhe.
+
+Achados recorrentes de falso positivo neste projeto, todos ligados a como o Sonar resolve símbolos
+gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm e os campos de
+`x:Name` que o `InitializeComponent()` do XAML gera):
+
+- **S2068 "Hard-coded credentials"**: flaga a *declaração* de qualquer campo/const cujo nome bata
+  com password/pwd/passphrase e tenha um valor de string literal — mesmo em teste. Evite nomes com
+  essas palavras para constantes de teste (ex.: `VaultUnlockCode` em vez de `Password`).
+- **S2325 "Make X a static method/property"**: dispara em propriedades/métodos que só leem outra
+  propriedade gerada por `[ObservableProperty]` (ex.: `CanInteract => !IsBusy`) ou que referenciam
+  um elemento nomeado do XAML (ex.: `SealOverlay.PlayAsync(...)`) — nos dois casos o Sonar não
+  reconhece o acesso como "dado de instância". Não dá pra genuinamente tornar esses membros
+  `static` sem quebrar o binding/o comportamento; a correção é suprimir com
+  `#pragma warning disable S2325` / `restore S2325` em volta do trecho, com um comentário curto
+  explicando o porquê (não usar `[SuppressMessage]` nem desabilitar a regra no projeto inteiro).
+- Bloco `catch (Exception) { }` vazio sem tratamento: preencha com um comentário de uma linha
+  explicando por que ignorar é intencional (regra de "empty block"/"handle the exception").
+- `CommandParameter` de `Button`/etc. no XAML sempre chega como `string` ao `ICommand` ligado, não
+  importa o tipo do parâmetro no C# — `RelayCommand<int>` lança `InvalidCastException` em silêncio
+  (o clique não faz nada, sem erro visível). Prefira declarar o método do `[RelayCommand]` com
+  parâmetro `string` e converter dentro dele (`int.Parse(...)`).
+
+Essas issues só aparecem como "New" na primeira vez que a linha em questão é tocada nesta rodada —
+o mesmo padrão já existe, sem supressão, em ViewModels mais antigos (`CanInteract => !IsBusy` em
+`UnlockViewModel`/`CreateVaultViewModel`, por exemplo), só não é reportado ali por ser código de
+antes da janela de "New Code" do Sonar.
 
 ## Como manter este arquivo
 

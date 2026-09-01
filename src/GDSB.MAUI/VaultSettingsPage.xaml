@@ -2,9 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
-             xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
-             x:Class="GDSB.MAUI.CreateVaultPage"
+             xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             x:Class="GDSB.MAUI.VaultSettingsPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
 
@@ -13,78 +13,63 @@
     </ContentPage.Resources>
 
     <Grid>
+        <ScrollView>
+            <Grid RowDefinitions="Auto,*" Padding="32">
 
-        <Grid RowDefinitions="Auto,*,Auto" Padding="32">
+                <Label Grid.Row="0" Text="&#8592; Voltar" TextColor="{StaticResource TextSecondaryDark}"
+                       FontSize="14" Margin="0,8,0,0" behaviors:HoverCursor.IsHand="True">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
 
-            <Label Grid.Row="0" Text="&#8592; Voltar" TextColor="{StaticResource TextSecondaryDark}"
-                   FontSize="14" Margin="0,8,0,0" behaviors:HoverCursor.IsHand="True">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding GoBackCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
+                <VerticalStackLayout Grid.Row="1" Spacing="20" Margin="0,20,0,0">
 
-            <ScrollView Grid.Row="1">
-                <VerticalStackLayout Spacing="28">
+                    <Label Text="Editar cofre" FontSize="22" FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextPrimaryDark}" />
 
-                    <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
-                        <!-- A mesma marca da tela de desbloqueio, com a haste erguida: lá o cofre
-                             está selado e você vai abri-lo; aqui ele ainda não existe. Mesmo
-                             desenho, estados opostos - ver BrandMarkDrawable.Open. Antes era o
-                             emoji 🔑, que muda de desenho a cada plataforma. -->
-                        <GraphicsView x:Name="BrandMark" WidthRequest="72" HeightRequest="72"
-                                      HorizontalOptions="Center" />
-                        <Label Text="Novo cofre" FontSize="22" FontFamily="OpenSansSemibold"
-                               TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
-                        <Label Text="Escolha onde guardar e defina a senha mestra" FontSize="13"
-                               TextColor="{StaticResource TextSecondaryDark}" HorizontalOptions="Center"
-                               HorizontalTextAlignment="Center" />
-                    </VerticalStackLayout>
-
-                    <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
-                        <VerticalStackLayout Spacing="16">
-
-                            <VerticalStackLayout Spacing="8">
-                                <Label Text="NOME DO COFRE" Style="{StaticResource FieldLabelStyle}" />
-                                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                                    <Entry Text="{Binding VaultName}" TextColor="{StaticResource TextPrimaryDark}"
-                                           PlaceholderColor="{StaticResource TextMutedDark}" BackgroundColor="Transparent"
-                                           VerticalOptions="Center" />
-                                </Border>
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Spacing="8">
-                                <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
-                                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                                    <Entry Text="{Binding Password}" IsPassword="True"
-                                           Placeholder="Mínimo de 8 caracteres"
-                                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                                           BackgroundColor="Transparent" VerticalOptions="Center" />
-                                </Border>
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Spacing="8">
-                                <Label Text="CONFIRMAR SENHA" Style="{StaticResource FieldLabelStyle}" />
-                                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
-                                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
-                                    <Entry Text="{Binding ConfirmPassword}" IsPassword="True"
-                                           Placeholder="Digite a senha novamente"
-                                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                                           BackgroundColor="Transparent" VerticalOptions="Center"
-                                           ReturnCommand="{Binding CreateVaultCommand}" />
-                                </Border>
-                            </VerticalStackLayout>
-
-                            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
-                                   IsVisible="{Binding HasErrorMessage}" />
-
-                            <Button Text="{Binding CreateButtonText}" Style="{StaticResource PrimaryActionButtonStyle}"
-                                    Command="{Binding CreateVaultCommand}" IsEnabled="{Binding CanInteract}" />
-
+                    <!-- Oferta condicional: aparece só depois de salvar nome ou senha, que mexem no
+                         ponto de desbloqueio. Nunca aparece por causa das proteções. Aceitar
+                         encerra a sessão e volta pra tela de desbloqueio - com dois arquivos
+                         válidos (o original e o novo), continuar editando aqui gravaria no
+                         arquivo errado sem o usuário perceber. -->
+                    <Border Style="{StaticResource CardBorderStyle}" Padding="18" StrokeShape="RoundRectangle 16"
+                            IsVisible="{Binding ShowSaveAsNewFileOffer}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Salvar também num arquivo novo?" FontFamily="OpenSansSemibold" FontSize="15"
+                                   TextColor="{StaticResource TextPrimaryDark}" />
+                            <Label Text="O arquivo atual já foi gravado com a mudança. Você também pode salvar uma cópia num arquivo novo, mantendo o original intacto. Ao salvar, a sessão é encerrada e você escolhe qual dos dois abrir na tela de desbloqueio."
+                                   TextColor="{StaticResource TextSecondaryDark}" FontSize="13" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0" Text="Não, obrigado" Style="{StaticResource SecondaryActionButtonStyle}"
+                                        Command="{Binding DeclineSaveAsNewFileCommand}" />
+                                <Button Grid.Column="1" Text="Salvar como novo arquivo" Style="{StaticResource PrimaryActionButtonStyle}"
+                                        HeightRequest="46" Command="{Binding AcceptSaveAsNewFileCommand}" />
+                            </Grid>
                         </VerticalStackLayout>
                     </Border>
 
+                    <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                           IsVisible="{Binding HasErrorMessage}" />
+
+                    <!-- Bloco 1: nome -->
+                    <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
+                        <VerticalStackLayout Spacing="14">
+                            <Label Text="NOME DO COFRE" Style="{StaticResource FieldLabelStyle}" />
+                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                    StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                <Entry Text="{Binding VaultName}" TextColor="{StaticResource TextPrimaryDark}"
+                                       PlaceholderColor="{StaticResource TextMutedDark}" BackgroundColor="Transparent"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="{Binding NameErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                                   IsVisible="{Binding HasNameErrorMessage}" />
+                            <Button Text="Salvar nome" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
+                                    Command="{Binding SaveNameCommand}" IsEnabled="{Binding CanInteract}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Bloco 2: proteções (fase 3) - salva no arquivo atual, sem prompt nenhum -->
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="18">
 
@@ -97,8 +82,6 @@
                                     <Switch Grid.Column="1" IsToggled="{Binding ClipboardClearEnabled}"
                                             OnColor="{StaticResource Primary}" />
                                 </Grid>
-                                <Label Text="Ao copiar uma senha ou usuário, o app apaga o valor da área de transferência depois do tempo escolhido."
-                                       TextColor="{StaticResource TextSecondaryDark}" FontSize="12" />
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding ClipboardClearEnabled}">
                                     <Button Text="20s" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="20">
@@ -142,8 +125,6 @@
                                     <Switch Grid.Column="1" IsToggled="{Binding AutoLockEnabled}"
                                             OnColor="{StaticResource Primary}" />
                                 </Grid>
-                                <Label Text="Volta pra tela de senha se o app ficar em segundo plano além do tempo escolhido."
-                                       TextColor="{StaticResource TextSecondaryDark}" FontSize="12" />
                                 <Label Text="Desligar deixa o cofre aberto indefinidamente em segundo plano."
                                        TextColor="{StaticResource Danger}" FontSize="12"
                                        IsVisible="{Binding AutoLockEnabled, Converter={StaticResource InvertedBoolConverter}}" />
@@ -191,15 +172,72 @@
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
+                            <Button Text="Salvar proteções" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
+                                    Command="{Binding SaveProtectionsCommand}" IsEnabled="{Binding CanInteract}" />
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Bloco 3: trocar senha mestra -->
+                    <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
+                        <VerticalStackLayout Spacing="14">
+
+                            <Label Text="TROCAR SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="SENHA ATUAL" Style="{StaticResource FieldLabelStyle}" />
+                                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                    <Entry Text="{Binding CurrentPassword}" IsPassword="True"
+                                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                           BackgroundColor="Transparent" VerticalOptions="Center" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="SENHA NOVA" Style="{StaticResource FieldLabelStyle}" />
+                                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                    <Entry Text="{Binding NewPassword}" IsPassword="True"
+                                           Placeholder="Mínimo de 8 caracteres"
+                                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                           BackgroundColor="Transparent" VerticalOptions="Center" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="CONFIRMAR SENHA NOVA" Style="{StaticResource FieldLabelStyle}" />
+                                <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                        StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                    <Entry Text="{Binding ConfirmNewPassword}" IsPassword="True"
+                                           TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                           BackgroundColor="Transparent" VerticalOptions="Center"
+                                           ReturnCommand="{Binding ChangePasswordCommand}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <CheckBox Grid.Column="0" IsChecked="{Binding DeleteOldBackups}" Color="{StaticResource Primary}" />
+                                <Label Grid.Column="1" Text="Excluir os backups antigos deste cofre (continuam cifrados com a senha antiga)"
+                                       TextColor="{StaticResource TextSecondaryDark}" FontSize="13" VerticalOptions="Center" />
+                            </Grid>
+
+                            <Label Text="{Binding PasswordErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                                   IsVisible="{Binding HasPasswordErrorMessage}" />
+
+                            <Button Text="Trocar senha" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
+                                    Command="{Binding ChangePasswordCommand}" IsEnabled="{Binding CanInteract}" />
+
                         </VerticalStackLayout>
                     </Border>
 
                 </VerticalStackLayout>
-            </ScrollView>
 
-        </Grid>
+            </Grid>
+        </ScrollView>
 
-        <views:BiometricOptInView BindingContext="{Binding BiometricOptIn}" />
-
+        <!-- Disparado por SettingsSaved, que só ocorre quando a gravação (nome, proteções ou
+             senha) deu certo - ver SealOverlayView/LockSealDrawable. -->
+        <views:SealOverlayView x:Name="SealOverlay" />
     </Grid>
 </ContentPage>

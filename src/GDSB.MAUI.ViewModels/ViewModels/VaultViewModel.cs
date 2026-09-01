@@ -15,6 +15,7 @@ namespace GDSB.MAUI.ViewModels
         private readonly IProfileFileService _profileFileService;
         private readonly INavigationService _navigationService;
         private readonly IAppLauncherService _appLauncherService;
+        private readonly IVaultSessionService _vaultSessionService;
 
         private Profile? _profile;
         private string? _location;
@@ -25,13 +26,15 @@ namespace GDSB.MAUI.ViewModels
             IAlertService alertService,
             IProfileFileService profileFileService,
             INavigationService navigationService,
-            IAppLauncherService appLauncherService)
+            IAppLauncherService appLauncherService,
+            IVaultSessionService vaultSessionService)
         {
             _clipboardService = clipboardService;
             _alertService = alertService;
             _profileFileService = profileFileService;
             _navigationService = navigationService;
             _appLauncherService = appLauncherService;
+            _vaultSessionService = vaultSessionService;
         }
 
         // A View anima um toast quando isso dispara - decidido por evento (não por uma propriedade
@@ -251,7 +254,25 @@ namespace GDSB.MAUI.ViewModels
         }
 
         [RelayCommand]
-        private Task GoHomeAsync() => _navigationService.GoHomeAsync();
+        private Task GoHomeAsync()
+        {
+            _vaultSessionService.Clear();
+            return _navigationService.GoHomeAsync();
+        }
+
+        [RelayCommand]
+        private Task OpenVaultSettingsAsync()
+        {
+            if (_profile is null || _location is null || _password is null)
+                return Task.CompletedTask;
+
+            return _navigationService.NavigateToAsync("VaultSettingsPage", new Dictionary<string, object>
+            {
+                ["Profile"] = _profile,
+                ["Location"] = _location,
+                ["Password"] = _password,
+            });
+        }
 
         /// <summary>Devolve true só se o cofre foi realmente gravado em disco.</summary>
         private async Task<bool> PersistAsync()

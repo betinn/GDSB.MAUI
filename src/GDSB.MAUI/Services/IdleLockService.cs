@@ -8,14 +8,14 @@ namespace GDSB.MAUI.Services
     // instância anterior do ViewModel (e o Profile/senha que ela segurava) em vez de só escondê-la.
     public class IdleLockService : IIdleLockService
     {
-        public static readonly TimeSpan LockAfter = TimeSpan.FromMinutes(2);
-
         private readonly INavigationService _navigationService;
+        private readonly IVaultSessionService _vaultSessionService;
         private DateTime? _sleptAtUtc;
 
-        public IdleLockService(INavigationService navigationService)
+        public IdleLockService(INavigationService navigationService, IVaultSessionService vaultSessionService)
         {
             _navigationService = navigationService;
+            _vaultSessionService = vaultSessionService;
         }
 
         public void OnSleep() => _sleptAtUtc = DateTime.UtcNow;
@@ -27,8 +27,15 @@ namespace GDSB.MAUI.Services
 
             _sleptAtUtc = null;
 
-            if (DateTime.UtcNow - sleptAt >= LockAfter)
+            var settings = _vaultSessionService.Settings;
+            if (!settings.AutoLockEnabled)
+                return;
+
+            if (DateTime.UtcNow - sleptAt >= TimeSpan.FromMinutes(settings.AutoLockMinutes))
+            {
+                _vaultSessionService.Clear();
                 await _navigationService.GoHomeAsync();
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ namespace GDSB.Domain.Entities
     {
         public string Nome { get; set; } = string.Empty;
         public List<SecretBox> Boxes { get; set; } = new List<SecretBox>();
+        public VaultSettings Settings { get; set; } = new();
 
     }
 }

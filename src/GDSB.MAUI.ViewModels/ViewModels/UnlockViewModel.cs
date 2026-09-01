@@ -32,9 +32,10 @@ namespace GDSB.MAUI.ViewModels
         private readonly IBiometricUnlockService _biometricUnlockService;
         private readonly IPreferencesService _preferencesService;
         private readonly IAlertService _alertService;
+        private readonly IVaultSessionService _vaultSessionService;
 
         public UnlockViewModel(
-            IProfileFileService profileFileService,
+            VaultAccess vaultAccess,
             IFilePickerService filePickerService,
             INavigationService navigationService,
             IBiometricUnlockService biometricUnlockService,
@@ -42,12 +43,13 @@ namespace GDSB.MAUI.ViewModels
             IAlertService alertService,
             BiometricOptInCoordinator biometricOptIn)
         {
-            _profileFileService = profileFileService;
+            _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
             _biometricUnlockService = biometricUnlockService;
             _preferencesService = preferencesService;
             _alertService = alertService;
+            _vaultSessionService = vaultAccess.VaultSessionService;
             BiometricOptIn = biometricOptIn;
         }
 
@@ -248,6 +250,7 @@ namespace GDSB.MAUI.ViewModels
                 if (result.WasLegacyFormat)
                     await Task.Run(() => _profileFileService.Save(location, result.Profile, enteredPassword));
 
+                _vaultSessionService.Start(result.Profile.Settings);
                 BiometricOptIn.RememberVault(location, result.Profile.Nome);
 
                 if (offerBiometricOptIn)

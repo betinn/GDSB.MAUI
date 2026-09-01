@@ -1,6 +1,7 @@
 using GDSB.Domain.Entities;
 using GDSB.Domain.Exceptions;
 using GDSB.MAUI.Interfaces;
+using GDSB.MAUI.Services;
 using GDSB.MAUI.Tests.Fakes;
 using GDSB.MAUI.ViewModels;
 using System.Text;
@@ -21,13 +22,14 @@ namespace GDSB.MAUI.Tests
             public FakeBiometricUnlockService BiometricUnlockService { get; } = new();
             public FakePreferencesService PreferencesService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
+            public FakeVaultSessionService VaultSessionService { get; } = new();
             public UnlockViewModel ViewModel { get; }
 
             public Sut()
             {
                 var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
                 ViewModel = new UnlockViewModel(
-                    ProfileFileService,
+                    new VaultAccess(ProfileFileService, VaultSessionService),
                     FilePickerService,
                     NavigationService,
                     BiometricUnlockService,

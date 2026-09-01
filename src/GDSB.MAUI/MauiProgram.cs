@@ -68,6 +68,8 @@ namespace GDSB.MAUI
             services.AddSingleton<IIdleLockService, IdleLockService>();
             services.AddSingleton<IPreferencesService, PreferencesService>();
             services.AddSingleton<IAppLauncherService, AppLauncherService>();
+            services.AddSingleton<IVaultSessionService, VaultSessionService>();
+            services.AddSingleton<VaultAccess>();
         }
 
         private static void RegisterViewModels(IServiceCollection services)
@@ -79,6 +81,7 @@ namespace GDSB.MAUI
             services.AddTransient<UnlockViewModel>();
             services.AddTransient<VaultViewModel>();
             services.AddTransient<CreateVaultViewModel>();
+            services.AddTransient<VaultSettingsViewModel>();
         }
 
         private static void RegisterPages(IServiceCollection services)
@@ -86,6 +89,7 @@ namespace GDSB.MAUI
             services.AddTransient<UnlockPage>();
             services.AddTransient<VaultPage>();
             services.AddTransient<CreateVaultPage>();
+            services.AddTransient<VaultSettingsPage>();
             services.AddTransient<AppShell>();
         }
     }

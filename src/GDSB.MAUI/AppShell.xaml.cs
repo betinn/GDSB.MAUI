@@ -9,6 +9,7 @@ namespace GDSB.MAUI
             Items.Add(new ShellContent { Content = unlockPage, Route = nameof(UnlockPage) });
             Routing.RegisterRoute(nameof(VaultPage), typeof(VaultPage));
             Routing.RegisterRoute(nameof(CreateVaultPage), typeof(CreateVaultPage));
+            Routing.RegisterRoute(nameof(VaultSettingsPage), typeof(VaultSettingsPage));
         }
     }
 }

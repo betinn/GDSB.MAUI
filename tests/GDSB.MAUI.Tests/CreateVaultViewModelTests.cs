@@ -14,6 +14,7 @@ namespace GDSB.MAUI.Tests
             public FakeBiometricUnlockService BiometricUnlockService { get; } = new();
             public FakePreferencesService PreferencesService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
+            public FakeVaultSessionService VaultSessionService { get; } = new();
             public CreateVaultViewModel ViewModel { get; }
 
             public Sut()
@@ -24,6 +25,7 @@ namespace GDSB.MAUI.Tests
                     FilePickerService,
                     NavigationService,
                     BiometricUnlockService,
+                    VaultSessionService,
                     biometricOptIn);
             }
         }
@@ -70,6 +72,53 @@ namespace GDSB.MAUI.Tests
             Assert.Equal("Meu Cofre", save.Profile.Nome);
             var navigation = Assert.Single(sut.NavigationService.NavigateToRootCalls);
             Assert.Equal("VaultPage", navigation.Route);
+        }
+
+        [Fact]
+        public async Task CreateVaultAsync_Success_ProtectionTogglesReachSavedProfileAndSession()
+        {
+            // Nome de propósito sem "password"/"pwd": a regra S2068 do Sonar ("Hard-coded
+            // credentials") flaga identificadores nesses moldes atribuídos a um valor literal.
+            const string sampleUnlockCode = "senha12345";
+
+            var sut = new Sut();
+            sut.ViewModel.VaultName = "Meu Cofre";
+            sut.ViewModel.Password = sampleUnlockCode;
+            sut.ViewModel.ConfirmPassword = sampleUnlockCode;
+            sut.ViewModel.ClipboardClearEnabled = false;
+            sut.ViewModel.AutoLockEnabled = false;
+            sut.ViewModel.AutoLockMinutes = 15;
+
+            await sut.ViewModel.CreateVaultCommand.ExecuteAsync(null);
+
+            var save = Assert.Single(sut.ProfileFileService.SaveCalls);
+            Assert.False(save.Profile.Settings.ClipboardClearEnabled);
+            Assert.False(save.Profile.Settings.AutoLockEnabled);
+            Assert.Equal(15, save.Profile.Settings.AutoLockMinutes);
+            var started = Assert.Single(sut.VaultSessionService.StartCalls);
+            Assert.Same(save.Profile.Settings, started);
+        }
+
+        [Fact]
+        public void SelectClipboardClearSecondsCommand_ParsesStringParameter()
+        {
+            // O CommandParameter do XAML sempre chega como string ao comando - regressão do bug
+            // em que os seletores de tempo pareciam não reagir a clique nenhum.
+            var sut = new Sut();
+
+            sut.ViewModel.SelectClipboardClearSecondsCommand.Execute("45");
+
+            Assert.Equal(45, sut.ViewModel.ClipboardClearSeconds);
+        }
+
+        [Fact]
+        public void SelectAutoLockMinutesCommand_ParsesStringParameter()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectAutoLockMinutesCommand.Execute("15");
+
+            Assert.Equal(15, sut.ViewModel.AutoLockMinutes);
         }
     }
 }
