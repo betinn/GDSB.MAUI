@@ -125,8 +125,14 @@
                 <!-- O nome do cofre vive no cabeçalho da página, não no Title do Shell: com os
                      dois, o layout largo mostrava o nome duas vezes. Aqui ele acompanha o
                      layout largo, que já fazia assim. -->
-                <Label Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="18"
-                       TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="18"
+                           TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="&#9881;" FontSize="18" Padding="0"
+                            BackgroundColor="Transparent" TextColor="{StaticResource TextSecondaryDark}"
+                            WidthRequest="38" HeightRequest="38"
+                            Command="{Binding OpenVaultSettingsCommand}" />
+                </Grid>
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                             StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
@@ -185,8 +191,14 @@
 
             <Grid Grid.Column="0" RowDefinitions="Auto,*" BackgroundColor="{StaticResource SurfaceDark}">
                 <VerticalStackLayout Grid.Row="0" Padding="18,20,18,14" Spacing="12" BackgroundColor="{StaticResource Tertiary}">
-                    <Label Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="18"
-                           TextColor="{StaticResource TextPrimaryDark}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="18"
+                               TextColor="{StaticResource TextPrimaryDark}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="&#9881;" FontSize="18" Padding="0"
+                                BackgroundColor="Transparent" TextColor="{StaticResource TextSecondaryDark}"
+                                WidthRequest="38" HeightRequest="38"
+                                Command="{Binding OpenVaultSettingsCommand}" />
+                    </Grid>
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                         <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                                 StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="42">

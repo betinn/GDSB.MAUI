@@ -260,6 +260,20 @@ namespace GDSB.MAUI.ViewModels
             return _navigationService.GoHomeAsync();
         }
 
+        [RelayCommand]
+        private Task OpenVaultSettingsAsync()
+        {
+            if (_profile is null || _location is null || _password is null)
+                return Task.CompletedTask;
+
+            return _navigationService.NavigateToAsync("VaultSettingsPage", new Dictionary<string, object>
+            {
+                ["Profile"] = _profile,
+                ["Location"] = _location,
+                ["Password"] = _password,
+            });
+        }
+
         /// <summary>Devolve true só se o cofre foi realmente gravado em disco.</summary>
         private async Task<bool> PersistAsync()
         {

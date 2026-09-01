@@ -120,9 +120,9 @@ Três frentes vindas do uso real:
 | 0 | Reset do contexto (este arquivo + artifact do plano) | ✅ Concluída | [#13](https://github.com/betinn/GDSB.MAUI/pull/13) |
 | 1 | Desbloqueio: arquivo antes da senha | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
 | 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
-| 3 | Proteções configuráveis por cofre (`VaultSettings`) | 🔜 Próxima | — |
-| 4 | Tela de edição do cofre | ⬜ Planejada | — |
-| 5 | Recuperação de backup | ⬜ Planejada | — |
+| 3 | Proteções configuráveis por cofre (`VaultSettings`) | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
+| 4 | Tela de edição do cofre | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
+| 5 | Recuperação de backup | 🔜 Próxima | — |
 | 6 | Fechamento (README, contexto, testes, build) | ⬜ Planejada | — |
 
 Dependências: **2 antes de 5** (a tela de recuperação lê o store criado na fase 2) e **3 antes de 4**
@@ -132,6 +132,14 @@ As fases 1 e 2 foram implementadas juntas no PR #15 porque a sessão que as fez 
 uma única branch para as duas — não é o padrão daqui pra frente. Essa sessão não tinha Android SDK
 disponível (rede bloqueava `dl.google.com`); o build Android e o roteiro manual da fase 1 ficaram
 pendentes de verificação antes do merge — ver o PR para detalhes.
+
+Pelo mesmo motivo (branch única configurada pra sessão), as fases 3 e 4 foram implementadas juntas
+no PR #16. Essa sessão instalou o .NET 10 SDK e o workload `maui-android` via `apt` (mirror do
+Ubuntu, que tem pacote `dotnet-sdk-10.0` — mais confiável aqui do que o `dotnet-install.sh`, que
+esbarra no mesmo bloqueio de rede), e as duas suítes de teste passaram (65 testes). Mas o Android SDK
+em si não foi instalável (mesmo bloqueio de `dl.google.com`), então o `dotnet build
+-p:GdsbAndroidOnly=true` e o roteiro manual da fase 4 ficaram pendentes de verificação antes do
+merge.
 
 ### Decisões já fechadas com o usuário
 

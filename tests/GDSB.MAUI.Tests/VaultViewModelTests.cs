@@ -244,6 +244,22 @@ namespace GDSB.MAUI.Tests
         }
 
         [Fact]
+        public async Task OpenVaultSettingsAsync_NavigatesWithProfileLocationAndPassword()
+        {
+            var sut = new Sut();
+            var profile = ProfileWithBoxes(Box("Netflix"));
+            sut.LoadProfile(profile);
+
+            await sut.ViewModel.OpenVaultSettingsCommand.ExecuteAsync(null);
+
+            var navigation = Assert.Single(sut.NavigationService.NavigateToCalls);
+            Assert.Equal("VaultSettingsPage", navigation.Route);
+            Assert.Same(profile, navigation.Parameters!["Profile"]);
+            Assert.Equal(Location, navigation.Parameters!["Location"]);
+            Assert.Equal(Password, navigation.Parameters!["Password"]);
+        }
+
+        [Fact]
         public void OnSizeChanged_TogglesIsWideLayout()
         {
             var sut = new Sut();
