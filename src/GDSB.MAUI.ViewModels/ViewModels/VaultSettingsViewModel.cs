@@ -172,7 +172,7 @@ namespace GDSB.MAUI.ViewModels
 
                 BiometricOptIn.RememberVault(_location, newName);
                 SettingsSaved?.Invoke(this, EventArgs.Empty);
-                OfferSaveAsNewFile();
+                ShowSaveAsNewFileOffer = true;
             }
             catch (Exception)
             {
@@ -289,7 +289,7 @@ namespace GDSB.MAUI.ViewModels
                 ConfirmNewPassword = string.Empty;
 
                 SettingsSaved?.Invoke(this, EventArgs.Empty);
-                OfferSaveAsNewFile();
+                ShowSaveAsNewFileOffer = true;
             }
             catch (Exception)
             {
@@ -300,8 +300,6 @@ namespace GDSB.MAUI.ViewModels
                 IsBusy = false;
             }
         }
-
-        private void OfferSaveAsNewFile() => ShowSaveAsNewFileOffer = true;
 
         [RelayCommand]
         private async Task AcceptSaveAsNewFileAsync()
@@ -341,6 +339,9 @@ namespace GDSB.MAUI.ViewModels
                 }
                 catch (Exception)
                 {
+                    // Sem ação a tomar aqui: a sessão vai ser encerrada de qualquer jeito logo
+                    // abaixo (ForgetVault + GoHomeAsync), então o atalho de biometria some do
+                    // Preferences mesmo que DisableAsync falhe em limpar o lado da plataforma.
                 }
 
                 BiometricOptIn.ForgetVault();

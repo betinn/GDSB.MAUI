@@ -58,6 +58,10 @@ public partial class VaultPage : ContentPage
 
     // Os três selos, por cima da lista já atualizada. Só chegam aqui quando a gravação no
     // arquivo deu certo - ver os eventos correspondentes no VaultViewModel.
+    // S2325 ("make static") é falso positivo: SealOverlay é um elemento nomeado do XAML (campo de
+    // instância gerado por InitializeComponent), mas o Sonar não resolve esse tipo de campo
+    // gerado - mesmo caso de HasErrorMessage/CanInteract em VaultSettingsViewModel.
+#pragma warning disable S2325
     private async void OnSecretCreated(object? sender, EventArgs e)
         => await SealOverlay.PlayAsync(LockSealMode.Create, "Segredo guardado", 760);
 
@@ -66,4 +70,5 @@ public partial class VaultPage : ContentPage
 
     private async void OnSecretDeleted(object? sender, EventArgs e)
         => await SealOverlay.PlayAsync(LockSealMode.Delete, "Segredo excluído", 740);
+#pragma warning restore S2325
 }

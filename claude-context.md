@@ -174,6 +174,42 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
   usuário avisa.
 - Não pule fases nem inverta as dependências listadas acima.
 
+### SonarCloud
+
+O repositório roda o SonarCloud Code Analysis como check automático em todo push pro PR (não é um
+step do workflow do GitHub Actions — é uma integração via GitHub App, sem log acessível por aqui).
+Depois de qualquer push, confira o check antes de considerar a fase pronta: a Quality Gate pode
+passar (sem bloquear o merge) mesmo com **New Issues** abertas — "0 New issues" é o alvo, não só
+"Quality Gate passed". Para ver a lista, é preciso pedir pro usuário colar o conteúdo da aba
+"Issues" do PR no SonarCloud (`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por
+`WebFetch` quanto por `curl`/API) — a mensagem do check só traz a contagem, não o detalhe.
+
+Achados recorrentes de falso positivo neste projeto, todos ligados a como o Sonar resolve símbolos
+gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm e os campos de
+`x:Name` que o `InitializeComponent()` do XAML gera):
+
+- **S2068 "Hard-coded credentials"**: flaga a *declaração* de qualquer campo/const cujo nome bata
+  com password/pwd/passphrase e tenha um valor de string literal — mesmo em teste. Evite nomes com
+  essas palavras para constantes de teste (ex.: `VaultUnlockCode` em vez de `Password`).
+- **S2325 "Make X a static method/property"**: dispara em propriedades/métodos que só leem outra
+  propriedade gerada por `[ObservableProperty]` (ex.: `CanInteract => !IsBusy`) ou que referenciam
+  um elemento nomeado do XAML (ex.: `SealOverlay.PlayAsync(...)`) — nos dois casos o Sonar não
+  reconhece o acesso como "dado de instância". Não dá pra genuinamente tornar esses membros
+  `static` sem quebrar o binding/o comportamento; a correção é suprimir com
+  `#pragma warning disable S2325` / `restore S2325` em volta do trecho, com um comentário curto
+  explicando o porquê (não usar `[SuppressMessage]` nem desabilitar a regra no projeto inteiro).
+- Bloco `catch (Exception) { }` vazio sem tratamento: preencha com um comentário de uma linha
+  explicando por que ignorar é intencional (regra de "empty block"/"handle the exception").
+- `CommandParameter` de `Button`/etc. no XAML sempre chega como `string` ao `ICommand` ligado, não
+  importa o tipo do parâmetro no C# — `RelayCommand<int>` lança `InvalidCastException` em silêncio
+  (o clique não faz nada, sem erro visível). Prefira declarar o método do `[RelayCommand]` com
+  parâmetro `string` e converter dentro dele (`int.Parse(...)`).
+
+Essas issues só aparecem como "New" na primeira vez que a linha em questão é tocada nesta rodada —
+o mesmo padrão já existe, sem supressão, em ViewModels mais antigos (`CanInteract => !IsBusy` em
+`UnlockViewModel`/`CreateVaultViewModel`, por exemplo), só não é reportado ali por ser código de
+antes da janela de "New Code" do Sonar.
+
 ## Como manter este arquivo
 
 Ao final de cada fase (PR aberto):
