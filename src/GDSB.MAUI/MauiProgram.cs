@@ -68,6 +68,7 @@ namespace GDSB.MAUI
             services.AddSingleton<IIdleLockService, IdleLockService>();
             services.AddSingleton<IPreferencesService, PreferencesService>();
             services.AddSingleton<IAppLauncherService, AppLauncherService>();
+            services.AddSingleton<IVaultSessionService, VaultSessionService>();
         }
 
         private static void RegisterViewModels(IServiceCollection services)

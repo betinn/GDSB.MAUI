@@ -14,6 +14,7 @@ namespace GDSB.MAUI.Tests
             public FakeBiometricUnlockService BiometricUnlockService { get; } = new();
             public FakePreferencesService PreferencesService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
+            public FakeVaultSessionService VaultSessionService { get; } = new();
             public CreateVaultViewModel ViewModel { get; }
 
             public Sut()
@@ -24,6 +25,7 @@ namespace GDSB.MAUI.Tests
                     FilePickerService,
                     NavigationService,
                     BiometricUnlockService,
+                    VaultSessionService,
                     biometricOptIn);
             }
         }
@@ -70,6 +72,27 @@ namespace GDSB.MAUI.Tests
             Assert.Equal("Meu Cofre", save.Profile.Nome);
             var navigation = Assert.Single(sut.NavigationService.NavigateToRootCalls);
             Assert.Equal("VaultPage", navigation.Route);
+        }
+
+        [Fact]
+        public async Task CreateVaultAsync_Success_ProtectionTogglesReachSavedProfileAndSession()
+        {
+            var sut = new Sut();
+            sut.ViewModel.VaultName = "Meu Cofre";
+            sut.ViewModel.Password = "senha12345";
+            sut.ViewModel.ConfirmPassword = "senha12345";
+            sut.ViewModel.ClipboardClearEnabled = false;
+            sut.ViewModel.AutoLockEnabled = false;
+            sut.ViewModel.AutoLockMinutes = 15;
+
+            await sut.ViewModel.CreateVaultCommand.ExecuteAsync(null);
+
+            var save = Assert.Single(sut.ProfileFileService.SaveCalls);
+            Assert.False(save.Profile.Settings.ClipboardClearEnabled);
+            Assert.False(save.Profile.Settings.AutoLockEnabled);
+            Assert.Equal(15, save.Profile.Settings.AutoLockMinutes);
+            var started = Assert.Single(sut.VaultSessionService.StartCalls);
+            Assert.Same(save.Profile.Settings, started);
         }
     }
 }

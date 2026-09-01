@@ -21,6 +21,7 @@ namespace GDSB.MAUI.Tests
             public FakeBiometricUnlockService BiometricUnlockService { get; } = new();
             public FakePreferencesService PreferencesService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
+            public FakeVaultSessionService VaultSessionService { get; } = new();
             public UnlockViewModel ViewModel { get; }
 
             public Sut()
@@ -33,6 +34,7 @@ namespace GDSB.MAUI.Tests
                     BiometricUnlockService,
                     PreferencesService,
                     AlertService,
+                    VaultSessionService,
                     biometricOptIn);
             }
         }

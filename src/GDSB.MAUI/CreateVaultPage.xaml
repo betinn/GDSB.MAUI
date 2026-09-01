@@ -3,9 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              x:Class="GDSB.MAUI.CreateVaultPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
+
+    <ContentPage.Resources>
+        <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+    </ContentPage.Resources>
 
     <Grid>
 
@@ -75,6 +80,115 @@
 
                         <Button Text="{Binding CreateButtonText}" Style="{StaticResource PrimaryActionButtonStyle}"
                                 Command="{Binding CreateVaultCommand}" IsEnabled="{Binding CanInteract}" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
+                    <VerticalStackLayout Spacing="18">
+
+                        <Label Text="PROTEÇÕES" Style="{StaticResource FieldLabelStyle}" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="Limpar a área de transferência"
+                                       TextColor="{StaticResource TextPrimaryDark}" FontSize="14" VerticalOptions="Center" />
+                                <Switch Grid.Column="1" IsToggled="{Binding ClipboardClearEnabled}"
+                                        OnColor="{StaticResource Primary}" />
+                            </Grid>
+                            <Label Text="Ao copiar uma senha ou usuário, o app apaga o valor da área de transferência depois do tempo escolhido."
+                                   TextColor="{StaticResource TextSecondaryDark}" FontSize="12" />
+                            <HorizontalStackLayout Spacing="8" IsVisible="{Binding ClipboardClearEnabled}">
+                                <Button Text="20s" Style="{StaticResource FilterChipStyle}"
+                                        Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="20">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding ClipboardClearSeconds}" Value="20">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="{StaticResource White}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                                <Button Text="45s" Style="{StaticResource FilterChipStyle}"
+                                        Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="45">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding ClipboardClearSeconds}" Value="45">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="{StaticResource White}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                                <Button Text="90s" Style="{StaticResource FilterChipStyle}"
+                                        Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="90">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding ClipboardClearSeconds}" Value="90">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="{StaticResource White}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <BoxView HeightRequest="1" Color="{StaticResource BorderDark}" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="Bloqueio automático"
+                                       TextColor="{StaticResource TextPrimaryDark}" FontSize="14" VerticalOptions="Center" />
+                                <Switch Grid.Column="1" IsToggled="{Binding AutoLockEnabled}"
+                                        OnColor="{StaticResource Primary}" />
+                            </Grid>
+                            <Label Text="Volta pra tela de senha se o app ficar em segundo plano além do tempo escolhido."
+                                   TextColor="{StaticResource TextSecondaryDark}" FontSize="12" />
+                            <Label Text="Desligar deixa o cofre aberto indefinidamente em segundo plano."
+                                   TextColor="{StaticResource Danger}" FontSize="12"
+                                   IsVisible="{Binding AutoLockEnabled, Converter={StaticResource InvertedBoolConverter}}" />
+                            <HorizontalStackLayout Spacing="8" IsVisible="{Binding AutoLockEnabled}">
+                                <Button Text="1 min" Style="{StaticResource FilterChipStyle}"
+                                        Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="1">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="{StaticResource White}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                                <Button Text="2 min" Style="{StaticResource FilterChipStyle}"
+                                        Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="2">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="2">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="{StaticResource White}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                                <Button Text="5 min" Style="{StaticResource FilterChipStyle}"
+                                        Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="5">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="5">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="{StaticResource White}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                                <Button Text="15 min" Style="{StaticResource FilterChipStyle}"
+                                        Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="15">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="15">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="{StaticResource White}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
 
                     </VerticalStackLayout>
                 </Border>

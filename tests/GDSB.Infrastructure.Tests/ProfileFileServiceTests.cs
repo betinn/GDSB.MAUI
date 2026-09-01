@@ -4,6 +4,7 @@ using GDSB.Infrastructure.Backup;
 using GDSB.Infrastructure.Encryption.Legacy;
 using GDSB.Infrastructure.Encryption.V2;
 using GDSB.Infrastructure.Tests.Legacy;
+using System.Text.Json;
 using Xunit;
 
 namespace GDSB.Infrastructure.Tests
@@ -160,6 +161,61 @@ namespace GDSB.Infrastructure.Tests
             {
                 File.Delete(path);
                 _backupStore.DeleteAllFor(path);
+            }
+        }
+
+        [Fact]
+        public void Save_RoundTripsVaultSettings()
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
+            try
+            {
+                var profile = CreateSampleProfile();
+                profile.Settings = new VaultSettings
+                {
+                    ClipboardClearEnabled = false,
+                    ClipboardClearSeconds = 90,
+                    AutoLockEnabled = false,
+                    AutoLockMinutes = 15,
+                };
+
+                _sut.Save(path, profile, Password);
+                var reopened = _sut.Open(path, Password);
+
+                Assert.False(reopened.Profile.Settings.ClipboardClearEnabled);
+                Assert.Equal(90, reopened.Profile.Settings.ClipboardClearSeconds);
+                Assert.False(reopened.Profile.Settings.AutoLockEnabled);
+                Assert.Equal(15, reopened.Profile.Settings.AutoLockMinutes);
+            }
+            finally
+            {
+                File.Delete(path);
+                _backupStore.DeleteAllFor(path);
+            }
+        }
+
+        [Fact]
+        public void Open_V2FileWithoutSettingsKey_UsesDefaultVaultSettings()
+        {
+            // Reproduz um arquivo v2 gravado antes da chave "Settings" existir - o inicializador
+            // de propriedade de VaultSettings deve valer quando a chave não está no JSON.
+            var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
+            try
+            {
+                var legacyJson = JsonSerializer.Serialize(new { Nome = "Cofre de teste", Boxes = Array.Empty<object>() });
+                var fileBytes = new AesGcmFileCryptoService().Encrypt(legacyJson, Password);
+                File.WriteAllBytes(path, fileBytes);
+
+                var result = _sut.Open(path, Password);
+
+                Assert.True(result.Profile.Settings.ClipboardClearEnabled);
+                Assert.Equal(20, result.Profile.Settings.ClipboardClearSeconds);
+                Assert.True(result.Profile.Settings.AutoLockEnabled);
+                Assert.Equal(2, result.Profile.Settings.AutoLockMinutes);
+            }
+            finally
+            {
+                File.Delete(path);
             }
         }
 

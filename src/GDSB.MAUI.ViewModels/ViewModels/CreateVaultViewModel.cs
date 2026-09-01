@@ -18,18 +18,21 @@ namespace GDSB.MAUI.ViewModels
         private readonly IFilePickerService _filePickerService;
         private readonly INavigationService _navigationService;
         private readonly IBiometricUnlockService _biometricUnlockService;
+        private readonly IVaultSessionService _vaultSessionService;
 
         public CreateVaultViewModel(
             IProfileFileService profileFileService,
             IFilePickerService filePickerService,
             INavigationService navigationService,
             IBiometricUnlockService biometricUnlockService,
+            IVaultSessionService vaultSessionService,
             BiometricOptInCoordinator biometricOptIn)
         {
             _profileFileService = profileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
             _biometricUnlockService = biometricUnlockService;
+            _vaultSessionService = vaultSessionService;
             BiometricOptIn = biometricOptIn;
         }
 
@@ -45,6 +48,28 @@ namespace GDSB.MAUI.ViewModels
 
         [ObservableProperty]
         private string confirmPassword = string.Empty;
+
+        public static IReadOnlyList<int> ClipboardClearSecondsOptions { get; } = new[] { 20, 45, 90 };
+
+        public static IReadOnlyList<int> AutoLockMinutesOptions { get; } = new[] { 1, 2, 5, 15 };
+
+        [ObservableProperty]
+        private bool clipboardClearEnabled = true;
+
+        [ObservableProperty]
+        private int clipboardClearSeconds = 20;
+
+        [ObservableProperty]
+        private bool autoLockEnabled = true;
+
+        [ObservableProperty]
+        private int autoLockMinutes = 2;
+
+        [RelayCommand]
+        private void SelectClipboardClearSeconds(int seconds) => ClipboardClearSeconds = seconds;
+
+        [RelayCommand]
+        private void SelectAutoLockMinutes(int minutes) => AutoLockMinutes = minutes;
 
         [ObservableProperty]
         private bool isBusy;
@@ -101,10 +126,21 @@ namespace GDSB.MAUI.ViewModels
             IsBusy = true;
             try
             {
-                var profile = new Profile { Nome = VaultName.Trim() };
+                var profile = new Profile
+                {
+                    Nome = VaultName.Trim(),
+                    Settings = new VaultSettings
+                    {
+                        ClipboardClearEnabled = ClipboardClearEnabled,
+                        ClipboardClearSeconds = ClipboardClearSeconds,
+                        AutoLockEnabled = AutoLockEnabled,
+                        AutoLockMinutes = AutoLockMinutes,
+                    },
+                };
                 var enteredPassword = Password;
 
                 await Task.Run(() => _profileFileService.Save(location, profile, enteredPassword));
+                _vaultSessionService.Start(profile.Settings);
 
                 // Um cofre novo nunca deve herdar o atalho de biometria de outro que o usuário
                 // tinha aberto antes - sem isso, criar o cofre B com a biometria do cofre A ainda

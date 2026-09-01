@@ -2,29 +2,39 @@ namespace GDSB.MAUI.Services
 {
     public class ClipboardService : IClipboardService
     {
-        private static readonly TimeSpan ClearAfter = TimeSpan.FromSeconds(20);
+        private readonly IVaultSessionService _vaultSessionService;
 
         private CancellationTokenSource? _pendingClear;
+
+        public ClipboardService(IVaultSessionService vaultSessionService)
+        {
+            _vaultSessionService = vaultSessionService;
+        }
 
         public async Task SetTextAsync(string text)
         {
             _pendingClear?.Cancel();
-            var cts = new CancellationTokenSource();
-            _pendingClear = cts;
 
             await Clipboard.SetTextAsync(text);
-            ScheduleClear(text, cts.Token);
+
+            var settings = _vaultSessionService.Settings;
+            if (!settings.ClipboardClearEnabled)
+                return;
+
+            var cts = new CancellationTokenSource();
+            _pendingClear = cts;
+            ScheduleClear(text, TimeSpan.FromSeconds(settings.ClipboardClearSeconds), cts.Token);
         }
 
-        // Dispara sem esperar - SetTextAsync não deve ficar pendurada 20s pra retornar. Só limpa
-        // se o clipboard ainda tiver exatamente o valor copiado aqui: se o usuário copiou outra
-        // coisa (dentro ou fora do app) nesse meio-tempo, limpar destruiria esse valor novo.
-        private static void ScheduleClear(string copiedText, CancellationToken token) =>
+        // Dispara sem esperar - SetTextAsync não deve ficar pendurada pra retornar. Só limpa se o
+        // clipboard ainda tiver exatamente o valor copiado aqui: se o usuário copiou outra coisa
+        // (dentro ou fora do app) nesse meio-tempo, limpar destruiria esse valor novo.
+        private static void ScheduleClear(string copiedText, TimeSpan clearAfter, CancellationToken token) =>
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    await Task.Delay(ClearAfter, token);
+                    await Task.Delay(clearAfter, token);
                 }
                 catch (TaskCanceledException)
                 {

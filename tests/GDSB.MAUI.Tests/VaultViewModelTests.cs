@@ -17,11 +17,12 @@ namespace GDSB.MAUI.Tests
             public FakeProfileFileService ProfileFileService { get; } = new();
             public FakeNavigationService NavigationService { get; } = new();
             public FakeAppLauncherService AppLauncherService { get; } = new();
+            public FakeVaultSessionService VaultSessionService { get; } = new();
             public VaultViewModel ViewModel { get; }
 
             public Sut()
             {
-                ViewModel = new VaultViewModel(ClipboardService, AlertService, ProfileFileService, NavigationService, AppLauncherService);
+                ViewModel = new VaultViewModel(ClipboardService, AlertService, ProfileFileService, NavigationService, AppLauncherService, VaultSessionService);
             }
 
             public void LoadProfile(Profile profile)
@@ -228,6 +229,18 @@ namespace GDSB.MAUI.Tests
             await sut.ViewModel.OpenUrlCommand.ExecuteAsync(item);
 
             Assert.Single(sut.AlertService.Calls);
+        }
+
+        [Fact]
+        public async Task GoHomeAsync_ClearsVaultSession()
+        {
+            var sut = new Sut();
+            sut.LoadProfile(ProfileWithBoxes());
+
+            await sut.ViewModel.GoHomeCommand.ExecuteAsync(null);
+
+            Assert.Equal(1, sut.VaultSessionService.ClearCallCount);
+            Assert.Equal(1, sut.NavigationService.GoHomeCallCount);
         }
 
         [Fact]
