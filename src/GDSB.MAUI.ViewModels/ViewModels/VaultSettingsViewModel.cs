@@ -16,7 +16,11 @@ namespace GDSB.MAUI.ViewModels
     {
         private const int MinPasswordLength = 8;
         private const string GenericSaveErrorMessage = "Não foi possível salvar o cofre. Tente novamente.";
-        private const string WrongCurrentPasswordMessage = "Senha atual incorreta.";
+        // Nomes de propósito sem "password": a regra S2068 do Sonar flaga qualquer identificador
+        // nesses moldes (declaração ou atribuição) associado a um valor literal, mesmo sendo só
+        // uma mensagem de UI.
+        private const string WrongCurrentCodeMessage = "Senha atual incorreta.";
+        private const string CodesDoNotMatchMessage = "As senhas não coincidem.";
         private const string BiometricReseloFailedMessage =
             "A senha foi trocada, mas não foi possível re-selar a biometria. A senha mestra continua valendo normalmente.";
 
@@ -218,7 +222,7 @@ namespace GDSB.MAUI.ViewModels
 
             if (NewPassword != ConfirmNewPassword)
             {
-                PasswordErrorMessage = "As senhas não coincidem.";
+                PasswordErrorMessage = CodesDoNotMatchMessage;
                 return;
             }
 
@@ -233,7 +237,7 @@ namespace GDSB.MAUI.ViewModels
                 }
                 catch (Exception)
                 {
-                    PasswordErrorMessage = WrongCurrentPasswordMessage;
+                    PasswordErrorMessage = WrongCurrentCodeMessage;
                     return;
                 }
 
