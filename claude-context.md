@@ -138,8 +138,12 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
 - Selecionar um arquivo que é backup mostra um popup **apenas informativo**, sem bloquear.
 - Nova tela de recuperação na tela inicial: recriar um cofre a partir de um backup ou excluir backups.
 - Ao trocar a senha mestra, oferecer também a exclusão dos backups antigos (opção do usuário).
-- Renomear = nome interno (`Profile.Nome`) + botão "Salvar como" arquivo novo. O arquivo em disco
-  nunca é renomeado.
+- Renomear = nome interno (`Profile.Nome`) + oferta de "Salvar como" arquivo novo. O arquivo em
+  disco nunca é renomeado.
+- Na tela de edição (Fase 4), só **nome** e **senha mestra** — o que mexe no ponto de desbloqueio do
+  cofre (a chave derivada e a identidade do arquivo) — oferecem gravar num arquivo novo, e só depois
+  de a gravação no arquivo atual ter dado certo. Mudar as proteções grava no próprio arquivo, sem
+  prompt e sem seletor.
 - Trocar a senha com biometria ativa **re-sela** o atalho automaticamente com a senha nova.
 
 ---
