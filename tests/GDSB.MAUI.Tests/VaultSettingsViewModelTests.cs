@@ -218,8 +218,33 @@ namespace GDSB.MAUI.Tests
             Assert.Equal(2, sut.ProfileFileService.SaveCalls.Count);
             Assert.Equal(Location, sut.ProfileFileService.SaveCalls[0].Location);
             Assert.Equal("content://new-vault", sut.ProfileFileService.SaveCalls[1].Location);
-            Assert.True(sut.ViewModel.ShowSwitchToNewFileOffer);
             Assert.False(sut.ViewModel.ShowSaveAsNewFileOffer);
+        }
+
+        [Fact]
+        public async Task AcceptSaveAsNewFileAsync_EndsSessionAndGoesHome()
+        {
+            // Regressão de um bug grave: continuar editando nesta tela depois de criar o
+            // arquivo novo ainda gravava no arquivo original (_location nunca era atualizado
+            // sem uma segunda confirmação, e nada impedia o usuário de seguir mexendo antes de
+            // respondê-la). Em vez de tentar adivinhar qual dos dois arquivos o usuário quer, a
+            // sessão é encerrada - biometria incluída, já que ela mira um único arquivo - e o
+            // próximo desbloqueio escolhe explicitamente.
+            var sut = new Sut();
+            sut.Load();
+            sut.BiometricUnlockService.IsEnabled = true;
+            sut.PreferencesService.SetString(BiometricOptInCoordinator.LastLocationPreferenceKey, Location);
+            sut.ViewModel.VaultName = "Novo nome";
+            await sut.ViewModel.SaveNameCommand.ExecuteAsync(null);
+            sut.FilePickerService.PickSaveLocationResult = "content://new-vault";
+
+            await sut.ViewModel.AcceptSaveAsNewFileCommand.ExecuteAsync(null);
+
+            Assert.Equal(1, sut.BiometricUnlockService.DisableCallCount);
+            Assert.Null(sut.PreferencesService.GetString(BiometricOptInCoordinator.LastLocationPreferenceKey, null));
+            Assert.Equal(1, sut.VaultSessionService.ClearCallCount);
+            Assert.Equal(1, sut.NavigationService.GoHomeCallCount);
+            Assert.Empty(sut.NavigationService.NavigateToRootCalls);
         }
 
         [Fact]

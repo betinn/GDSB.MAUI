@@ -29,35 +29,22 @@
                            TextColor="{StaticResource TextPrimaryDark}" />
 
                     <!-- Oferta condicional: aparece só depois de salvar nome ou senha, que mexem no
-                         ponto de desbloqueio. Nunca aparece por causa das proteções. -->
+                         ponto de desbloqueio. Nunca aparece por causa das proteções. Aceitar
+                         encerra a sessão e volta pra tela de desbloqueio - com dois arquivos
+                         válidos (o original e o novo), continuar editando aqui gravaria no
+                         arquivo errado sem o usuário perceber. -->
                     <Border Style="{StaticResource CardBorderStyle}" Padding="18" StrokeShape="RoundRectangle 16"
                             IsVisible="{Binding ShowSaveAsNewFileOffer}">
                         <VerticalStackLayout Spacing="12">
                             <Label Text="Salvar também num arquivo novo?" FontFamily="OpenSansSemibold" FontSize="15"
                                    TextColor="{StaticResource TextPrimaryDark}" />
-                            <Label Text="O arquivo atual já foi gravado com a mudança. Você também pode salvar uma cópia num arquivo novo, mantendo o original intacto."
+                            <Label Text="O arquivo atual já foi gravado com a mudança. Você também pode salvar uma cópia num arquivo novo, mantendo o original intacto. Ao salvar, a sessão é encerrada e você escolhe qual dos dois abrir na tela de desbloqueio."
                                    TextColor="{StaticResource TextSecondaryDark}" FontSize="13" />
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                 <Button Grid.Column="0" Text="Não, obrigado" Style="{StaticResource SecondaryActionButtonStyle}"
                                         Command="{Binding DeclineSaveAsNewFileCommand}" />
                                 <Button Grid.Column="1" Text="Salvar como novo arquivo" Style="{StaticResource PrimaryActionButtonStyle}"
                                         HeightRequest="46" Command="{Binding AcceptSaveAsNewFileCommand}" />
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <Border Style="{StaticResource CardBorderStyle}" Padding="18" StrokeShape="RoundRectangle 16"
-                            IsVisible="{Binding ShowSwitchToNewFileOffer}">
-                        <VerticalStackLayout Spacing="12">
-                            <Label Text="Continuar trabalhando no arquivo novo?" FontFamily="OpenSansSemibold" FontSize="15"
-                                   TextColor="{StaticResource TextPrimaryDark}" />
-                            <Label Text="O arquivo novo já foi gravado. Você pode continuar usando o cofre a partir dele, ou seguir no arquivo original."
-                                   TextColor="{StaticResource TextSecondaryDark}" FontSize="13" />
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                <Button Grid.Column="0" Text="Ficar no original" Style="{StaticResource SecondaryActionButtonStyle}"
-                                        Command="{Binding DeclineSwitchToNewFileCommand}" />
-                                <Button Grid.Column="1" Text="Usar o arquivo novo" Style="{StaticResource PrimaryActionButtonStyle}"
-                                        HeightRequest="46" Command="{Binding AcceptSwitchToNewFileCommand}" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>

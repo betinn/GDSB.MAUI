@@ -106,15 +106,10 @@ namespace GDSB.MAUI.ViewModels
         private bool showSaveAsNewFileOffer;
 
         [ObservableProperty]
-        private bool showSwitchToNewFileOffer;
-
-        [ObservableProperty]
         private bool isBusy;
 
         [ObservableProperty]
         private string? errorMessage;
-
-        private string? _pendingNewLocation;
 
         // S2325 ("make static") é falso positivo aqui: essas quatro propriedades leem estado por
         // instância (via as propriedades geradas pelo [ObservableProperty] acima) e não podem virar
@@ -306,12 +301,7 @@ namespace GDSB.MAUI.ViewModels
             }
         }
 
-        private void OfferSaveAsNewFile()
-        {
-            ShowSwitchToNewFileOffer = false;
-            _pendingNewLocation = null;
-            ShowSaveAsNewFileOffer = true;
-        }
+        private void OfferSaveAsNewFile() => ShowSaveAsNewFileOffer = true;
 
         [RelayCommand]
         private async Task AcceptSaveAsNewFileAsync()
@@ -337,9 +327,27 @@ namespace GDSB.MAUI.ViewModels
             try
             {
                 await Task.Run(() => _profileFileService.Save(location, _profile, _password));
-                _pendingNewLocation = location;
+
+                // A partir daqui existem dois arquivos válidos com o mesmo conteúdo (o original
+                // e o novo) - continuar editando nesta tela gravaria no arquivo errado sem o
+                // usuário perceber (foi exatamente o bug relatado: renomear pro "arquivo B" e
+                // toda mudança seguinte ainda ia pro "arquivo A"). Em vez de adivinhar qual dos
+                // dois o usuário quer usar, encerra a sessão - a biometria mira um único arquivo
+                // por vez, então também não faz sentido mantê-la selada aqui - e volta pra home:
+                // o próximo desbloqueio escolhe o arquivo (A ou B) de forma explícita.
+                try
+                {
+                    await _biometricUnlockService.DisableAsync();
+                }
+                catch (Exception)
+                {
+                }
+
+                BiometricOptIn.ForgetVault();
+                _vaultSessionService.Clear();
                 ShowSaveAsNewFileOffer = false;
-                ShowSwitchToNewFileOffer = true;
+
+                await _navigationService.GoHomeAsync();
             }
             catch (Exception)
             {
@@ -355,27 +363,6 @@ namespace GDSB.MAUI.ViewModels
         private Task DeclineSaveAsNewFileAsync()
         {
             ShowSaveAsNewFileOffer = false;
-            return ReturnToVaultAsync(_location);
-        }
-
-        [RelayCommand]
-        private Task AcceptSwitchToNewFileAsync()
-        {
-            ShowSwitchToNewFileOffer = false;
-            var newLocation = _pendingNewLocation;
-            _pendingNewLocation = null;
-
-            if (_profile is not null && newLocation is not null)
-                BiometricOptIn.RememberVault(newLocation, _profile.Nome);
-
-            return ReturnToVaultAsync(newLocation ?? _location);
-        }
-
-        [RelayCommand]
-        private Task DeclineSwitchToNewFileAsync()
-        {
-            ShowSwitchToNewFileOffer = false;
-            _pendingNewLocation = null;
             return ReturnToVaultAsync(_location);
         }
 
