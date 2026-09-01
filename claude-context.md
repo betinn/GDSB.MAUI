@@ -117,8 +117,8 @@ Três frentes vindas do uso real:
 
 | # | Fase | Status | PR |
 |---|------|--------|-----|
-| 0 | Reset do contexto (este arquivo + artifact do plano) | 🔜 Próxima | — |
-| 1 | Desbloqueio: arquivo antes da senha | ⬜ Planejada | — |
+| 0 | Reset do contexto (este arquivo + artifact do plano) | ✅ Concluída | [#13](https://github.com/betinn/GDSB.MAUI/pull/13) |
+| 1 | Desbloqueio: arquivo antes da senha | 🔜 Próxima | — |
 | 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ⬜ Planejada | — |
 | 3 | Proteções configuráveis por cofre (`VaultSettings`) | ⬜ Planejada | — |
 | 4 | Tela de edição do cofre | ⬜ Planejada | — |
