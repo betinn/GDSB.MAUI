@@ -163,6 +163,14 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
 - O "?" abre um **painel no estilo do app** (overlay escuro, mesmo padrão dos três modais de
   `BackupRecoveryPage`), não um `DisplayAlert` nativo. Todo o texto de ajuda vive num catálogo em
   C# (`HelpTopics`), fora do XAML.
+- **Todo painel de ajuda mostra o controle de que fala**, não só descreve: entre os parágrafos
+  entra uma réplica inerte do botão, campo ou chip em questão, montada com os estilos de verdade de
+  `Styles.xaml`. Por isso um tópico é uma lista de blocos (`Heading` / `Text` / `Visual`), não uma
+  lista de parágrafos. Painel só de texto é considerado incompleto — a regra é garantida por teste
+  na fase 3 ("todo tópico tem pelo menos um bloco `Visual`").
+- **A tela de backup tem um "?" só**, no cabeçalho, e ele cobre a tela inteira (backup automático,
+  restaurar, excluir, excluir todos). Nada de "?" nos cartões nem nos botões. A tela de edição do
+  cofre **continua com um "?" por sessão** — a regra do "?" único vale só para a tela de backup.
 - Campo obrigatório = **asterisco no label** em cor de destaque + legenda `* campos obrigatórios`
   no fim do bloco. Campos opcionais não recebem marca nenhuma.
 - O tutorial aparece sozinho no primeiro acesso e fica revisível por um link **"Como funciona?" no
