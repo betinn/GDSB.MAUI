@@ -122,8 +122,8 @@ Três frentes vindas do uso real:
 | 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
 | 3 | Proteções configuráveis por cofre (`VaultSettings`) | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
 | 4 | Tela de edição do cofre | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
-| 5 | Recuperação de backup | ✅ Concluída | ver nota abaixo |
-| 6 | Fechamento (README, contexto, testes, build) | ✅ Concluída | ver nota abaixo |
+| 5 | Recuperação de backup | ✅ Concluída | [#17](https://github.com/betinn/GDSB.MAUI/pull/17) |
+| 6 | Fechamento (README, contexto, testes, build) | ✅ Concluída | [#17](https://github.com/betinn/GDSB.MAUI/pull/17) |
 
 **Rodada concluída.** As fases 5 e 6 foram implementadas na mesma sessão que também corrigiu os 75
 issues abertos do SonarCloud (ver seção própria abaixo) — as duas frentes foram pedidas juntas e
