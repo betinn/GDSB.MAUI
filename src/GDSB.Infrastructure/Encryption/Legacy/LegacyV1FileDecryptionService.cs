@@ -1,4 +1,5 @@
 ﻿using GDSB.Domain.Entities;
+using GDSB.Domain.Exceptions;
 using GDSB.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,13 @@ namespace GDSB.Infrastructure.Encryption.Legacy
     // Leitor do formato .GDSBX v1 (diagnosticado na Fase 0 como fraco: IV fixo, senha ciclada sem KDF).
     // Existe só para abrir arquivos antigos e migrá-los para o formato v2 (AesGcmFileCryptoService) ao salvar.
     // Nunca deve voltar a gravar nada neste formato.
+    //
+    // [Obsolete] aqui é só um aviso pro autor de código novo, não uma dívida a remover: o suporte a
+    // v1 é permanente (ver "Regra permanente" no claude-context.md) - cofres antigos precisam
+    // continuar abrindo indefinidamente.
+#pragma warning disable S1133
     [Obsolete("Somente leitura de arquivos .GDSBX v1 legados, para migração. Não usar para gravar arquivos novos — use IFileCryptoServiceV2.")]
+#pragma warning restore S1133
     public class LegacyV1FileDecryptionService : IFileDecryptionService
     {
         private static readonly JsonSerializerOptions _legacyJsonOptions = new() { PropertyNameCaseInsensitive = true };
@@ -32,7 +39,7 @@ namespace GDSB.Infrastructure.Encryption.Legacy
             var profile = JsonSerializer.Deserialize<Profile>(DecryptStringFromBytes_Aes(aesText, aesByteFirst, aesSecByte), _legacyJsonOptions);
 
             if (profile == null)
-                throw new NullReferenceException("Profile is null");
+                throw new InvalidPasswordOrCorruptFileException();
 
             return profile;
         }
@@ -77,11 +84,11 @@ namespace GDSB.Infrastructure.Encryption.Legacy
         private static string DecryptStringFromBytes_Aes(byte[] profileContentEncrypted, byte[] PasswordBytes, byte[] IVBase)
         {
             if (profileContentEncrypted == null || profileContentEncrypted.Length <= 0)
-                throw new ArgumentNullException("cipherText");
+                throw new ArgumentNullException(nameof(profileContentEncrypted));
             if (PasswordBytes == null || PasswordBytes.Length <= 0)
-                throw new ArgumentNullException("Key");
+                throw new ArgumentNullException(nameof(PasswordBytes));
             if (IVBase == null || IVBase.Length <= 0)
-                throw new ArgumentNullException("IV");
+                throw new ArgumentNullException(nameof(IVBase));
 
             string plaintext;
 

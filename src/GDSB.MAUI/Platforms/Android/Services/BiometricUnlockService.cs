@@ -49,7 +49,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
             try
             {
                 var key = GetOrCreateKey();
-                var cipher = Cipher.GetInstance(Transformation)!;
+                var cipher = Cipher.GetInstance(Transformation);
                 cipher.Init(CipherMode.EncryptMode, key);
 
                 var authenticatedCipher = await AuthenticateAsync(activity, cipher, "Confirme sua biometria para ativar o desbloqueio rápido");
@@ -59,9 +59,9 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 var ciphertext = authenticatedCipher.DoFinal(derivedKey);
                 var iv = authenticatedCipher.GetIV();
 
-                var editor = GetPrefs().Edit()!;
-                editor.PutString(IvPrefKey, Convert.ToBase64String(iv!));
-                editor.PutString(CiphertextPrefKey, Convert.ToBase64String(ciphertext!));
+                var editor = GetPrefs().Edit();
+                editor.PutString(IvPrefKey, Convert.ToBase64String(iv));
+                editor.PutString(CiphertextPrefKey, Convert.ToBase64String(ciphertext));
                 editor.Apply();
 
                 return true;
@@ -85,13 +85,13 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
             try
             {
-                var keyStore = KeyStore.GetInstance(KeystoreProvider)!;
+                var keyStore = KeyStore.GetInstance(KeystoreProvider);
                 keyStore.Load(null);
 
                 if (keyStore.GetKey(KeyAlias, null) is not { } key)
                     return null;
 
-                var cipher = Cipher.GetInstance(Transformation)!;
+                var cipher = Cipher.GetInstance(Transformation);
                 var iv = Convert.FromBase64String(ivBase64);
                 cipher.Init(CipherMode.DecryptMode, key, new GCMParameterSpec(GcmTagLengthBits, iv));
 
@@ -118,11 +118,11 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
         public Task DisableAsync()
         {
-            GetPrefs().Edit()?.Clear()?.Apply();
+            GetPrefs().Edit().Clear().Apply();
 
             try
             {
-                var keyStore = KeyStore.GetInstance(KeystoreProvider)!;
+                var keyStore = KeyStore.GetInstance(KeystoreProvider);
                 keyStore.Load(null);
                 if (keyStore.IsKeyEntry(KeyAlias))
                     keyStore.DeleteEntry(KeyAlias);
@@ -139,17 +139,17 @@ namespace GDSB.MAUI.Platforms.Android.Services
         private static FragmentActivity? GetActivity() => Platform.CurrentActivity as FragmentActivity;
 
         private static global::Android.Content.ISharedPreferences GetPrefs() =>
-            global::Android.App.Application.Context.GetSharedPreferences(PrefsName, FileCreationMode.Private)!;
+            global::Android.App.Application.Context.GetSharedPreferences(PrefsName, FileCreationMode.Private);
 
         private static IKey GetOrCreateKey()
         {
-            var keyStore = KeyStore.GetInstance(KeystoreProvider)!;
+            var keyStore = KeyStore.GetInstance(KeystoreProvider);
             keyStore.Load(null);
 
             if (keyStore.IsKeyEntry(KeyAlias) && keyStore.GetKey(KeyAlias, null) is { } existingKey)
                 return existingKey;
 
-            var keyGenerator = KeyGenerator.GetInstance(KeyProperties.KeyAlgorithmAes, KeystoreProvider)!;
+            var keyGenerator = KeyGenerator.GetInstance(KeyProperties.KeyAlgorithmAes, KeystoreProvider);
             var spec = new KeyGenParameterSpec.Builder(KeyAlias, KeyStorePurpose.Encrypt | KeyStorePurpose.Decrypt)
                 .SetBlockModes(KeyProperties.BlockModeGcm)
                 .SetEncryptionPaddings(KeyProperties.EncryptionPaddingNone)
@@ -157,7 +157,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 .Build();
 
             keyGenerator.Init(spec);
-            return keyGenerator.GenerateKey()!;
+            return keyGenerator.GenerateKey();
         }
 
         // Devolve o Cipher já autorizado (mesma instância passada em CryptoObject) depois de uma
@@ -175,7 +175,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
             activity.RunOnUiThread(() =>
             {
-                var executor = ContextCompat.GetMainExecutor(activity)!;
+                var executor = ContextCompat.GetMainExecutor(activity);
                 var prompt = new BiometricPrompt(activity, executor, new AuthCallback(tcs));
 
                 var promptInfo = new BiometricPrompt.PromptInfo.Builder()
@@ -227,11 +227,15 @@ namespace GDSB.MAUI.Platforms.Android.Services
             public override void OnAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) =>
                 _tcs.TrySetResult(result.CryptoObject?.Cipher);
 
-            public override void OnAuthenticationError(int errorCode, Java.Lang.ICharSequence errString) =>
+            // errorCode/errString não são usados: qualquer erro (cancelamento, timeout, bloqueio
+            // por tentativas) tem o mesmo tratamento aqui - falha e deixa o chamador cair pro
+            // campo de senha. Assinatura imposta pela classe base do AndroidX.Biometric.
+            public override void OnAuthenticationError(int _errorCode, Java.Lang.ICharSequence _errString) =>
                 _tcs.TrySetResult(null);
 
             // Não resolve a task aqui: uma tentativa falha (dedo errado) deixa o prompt aberto pro
             // usuário tentar de novo - só OnAuthenticationSucceeded/OnAuthenticationError encerram.
+            // Corpo vazio é intencional: não há ação de sistema a tomar numa falha recuperável.
             public override void OnAuthenticationFailed()
             {
             }

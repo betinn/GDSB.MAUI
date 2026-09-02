@@ -113,7 +113,7 @@ namespace GDSB.Infrastructure.Backup
             return Path.Combine(root, hash);
         }
 
-        private void RemoveFolderIfEmpty(string folder, FolderMeta meta)
+        private static void RemoveFolderIfEmpty(string folder, FolderMeta meta)
         {
             if (meta.Entries.Count == 0)
             {

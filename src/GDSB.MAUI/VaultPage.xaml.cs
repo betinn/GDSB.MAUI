@@ -38,7 +38,8 @@ public partial class VaultPage : ContentPage
 
     private async void OnToastRequested(object? sender, string message)
     {
-        _toastCts?.Cancel();
+        if (_toastCts is not null)
+            await _toastCts.CancelAsync();
         var cts = new CancellationTokenSource();
         _toastCts = cts;
 
