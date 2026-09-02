@@ -110,6 +110,9 @@ namespace GDSB.MAUI.ViewModels
         [RelayCommand]
         private Task GoToCreateVaultAsync() => _navigationService.NavigateToAsync("CreateVaultPage");
 
+        [RelayCommand]
+        private Task GoToBackupRecoveryAsync() => _navigationService.NavigateToAsync("BackupRecoveryPage");
+
         // Idem justificativa de S2325 acima - escreve em propriedades geradas por
         // [ObservableProperty], que o Sonar não reconhece como estado de instância.
 #pragma warning disable S2325

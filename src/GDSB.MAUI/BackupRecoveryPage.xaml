@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
+             xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
+             x:Class="GDSB.MAUI.BackupRecoveryPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource SurfaceDark}">
+
+    <ContentPage.Resources>
+        <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
+        <DataTemplate x:Key="BackupCardTemplate">
+            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="15"
+                           TextColor="{StaticResource TextPrimaryDark}" LineBreakMode="TailTruncation" />
+                    <Label Text="{Binding DisplayName}" FontSize="12.5" TextColor="{StaticResource TextSecondaryDark}"
+                           LineBreakMode="HeadTruncation" MaxLines="1" />
+                    <Label FontSize="12" TextColor="{StaticResource TextMutedDark}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding CreatedAtDisplay}" />
+                                <Span Text="  ·  " />
+                                <Span Text="{Binding SizeDisplay}" />
+                                <Span Text="  ·  " />
+                                <Span Text="{Binding KindLabel}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                        <Button Grid.Column="0" Text="Restaurar" Style="{StaticResource SecondaryActionButtonStyle}"
+                                HeightRequest="42"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.BeginRestoreCommand}"
+                                CommandParameter="{Binding .}" />
+                        <Button Grid.Column="1" Text="Excluir" HeightRequest="42"
+                                BackgroundColor="Transparent" TextColor="{StaticResource Danger}"
+                                BorderColor="{StaticResource Danger}" BorderWidth="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.PromptDeleteCommand}"
+                                CommandParameter="{Binding .}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid>
+        <ScrollView>
+            <Grid RowDefinitions="Auto,*" Padding="32">
+
+                <VerticalStackLayout Grid.Row="0" Spacing="4">
+                    <Label Text="&#8592; Voltar" TextColor="{StaticResource TextSecondaryDark}"
+                           FontSize="14" Margin="0,8,0,12" behaviors:HoverCursor.IsHand="True">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="Recuperar backup" FontSize="22" FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextPrimaryDark}" />
+                    <Label Text="Backups são gerados automaticamente antes de cada gravação. Restaurar sempre cria um arquivo novo - o cofre original nunca é sobrescrito."
+                           TextColor="{StaticResource TextSecondaryDark}" FontSize="13" Margin="0,4,0,0" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Row="1" Spacing="16" Margin="0,20,0,0">
+
+                    <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                           IsVisible="{Binding HasErrorMessage}" />
+
+                    <!-- Painel de restauração: aparece por cima da lista, um item por vez. -->
+                    <Border Style="{StaticResource CardBorderStyle}" Padding="20" StrokeShape="RoundRectangle 18"
+                            IsVisible="{Binding IsRestoring}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="{Binding PendingRestoreItem.DisplayName}" FontFamily="OpenSansSemibold"
+                                   FontSize="15" TextColor="{StaticResource TextPrimaryDark}" />
+                            <Label Text="Digite a senha mestra deste backup. Se ele for anterior a uma troca de senha, use a senha antiga."
+                                   TextColor="{StaticResource TextSecondaryDark}" FontSize="13" />
+                            <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
+                                    StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
+                                <Entry Text="{Binding RestorePassword}" IsPassword="True"
+                                       Placeholder="Senha mestra do backup"
+                                       TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                       BackgroundColor="Transparent" VerticalOptions="Center"
+                                       ReturnCommand="{Binding ConfirmRestoreCommand}" />
+                            </Border>
+                            <Label Text="{Binding RestoreErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
+                                   IsVisible="{Binding HasRestoreErrorMessage}" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0" Text="Cancelar" Style="{StaticResource SecondaryActionButtonStyle}"
+                                        Command="{Binding CancelRestoreCommand}" IsEnabled="{Binding CanInteract}" />
+                                <Button Grid.Column="1" Text="Restaurar" Style="{StaticResource PrimaryActionButtonStyle}"
+                                        HeightRequest="46" Command="{Binding ConfirmRestoreCommand}" IsEnabled="{Binding CanInteract}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Confirmação de exclusão de um item. -->
+                    <Border Style="{StaticResource CardBorderStyle}" Padding="20" StrokeShape="RoundRectangle 18"
+                            IsVisible="{Binding IsConfirmingDelete}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Excluir este backup?" FontFamily="OpenSansSemibold" FontSize="15"
+                                   TextColor="{StaticResource TextPrimaryDark}" />
+                            <Label Text="Essa ação não pode ser desfeita." TextColor="{StaticResource Danger}" FontSize="13" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0" Text="Cancelar" Style="{StaticResource SecondaryActionButtonStyle}"
+                                        Command="{Binding CancelDeleteCommand}" IsEnabled="{Binding CanInteract}" />
+                                <Button Grid.Column="1" Text="Excluir" HeightRequest="46"
+                                        BackgroundColor="{StaticResource Danger}" TextColor="{StaticResource White}"
+                                        Command="{Binding ConfirmDeleteCommand}" IsEnabled="{Binding CanInteract}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Confirmação de exclusão de todos. -->
+                    <Border Style="{StaticResource CardBorderStyle}" Padding="20" StrokeShape="RoundRectangle 18"
+                            IsVisible="{Binding IsConfirmingDeleteAll}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Excluir todos os backups?" FontFamily="OpenSansSemibold" FontSize="15"
+                                   TextColor="{StaticResource TextPrimaryDark}" />
+                            <Label Text="Essa ação não pode ser desfeita." TextColor="{StaticResource Danger}" FontSize="13" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0" Text="Cancelar" Style="{StaticResource SecondaryActionButtonStyle}"
+                                        Command="{Binding CancelDeleteAllCommand}" IsEnabled="{Binding CanInteract}" />
+                                <Button Grid.Column="1" Text="Excluir todos" HeightRequest="46"
+                                        BackgroundColor="{StaticResource Danger}" TextColor="{StaticResource White}"
+                                        Command="{Binding ConfirmDeleteAllCommand}" IsEnabled="{Binding CanInteract}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Estado vazio. -->
+                    <VerticalStackLayout Spacing="6" Margin="0,30,0,0" HorizontalOptions="Center"
+                                          IsVisible="{Binding HasBackups, Converter={StaticResource InvertedBoolConverter}}">
+                        <Label Text="Nenhum backup por aqui" FontFamily="OpenSansSemibold" FontSize="15"
+                               TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
+                        <Label Text="Backups aparecem automaticamente depois da primeira edição de um cofre."
+                               TextColor="{StaticResource TextSecondaryDark}" FontSize="13" HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <CollectionView ItemsSource="{Binding Backups}" ItemTemplate="{StaticResource BackupCardTemplate}"
+                                    IsVisible="{Binding HasBackups}" />
+
+                    <Label Text="Excluir todos os backups"
+                           TextColor="{StaticResource Danger}"
+                           FontSize="13"
+                           HorizontalOptions="Center"
+                           Margin="0,10,0,0"
+                           IsVisible="{Binding HasBackups}"
+                           behaviors:HoverCursor.IsHand="True">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding PromptDeleteAllCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                </VerticalStackLayout>
+
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>
