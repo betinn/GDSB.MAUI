@@ -125,7 +125,7 @@ explicar — na ordem inversa, as mesmas telas seriam reabertas duas vezes.
 |---|------|--------|------------|--------|-----|
 | 0 | Contexto e plano (este arquivo + artifact) | — | — | ✅ Concluída | — |
 | 1 | Retenção no domínio e no store | Backups | — | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
-| 2 | Bloco BACKUPS nas telas | Backups | 1 | ⬜ A fazer | — |
+| 2 | Bloco BACKUPS nas telas | Backups | 1 | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
 | 3 | Infra de ajuda e obrigatoriedade | Onboarding | — | ⬜ A fazer | — |
 | 4 | Tutorial de primeiro acesso | Onboarding | 3 | ⬜ A fazer | — |
 | 5 | Cofre novo e segredo novo | Onboarding | 2, 3 | ⬜ A fazer | — |
@@ -142,6 +142,10 @@ Dependências:
 
 As fases **1** e **3** não dependem de nada e podem ser feitas em paralelo, em sessões diferentes.
 As fases 5 e 6 só abrem depois de 2 e 3, porque as duas colocam um "?" na sessão `BACKUPS`.
+
+**Exceção já usada:** as fases 1 e 2 foram implementadas e mergeadas juntas no PR #19, a pedido
+explícito do usuário ("elas se complementam"). A regra de "um PR por fase" (seção "Como
+trabalhar") continua valendo por padrão — só quebre de novo se o usuário pedir.
 
 ### Decisões já fechadas com o usuário
 

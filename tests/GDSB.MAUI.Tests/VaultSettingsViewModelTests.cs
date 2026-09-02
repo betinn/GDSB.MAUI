@@ -103,12 +103,62 @@ namespace GDSB.MAUI.Tests
         }
 
         [Fact]
+        public void SelectBackupRetentionCountCommand_ParsesStringParameter()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectBackupRetentionCountCommand.Execute("20");
+
+            Assert.Equal(20, sut.ViewModel.BackupRetentionCount);
+        }
+
+        [Fact]
+        public void SelectBackupRetentionDaysCommand_ParsesStringParameter()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectBackupRetentionDaysCommand.Execute("15");
+
+            Assert.Equal(15, sut.ViewModel.BackupRetentionDays);
+        }
+
+        [Fact]
+        public void SelectBackupRetentionModeCommands_SwitchModeAndFlipVisibilityFlags()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectBackupRetentionModeDaysCommand.Execute(null);
+            Assert.Equal(BackupRetentionMode.Days, sut.ViewModel.BackupRetentionMode);
+            Assert.False(sut.ViewModel.IsBackupRetentionByCount);
+            Assert.True(sut.ViewModel.IsBackupRetentionByDays);
+
+            sut.ViewModel.SelectBackupRetentionModeCountCommand.Execute(null);
+            Assert.Equal(BackupRetentionMode.Count, sut.ViewModel.BackupRetentionMode);
+            Assert.True(sut.ViewModel.IsBackupRetentionByCount);
+            Assert.False(sut.ViewModel.IsBackupRetentionByDays);
+        }
+
+        [Fact]
+        public void Load_OldVaultWithoutBackupRetentionKey_OpensWithCountAndDefaultOf10()
+        {
+            var sut = new Sut();
+
+            sut.Load();
+
+            Assert.Equal(BackupRetentionMode.Count, sut.ViewModel.BackupRetentionMode);
+            Assert.Equal(10, sut.ViewModel.BackupRetentionCount);
+            Assert.Equal(5, sut.ViewModel.BackupRetentionDays);
+        }
+
+        [Fact]
         public async Task SaveProtectionsAsync_SavesCurrentFileAndStartsSession_WithoutOffer()
         {
             var sut = new Sut();
             sut.Load();
             sut.ViewModel.ClipboardClearEnabled = false;
             sut.ViewModel.AutoLockMinutes = 15;
+            sut.ViewModel.SelectBackupRetentionModeDaysCommand.Execute(null);
+            sut.ViewModel.BackupRetentionDays = 15;
             var settingsSavedCount = 0;
             sut.ViewModel.SettingsSaved += (_, _) => settingsSavedCount++;
 
@@ -118,6 +168,8 @@ namespace GDSB.MAUI.Tests
             Assert.Equal(Location, save.Location);
             Assert.False(save.Profile.Settings.ClipboardClearEnabled);
             Assert.Equal(15, save.Profile.Settings.AutoLockMinutes);
+            Assert.Equal(BackupRetentionMode.Days, save.Profile.Settings.BackupRetentionMode);
+            Assert.Equal(15, save.Profile.Settings.BackupRetentionDays);
             Assert.Same(save.Profile.Settings, sut.VaultSessionService.Settings);
             Assert.False(sut.ViewModel.ShowSaveAsNewFileOffer);
             Assert.Equal(1, settingsSavedCount);

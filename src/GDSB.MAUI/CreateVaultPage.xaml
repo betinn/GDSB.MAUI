@@ -191,6 +191,129 @@
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
+                            <BoxView HeightRequest="1" Color="{StaticResource BorderDark}" />
+
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="BACKUPS" Style="{StaticResource FieldLabelStyle}" />
+                                <Label Text="Manter quantas versões"
+                                       TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Button Text="Por quantidade" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionModeCountCommand}">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsBackupRetentionByCount}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Text="Por tempo" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionModeDaysCommand}">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsBackupRetentionByDays}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsBackupRetentionByCount}">
+                                    <Button Text="5" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="5">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="5">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Text="10" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="10">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="10">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Text="20" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="20">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="20">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Text="50" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="50">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="50">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsBackupRetentionByDays}">
+                                    <Button Text="3 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="3">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="3">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Text="5 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="5">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="5">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Text="15 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="15">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="15">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                    <Button Text="30 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="30">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="30">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </HorizontalStackLayout>
+
+                                <Label Text="Ao passar do limite de versões, a mais antiga é apagada. A versão mais recente nunca é apagada."
+                                       TextColor="{StaticResource TextSecondaryDark}" FontSize="12"
+                                       IsVisible="{Binding IsBackupRetentionByCount}" />
+                                <Label Text="Backups mais antigos que o limite escolhido são apagados. A versão mais recente nunca é apagada."
+                                       TextColor="{StaticResource TextSecondaryDark}" FontSize="12"
+                                       IsVisible="{Binding IsBackupRetentionByDays}" />
+                            </VerticalStackLayout>
+
                         </VerticalStackLayout>
                     </Border>
 
