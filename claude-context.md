@@ -90,89 +90,100 @@ teste, nem como fallback.
 
 ## Plano em execução
 
-O plano completo desta rodada — contexto, decisões fechadas, plano macro, plano micro por fase
-(arquivos a criar/alterar) e roteiro de verificação — vive neste documento:
+O plano completo desta rodada — contexto, decisões fechadas, **plano macro**, **plano micro por
+fase** (arquivos a criar/alterar, regras e "Pronto quando") e o **protótipo visual** das telas —
+vive neste documento:
 
-**➜ https://claude.ai/code/artifact/00e12b9d-b9d9-4c72-9a4e-e111477c329d**
+**➜ https://claude.ai/code/artifact/6bd2735a-f8fd-45ad-b7f3-4ff869c8de33**
 
-Ele é a fonte da verdade. `WebFetch` funciona nessa URL. Leia a fase que você vai executar lá antes
-de escrever qualquer código; aqui embaixo fica só o resumo de status, para você se localizar rápido.
+Ele é a fonte da verdade. `WebFetch` funciona nessa URL. **Leia a seção da fase que você vai
+executar antes de escrever qualquer código**; aqui embaixo fica só o resumo, para você se
+localizar rápido.
+
+O artifact da rodada anterior (desbloqueio, backups fora da pasta do cofre, edição de cofre —
+fases 1 a 6, todas concluídas) continua em
+https://claude.ai/code/artifact/00e12b9d-b9d9-4c72-9a4e-e111477c329d, só como histórico.
 
 ### Objetivo da rodada
 
-Três frentes vindas do uso real:
+Duas frentes, vindas do uso real:
 
-1. **Ordem do desbloqueio.** Hoje o app pede a senha antes de abrir o seletor de arquivo. Inverter:
-   escolher o arquivo primeiro, e só então liberar o campo de senha. Não se aplica ao modo com
-   biometria ligada, onde o bloco manual já some inteiro.
-2. **Backups.** Hoje o Windows grava `<cofre>.GDSBX.bak` ao lado do original — numa pasta
-   sincronizada isso aparece no celular e, com nome longo, a tela pequena trunca justamente o final.
-   Equalizar pelo comportamento do Android (backup em diretório do app), renomear para
-   `BKP - <arquivo>.bak` e dar ao app uma tela de recuperação/limpeza de backups.
-3. **Edição de cofre.** Não existe como renomear o cofre nem trocar a senha mestra depois de criado,
-   e as proteções (limpeza de clipboard, auto-lock) são constantes fixas. Criar uma tela de edição e
-   tornar as proteções configuráveis **por perfil** (gravadas dentro do próprio arquivo do cofre).
+1. **Backups versionados.** Hoje o `FileSystemVaultBackupStore.Store` monta sempre o mesmo caminho
+   por cofre (`BKP - <nome>.GDSBX.bak`) e grava por cima: existe **um único** backup, o de antes do
+   último save. Passar a guardar histórico, com um limite configurável **por cofre** — "até N
+   versões" **ou** "até N dias" — e poda automática ao passar do limite.
+2. **Primeiro acesso guiado.** O app não se explica para quem nunca o viu. Adicionar um tutorial de
+   3 slides na tela inicial, um "?" clicável ao lado das funcionalidades que não se explicam
+   sozinhas, e sinalização de campo obrigatório nos formulários.
+
+A frente 1 vem primeiro porque cria o bloco de configuração `BACKUPS` que a frente 2 precisa
+explicar — na ordem inversa, as mesmas telas seriam reabertas duas vezes.
 
 ### Status das fases
 
-| # | Fase | Status | PR |
-|---|------|--------|-----|
-| 0 | Reset do contexto (este arquivo + artifact do plano) | ✅ Concluída | [#13](https://github.com/betinn/GDSB.MAUI/pull/13) |
-| 1 | Desbloqueio: arquivo antes da senha | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
-| 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
-| 3 | Proteções configuráveis por cofre (`VaultSettings`) | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
-| 4 | Tela de edição do cofre | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
-| 5 | Recuperação de backup | ✅ Concluída | [#17](https://github.com/betinn/GDSB.MAUI/pull/17) |
-| 6 | Fechamento (README, contexto, testes, build) | ✅ Concluída | [#17](https://github.com/betinn/GDSB.MAUI/pull/17) |
+| # | Fase | Frente | Depende de | Status | PR |
+|---|------|--------|------------|--------|-----|
+| 0 | Contexto e plano (este arquivo + artifact) | — | — | ✅ Concluída | — |
+| 1 | Retenção no domínio e no store | Backups | — | ⬜ A fazer | — |
+| 2 | Bloco BACKUPS nas telas | Backups | 1 | ⬜ A fazer | — |
+| 3 | Infra de ajuda e obrigatoriedade | Onboarding | — | ⬜ A fazer | — |
+| 4 | Tutorial de primeiro acesso | Onboarding | 3 | ⬜ A fazer | — |
+| 5 | Cofre novo e segredo novo | Onboarding | 2, 3 | ⬜ A fazer | — |
+| 6 | Backup e edição do cofre | Onboarding | 2, 3 | ⬜ A fazer | — |
+| 7 | Fechamento (README, contexto, testes, build) | — | todas | ⬜ A fazer | — |
 
-**Rodada concluída.** As fases 5 e 6 foram implementadas na mesma sessão que também corrigiu os 75
-issues abertos do SonarCloud (ver seção própria abaixo) — as duas frentes foram pedidas juntas e
-foram pro mesmo PR, a pedido explícito de quem pediu a sessão. Essa sessão também não tinha Android
-SDK disponível (mesmo bloqueio de rede a `dl.google.com` das sessões anteriores); instalou o .NET 10
-SDK e o workload `maui-android` via `apt` (mesmo caminho que já funcionou nas fases 3/4), as duas
-suítes de teste passaram (87 testes: 20 em GDSB.Infrastructure.Tests + 67 em GDSB.MAUI.Tests), mas
-`dotnet build -p:GdsbAndroidOnly=true` e o roteiro manual das fases 1, 4 e 5 continuam pendentes de
-verificação num ambiente com Android SDK — ver o PR para detalhes.
+Dependências:
 
-Dependências: **2 antes de 5** (a tela de recuperação lê o store criado na fase 2) e **3 antes de 4**
-(a tela de edição edita o `VaultSettings` criado na fase 3). A fase 1 é independente das demais.
+```
+1 ──► 2 ──┐
+          ├──► 5, 6 ──► 7
+3 ──► 4 ──┘
+```
 
-As fases 1 e 2 foram implementadas juntas no PR #15 porque a sessão que as fez foi configurada com
-uma única branch para as duas — não é o padrão daqui pra frente. Essa sessão não tinha Android SDK
-disponível (rede bloqueava `dl.google.com`); o build Android e o roteiro manual da fase 1 ficaram
-pendentes de verificação antes do merge — ver o PR para detalhes.
-
-Pelo mesmo motivo (branch única configurada pra sessão), as fases 3 e 4 foram implementadas juntas
-no PR #16. Essa sessão instalou o .NET 10 SDK e o workload `maui-android` via `apt` (mirror do
-Ubuntu, que tem pacote `dotnet-sdk-10.0` — mais confiável aqui do que o `dotnet-install.sh`, que
-esbarra no mesmo bloqueio de rede), e as duas suítes de teste passaram (65 testes). Mas o Android SDK
-em si não foi instalável (mesmo bloqueio de `dl.google.com`), então o `dotnet build
--p:GdsbAndroidOnly=true` e o roteiro manual da fase 4 ficaram pendentes de verificação antes do
-merge.
+As fases **1** e **3** não dependem de nada e podem ser feitas em paralelo, em sessões diferentes.
+As fases 5 e 6 só abrem depois de 2 e 3, porque as duas colocam um "?" na sessão `BACKUPS`.
 
 ### Decisões já fechadas com o usuário
 
 Não relitigar durante a implementação — o detalhamento de cada uma está no artifact.
 
-- Backup se chama `BKP - <nome do arquivo>.bak` (prefixo resolve a truncagem; sufixo `.bak`/`.v1.bak`
-  impede confusão com um cofre).
-- Backup nunca mais ao lado do cofre, nem no Windows.
-- Selecionar um arquivo que é backup mostra um popup **apenas informativo**, sem bloquear.
-- Nova tela de recuperação na tela inicial: recriar um cofre a partir de um backup ou excluir backups.
-- Ao trocar a senha mestra, oferecer também a exclusão dos backups antigos (opção do usuário).
-- Renomear = nome interno (`Profile.Nome`) + oferta de "Salvar como" arquivo novo. O arquivo em
-  disco nunca é renomeado.
-- Na tela de edição (Fase 4), só **nome** e **senha mestra** — o que mexe no ponto de desbloqueio do
-  cofre (a chave derivada e a identidade do arquivo) — oferecem gravar num arquivo novo, e só depois
-  de a gravação no arquivo atual ter dado certo. Mudar as proteções grava no próprio arquivo, sem
-  prompt e sem seletor.
-- Trocar a senha com biometria ativa **re-sela** o atalho automaticamente com a senha nova.
+- Retenção com **dois modos, um por vez**: "até N versões" ou "até N dias". Configuração **por
+  cofre**, gravada dentro do arquivo (`Profile.Settings`), como já são as proteções.
+- Defaults: `Count` / 10 versões / 5 dias. Um cofre v2 antigo, sem a chave no JSON, abre nesses
+  valores pelo inicializador de propriedade — mesmo mecanismo já usado em `VaultSettings`.
+- Além do modo escolhido existe um **teto rígido de 100 arquivos por cofre**, válido nos dois
+  modos. Foi a opção escolhida em vez de uma janela mínima entre backups.
+- **Piso:** a poda nunca apaga o backup mais recente, mesmo que a regra de idade mande apagar
+  todos.
+- Backups `LegacyV1` **nunca são podados** e não contam para o teto; continuam com nome sem
+  timestamp (é a identidade por caminho que garante "nunca sobrescrever o original importado").
+- Backups `Rolling` passam a ter timestamp no nome:
+  `BKP - <nome>.GDSBX - 2026-09-02 14-30-12.bak` (`yyyy-MM-dd HH-mm-ss`, sem `:` — ilegal no
+  Windows).
+- O "?" abre um **painel no estilo do app** (overlay escuro, mesmo padrão dos três modais de
+  `BackupRecoveryPage`), não um `DisplayAlert` nativo. Todo o texto de ajuda vive num catálogo em
+  C# (`HelpTopics`), fora do XAML.
+- **Todo painel de ajuda mostra o controle de que fala**, não só descreve: entre os parágrafos
+  entra uma réplica inerte do botão, campo ou chip em questão, montada com os estilos de verdade de
+  `Styles.xaml`. Por isso um tópico é uma lista de blocos (`Heading` / `Text` / `Visual`), não uma
+  lista de parágrafos. Painel só de texto é considerado incompleto — a regra é garantida por teste
+  na fase 3 ("todo tópico tem pelo menos um bloco `Visual`").
+- **A tela de backup tem um "?" só**, no cabeçalho, e ele cobre a tela inteira (backup automático,
+  restaurar, excluir, excluir todos). Nada de "?" nos cartões nem nos botões. A tela de edição do
+  cofre **continua com um "?" por sessão** — a regra do "?" único vale só para a tela de backup.
+- Campo obrigatório = **asterisco no label** em cor de destaque + legenda `* campos obrigatórios`
+  no fim do bloco. Campos opcionais não recebem marca nenhuma.
+- O tutorial aparece sozinho no primeiro acesso e fica revisível por um link **"Como funciona?" no
+  topo** da tela inicial — acima do bloco de desbloqueio, não junto dos links de rodapé.
+- O tutorial **não abre automaticamente quando a biometria está armada** (`CanUseBiometric`), para
+  não brigar com o prompt do sistema que `UnlockViewModel.InitializeAsync` já dispara.
 
 ---
 
 ## Como trabalhar
 
-- **Uma branch por fase**, criada a partir da `main` (ex.: `fase-2-backup-store`).
+- **Uma branch por fase**, criada a partir da `main` (ex.: `fase-1-retencao-backups`). Quando a
+  sessão já vier com uma branch designada, use a designada.
 - **Um PR por fase.** Use a lista de arquivos e o "Pronto quando" da fase, no artifact, como
   checklist do PR.
 - Ao terminar a implementação da fase (código pronto e commitado), **abra o PR automaticamente, sem
@@ -194,11 +205,11 @@ passar (sem bloquear o merge) mesmo com **New Issues** abertas — "0 New issues
 `WebFetch` quanto por `curl`/API, mesmo com token — confirmado de novo nesta sessão) — a mensagem
 do check só traz a contagem, não o detalhe.
 
-Um plano gerado a partir de um relatório do SonarCloud de 2026-09-01 (75 issues: 2 vulnerabilidades,
-1 bug, 72 code smells) foi executado nesta sessão, no mesmo PR das fases 5/6 — ver o PR pra a lista
-completa do que foi corrigido. Como o Sonar continua inacessível daqui, o "0 issues" em New Code e
-Overall Code não pôde ser confirmado por esta sessão; precisa de confirmação humana (ou de uma
-sessão com rede liberada) olhando o SonarCloud direto.
+Na rodada anterior, os 75 issues abertos do relatório de 2026-09-01 (2 vulnerabilidades, 1 bug,
+72 code smells) foram corrigidos junto com as fases 5 e 6, no PR #17. Como o Sonar continua
+inacessível daqui, o "0 issues" em New Code e Overall Code nunca chegou a ser confirmado por uma
+sessão; se isso importar antes de abrir a rodada nova, precisa de confirmação humana olhando o
+SonarCloud direto.
 
 Achados recorrentes de falso positivo neste projeto, todos ligados a como o Sonar resolve símbolos
 gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm e os campos de
