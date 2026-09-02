@@ -41,6 +41,16 @@ namespace GDSB.MAUI.ViewModels
             _vaultSessionService = vaultSessionService;
         }
 
+        /// <summary>
+        /// Disparado só quando um backup foi realmente apagado do IVaultBackupStore (nunca antes
+        /// de confirmar) - a view usa isso pra tocar a mesma animação de "selo estilhaçado" da
+        /// exclusão de item em VaultPage, deixando visível que aquele backup foi destruído.
+        /// </summary>
+        public event EventHandler? BackupDeleted;
+
+        /// <summary>Disparado quando "excluir todos" apagou pelo menos um backup.</summary>
+        public event EventHandler? AllBackupsDeleted;
+
         public ObservableCollection<BackupItemViewModel> Backups { get; } = new();
 
         [ObservableProperty]
@@ -197,6 +207,7 @@ namespace GDSB.MAUI.ViewModels
             _backupStore.Delete(item.Info);
             PendingDeleteItem = null;
             Refresh();
+            BackupDeleted?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]
@@ -208,11 +219,16 @@ namespace GDSB.MAUI.ViewModels
         [RelayCommand(CanExecute = nameof(CanInteract))]
         private void ConfirmDeleteAll()
         {
+            var deletedAny = Backups.Count > 0;
+
             foreach (var item in Backups.ToList())
                 _backupStore.Delete(item.Info);
 
             IsConfirmingDeleteAll = false;
             Refresh();
+
+            if (deletedAny)
+                AllBackupsDeleted?.Invoke(this, EventArgs.Empty);
         }
 
         partial void OnIsBusyChanged(bool value)

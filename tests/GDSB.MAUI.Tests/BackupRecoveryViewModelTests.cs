@@ -118,12 +118,14 @@ namespace GDSB.MAUI.Tests
         }
 
         [Fact]
-        public void ConfirmDelete_CallsStoreDelete()
+        public void ConfirmDelete_CallsStoreDelete_AndRaisesBackupDeleted()
         {
             var sut = new Sut();
             var info = sut.AddBackup();
             sut.ViewModel.Initialize();
             var item = sut.ViewModel.Backups[0];
+            var deletedCount = 0;
+            sut.ViewModel.BackupDeleted += (_, _) => deletedCount++;
 
             sut.ViewModel.PromptDeleteCommand.Execute(item);
             sut.ViewModel.ConfirmDeleteCommand.Execute(null);
@@ -131,15 +133,18 @@ namespace GDSB.MAUI.Tests
             Assert.DoesNotContain(info, sut.BackupStore.Items);
             Assert.Empty(sut.ViewModel.Backups);
             Assert.False(sut.ViewModel.IsConfirmingDelete);
+            Assert.Equal(1, deletedCount);
         }
 
         [Fact]
-        public void ConfirmDeleteAll_DeletesEveryListedBackup()
+        public void ConfirmDeleteAll_DeletesEveryListedBackup_AndRaisesAllBackupsDeleted()
         {
             var sut = new Sut();
             sut.AddBackup();
             sut.BackupStore.Store("content://other-vault", "Outro cofre", new byte[] { 4, 5 }, VaultBackupKind.Rolling);
             sut.ViewModel.Initialize();
+            var deletedAllCount = 0;
+            sut.ViewModel.AllBackupsDeleted += (_, _) => deletedAllCount++;
 
             sut.ViewModel.PromptDeleteAllCommand.Execute(null);
             sut.ViewModel.ConfirmDeleteAllCommand.Execute(null);
@@ -147,6 +152,20 @@ namespace GDSB.MAUI.Tests
             Assert.Empty(sut.BackupStore.Items);
             Assert.Empty(sut.ViewModel.Backups);
             Assert.False(sut.ViewModel.IsConfirmingDeleteAll);
+            Assert.Equal(1, deletedAllCount);
+        }
+
+        [Fact]
+        public void ConfirmDeleteAll_NoBackups_DoesNotRaiseAllBackupsDeleted()
+        {
+            var sut = new Sut();
+            sut.ViewModel.Initialize();
+            var deletedAllCount = 0;
+            sut.ViewModel.AllBackupsDeleted += (_, _) => deletedAllCount++;
+
+            sut.ViewModel.ConfirmDeleteAllCommand.Execute(null);
+
+            Assert.Equal(0, deletedAllCount);
         }
     }
 }
