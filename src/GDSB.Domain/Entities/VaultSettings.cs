@@ -13,5 +13,11 @@ namespace GDSB.Domain.Entities
         public bool AutoLockEnabled { get; set; } = true;
 
         public int AutoLockMinutes { get; set; } = 2;
+
+        public BackupRetentionMode BackupRetentionMode { get; set; } = BackupRetentionMode.Count;
+
+        public int BackupRetentionCount { get; set; } = 10;
+
+        public int BackupRetentionDays { get; set; } = 5;
     }
 }

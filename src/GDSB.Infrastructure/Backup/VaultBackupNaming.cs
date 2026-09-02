@@ -13,6 +13,12 @@ namespace GDSB.Infrastructure.Backup
 
         public static string BuildName(string vaultFileName, string suffix) => $"{Prefix}{vaultFileName}{suffix}";
 
+        // Usado só para Rolling, que agora acumula versões em vez de sobrescrever - o timestamp
+        // é o que distingue uma versão da outra. Sem ":" no horário porque é ilegal em nome de
+        // arquivo no Windows.
+        public static string BuildName(string vaultFileName, string suffix, DateTime createdAtUtc) =>
+            $"{Prefix}{vaultFileName} - {createdAtUtc:yyyy-MM-dd HH-mm-ss}{suffix}";
+
         public static bool IsBackupName(string fileName) =>
             fileName.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase)
             || fileName.EndsWith(LegacySuffix, StringComparison.OrdinalIgnoreCase)

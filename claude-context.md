@@ -124,7 +124,7 @@ explicar — na ordem inversa, as mesmas telas seriam reabertas duas vezes.
 | # | Fase | Frente | Depende de | Status | PR |
 |---|------|--------|------------|--------|-----|
 | 0 | Contexto e plano (este arquivo + artifact) | — | — | ✅ Concluída | — |
-| 1 | Retenção no domínio e no store | Backups | — | ⬜ A fazer | — |
+| 1 | Retenção no domínio e no store | Backups | — | ✅ Concluída | PR aberto nesta sessão |
 | 2 | Bloco BACKUPS nas telas | Backups | 1 | ⬜ A fazer | — |
 | 3 | Infra de ajuda e obrigatoriedade | Onboarding | — | ⬜ A fazer | — |
 | 4 | Tutorial de primeiro acesso | Onboarding | 3 | ⬜ A fazer | — |

@@ -134,7 +134,7 @@ namespace GDSB.Infrastructure.Tests
         }
 
         [Fact]
-        public void Save_OverwritingV2File_CreatesRollingBakOfPreviousVersion()
+        public void Save_OverwritingV2File_AccumulatesRollingBakOfEachPreviousVersion()
         {
             var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
             try
@@ -153,9 +153,42 @@ namespace GDSB.Infrastructure.Tests
                 profile.Boxes[0].BoxName = "Netflix (editado de novo)";
                 _sut.Save(path, profile, Password);
 
-                var backupAgain = Assert.Single(_backupStore.List(), b => b.OriginLocation == path);
-                var backedUpAgain = _sut.Open(backupAgain.Id, Password);
-                Assert.Equal("Netflix (editado)", backedUpAgain.Profile.Boxes[0].BoxName);
+                // Rolling agora acumula uma versão por save (dentro do limite de retenção
+                // default, Count=10) em vez de sobrescrever a anterior.
+                var backups = _backupStore.List().Where(b => b.OriginLocation == path).ToList();
+                Assert.Equal(2, backups.Count);
+                Assert.Contains(backups, b => _sut.Open(b.Id, Password).Profile.Boxes[0].BoxName == "Netflix");
+                Assert.Contains(backups, b => _sut.Open(b.Id, Password).Profile.Boxes[0].BoxName == "Netflix (editado)");
+            }
+            finally
+            {
+                File.Delete(path);
+                _backupStore.DeleteAllFor(path);
+            }
+        }
+
+        [Fact]
+        public void Save_PrunesRollingBackupsUsingRetentionFromProfileSettings()
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.GDSBX");
+            try
+            {
+                var profile = CreateSampleProfile();
+                profile.Settings.BackupRetentionMode = BackupRetentionMode.Count;
+                profile.Settings.BackupRetentionCount = 1;
+
+                _sut.Save(path, profile, Password);
+
+                profile.Boxes[0].BoxName = "Netflix (editado)";
+                _sut.Save(path, profile, Password);
+
+                profile.Boxes[0].BoxName = "Netflix (editado de novo)";
+                _sut.Save(path, profile, Password);
+
+                var rollingBackups = _backupStore.List()
+                    .Where(b => b.OriginLocation == path && b.Kind == VaultBackupKind.Rolling)
+                    .ToList();
+                Assert.Single(rollingBackups);
             }
             finally
             {
