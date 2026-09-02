@@ -34,14 +34,35 @@ offset  tamanho  campo
 
 Arquivos `.GDSBX` antigos (v1) continuam abrindo normalmente: o formato é detectado automaticamente
 e, ao salvar pela primeira vez, o arquivo é migrado para v2 de forma transparente, com o original
-preservado em um backup `.v1.bak` ao lado.
+preservado como backup — nunca ao lado do cofre, ver "Backups" abaixo.
 
 ## Funcionalidades
 
 - Criar, abrir, editar e excluir cofres e itens (usuário, senha, URL, observações, favoritos).
-- Copiar usuário/senha para a área de transferência, com limpeza automática após 20s.
-- Auto-lock por inatividade (2 minutos em background) e biometria opcional para desbloquear o
-  último cofre aberto, sempre com a senha mestra disponível como alternativa.
+- **Desbloqueio:** escolher o arquivo do cofre vem antes da senha mestra — o campo de senha só
+  habilita depois de um arquivo selecionado. Não se aplica ao modo com biometria ligada, onde o
+  bloco manual inteiro dá lugar a um único botão mirando o último cofre aberto.
+- **Backups.** Antes de cada gravação, a versão anterior do cofre é salva automaticamente num
+  diretório próprio do app (`vault-backups`, dentro de `FileSystem.AppDataDirectory`) — nunca mais
+  ao lado do arquivo original, nem no Windows, o que evita que o backup apareça sincronizado junto
+  com o cofre em pastas do Google Drive/OneDrive. O nome usa o prefixo `BKP - ` (resolve a
+  truncagem em tela pequena, que corta o fim do nome) e o sufixo `.bak`/`.v1.bak`. Uma tela de
+  recuperação, alcançada pela tela de desbloqueio ("Recuperar de um backup"), lista todos os
+  backups e permite restaurar um deles para um arquivo novo (o cofre original nunca é sobrescrito)
+  ou excluir backups, um por vez ou todos de uma vez.
+- **Edição de cofre.** Uma tela própria (ícone de engrenagem no cabeçalho do cofre) permite
+  renomear o cofre e trocar a senha mestra — as duas únicas mudanças que afetam o ponto de
+  desbloqueio, então, depois de gravar no arquivo atual, a tela oferece salvar também num arquivo
+  novo (o original nunca é alterado sem essa confirmação). Trocar a senha com a biometria ativa
+  re-sela o atalho automaticamente com a senha nova, e oferece excluir os backups antigos (que
+  continuam cifrados com a senha anterior).
+- **Proteções por cofre.** Limpeza automática da área de transferência e auto-lock por inatividade
+  são configuráveis por cofre (gravadas dentro do próprio arquivo, em `Profile.Settings`), com
+  tempos ajustáveis (20/45/90s para o clipboard; 1/2/5/15 min para o auto-lock) e a opção de
+  desligar cada uma — com aviso de que desligar o auto-lock deixa o cofre aberto indefinidamente
+  em segundo plano.
+- Biometria opcional para desbloquear o último cofre aberto, sempre com a senha mestra disponível
+  como alternativa.
 - Layout responsivo: lista + bottom-sheet no celular, mestre-detalhe lado a lado no tablet.
 - No Android, acesso a arquivo via Storage Access Framework, permitindo cofres sincronizados por
   provedores como Google Drive ou OneDrive.

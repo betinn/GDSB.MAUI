@@ -16,7 +16,7 @@ namespace GDSB.MAUI.Platforms.Android
             if (decorView is null)
                 return;
 
-            var inputMethodManager = activity!.GetSystemService(Context.InputMethodService) as InputMethodManager;
+            var inputMethodManager = activity.GetSystemService(Context.InputMethodService) as InputMethodManager;
             inputMethodManager?.HideSoftInputFromWindow(decorView.WindowToken, HideSoftInputFlags.None);
         }
     }

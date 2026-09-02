@@ -81,11 +81,15 @@ namespace GDSB.MAUI.ViewModels
         [ObservableProperty]
         private string? errorMessage;
 
+        // Sonar não reconhece leitura de propriedade gerada por [ObservableProperty] como "dado de
+        // instância" e sugere static - tornar estático quebraria o binding de XAML.
+#pragma warning disable S2325
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         public bool CanInteract => !IsBusy;
 
         public string CreateButtonText => IsBusy ? "Criando..." : "Criar cofre";
+#pragma warning restore S2325
 
         [RelayCommand]
         private Task GoBackAsync() => _navigationService.GoBackAsync();
@@ -156,6 +160,9 @@ namespace GDSB.MAUI.ViewModels
                 }
                 catch (Exception)
                 {
+                    // Intencional: mesmo se não houver atalho de biometria pra desativar (ou o
+                    // Keystore falhar), o cofre novo precisa ser criado do mesmo jeito - a oferta
+                    // de biometria abaixo é o caminho normal pra religar, se o usuário quiser.
                 }
 
                 BiometricOptIn.ForgetVault();
@@ -179,7 +186,11 @@ namespace GDSB.MAUI.ViewModels
             }
         }
 
+        // Idem: referencia IsBusy (gerado por [ObservableProperty]) e é o CanExecute do
+        // [RelayCommand] acima - não pode virar static sem quebrar o CommunityToolkit.Mvvm.
+#pragma warning disable S2325
         private bool CanCreate() => !IsBusy;
+#pragma warning restore S2325
 
         partial void OnIsBusyChanged(bool value)
         {

@@ -46,7 +46,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
                     ?? global::Android.App.Application.Context.ContentResolver;
                 var uri = global::Android.Net.Uri.Parse(location);
 
-                using var cursor = resolver?.Query(uri!, new[] { OpenableColumns.DisplayName }, null, null, null);
+                using var cursor = resolver?.Query(uri, new[] { OpenableColumns.DisplayName }, null, null, null);
                 if (cursor is not null && cursor.MoveToFirst())
                 {
                     var columnIndex = cursor.GetColumnIndex(OpenableColumns.DisplayName);
@@ -83,7 +83,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
             if (activity is null)
             {
-                tcs.SetResult(null!);
+                tcs.SetResult(null);
                 return tcs.Task;
             }
 
@@ -92,13 +92,13 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 var uri = resultCode == Result.Ok ? data?.Data : null;
                 if (uri is null)
                 {
-                    tcs.TrySetResult(null!);
+                    tcs.TrySetResult(null);
                     return;
                 }
 
                 try
                 {
-                    var takeFlags = data!.Flags & (ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
+                    var takeFlags = data.Flags & (ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
                     activity.ContentResolver?.TakePersistableUriPermission(uri, takeFlags);
                 }
                 catch
@@ -107,7 +107,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
                     // persistente - a leitura/gravação ainda funciona normalmente nesta sessão.
                 }
 
-                tcs.TrySetResult(uri.ToString()!);
+                tcs.TrySetResult(uri.ToString());
             });
 
             activity.StartActivityForResult(intent, requestCode);

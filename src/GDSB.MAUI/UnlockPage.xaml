@@ -175,6 +175,16 @@
                     </Label.GestureRecognizers>
                 </Label>
 
+                <Label Text="Recuperar de um backup"
+                       TextColor="{StaticResource TextSecondaryDark}"
+                       FontSize="13"
+                       HorizontalOptions="Center"
+                       behaviors:HoverCursor.IsHand="True">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToBackupRecoveryCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+
             </VerticalStackLayout>
 
         </Grid>

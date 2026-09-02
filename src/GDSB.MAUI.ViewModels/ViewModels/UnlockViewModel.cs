@@ -63,6 +63,9 @@ namespace GDSB.MAUI.ViewModels
         [ObservableProperty]
         private string? selectedVaultFileName;
 
+        // Sonar não reconhece leitura/escrita de propriedade gerada por [ObservableProperty] como
+        // "dado de instância" e sugere static - tornar estático quebraria o binding de XAML.
+#pragma warning disable S2325
         public bool HasSelectedVault => !string.IsNullOrEmpty(SelectedVaultLocation);
 
         [ObservableProperty]
@@ -86,16 +89,20 @@ namespace GDSB.MAUI.ViewModels
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         public bool CanInteract => !IsBusy;
+#pragma warning restore S2325
 
         // Com biometria ativa, o campo de senha some e a única forma de abrir um cofre é o mesmo
         // que ela mira (ou trocar de cofre, que a desativa) - ver ChangeVaultAsync: sem isso, dava
         // pra abrir manualmente um cofre B com uma biometria ainda selada com a senha do cofre A,
         // e a próxima tentativa por biometria tentava abrir B com a senha de A.
+        // Idem justificativa de S2325 acima.
+#pragma warning disable S2325
         public bool ShowManualUnlock => !CanUseBiometric;
 
         public string UnlockButtonText => IsBusy ? "Abrindo..." : "Abrir cofre";
 
         public string EyeGlyph => IsPasswordHidden ? "👁" : "🙈";
+#pragma warning restore S2325
 
         [RelayCommand]
         private void ToggleShowPassword() => IsPasswordHidden = !IsPasswordHidden;
@@ -103,6 +110,12 @@ namespace GDSB.MAUI.ViewModels
         [RelayCommand]
         private Task GoToCreateVaultAsync() => _navigationService.NavigateToAsync("CreateVaultPage");
 
+        [RelayCommand]
+        private Task GoToBackupRecoveryAsync() => _navigationService.NavigateToAsync("BackupRecoveryPage");
+
+        // Idem justificativa de S2325 acima - escreve em propriedades geradas por
+        // [ObservableProperty], que o Sonar não reconhece como estado de instância.
+#pragma warning disable S2325
         public void ClearPassword()
         {
             Password = string.Empty;
@@ -111,6 +124,7 @@ namespace GDSB.MAUI.ViewModels
             SelectedVaultLocation = null;
             SelectedVaultFileName = null;
         }
+#pragma warning restore S2325
 
         // "Trocar arquivo": some do lugar do nome escolhido e volta ao estado inicial - mesmo
         // efeito de reabrir a UnlockPage do zero.
@@ -191,10 +205,10 @@ namespace GDSB.MAUI.ViewModels
                 return;
             }
 
-            if (!HasSelectedVault)
+            if (SelectedVaultLocation is not { } selectedLocation)
                 return;
 
-            await OpenAndNavigateAsync(SelectedVaultLocation!, Password, offerBiometricOptIn: true);
+            await OpenAndNavigateAsync(selectedLocation, Password, offerBiometricOptIn: true);
         }
 
         [RelayCommand(CanExecute = nameof(CanUnlockWithBiometric))]
@@ -291,6 +305,9 @@ namespace GDSB.MAUI.ViewModels
             }
             catch (Exception)
             {
+                // Intencional: mesmo se não houver atalho pra desativar (ou o Keystore falhar), a
+                // troca de cofre precisa seguir em frente - ForgetVault abaixo já limpa o estado
+                // relevante de qualquer forma.
             }
 
             BiometricOptIn.ForgetVault();
@@ -302,9 +319,13 @@ namespace GDSB.MAUI.ViewModels
         // UnlockCommand exige um arquivo escolhido; UnlockWithBiometricCommand não - a biometria
         // mira sempre o cofre lembrado em Preferences (LastLocationPreferenceKey), sem depender de
         // nenhuma seleção manual feita nesta tela.
+        // Idem justificativa de S2325 acima - CanExecute de [RelayCommand], não pode virar static
+        // sem quebrar o CommunityToolkit.Mvvm.
+#pragma warning disable S2325
         private bool CanUnlock() => !IsBusy && HasSelectedVault;
 
         private bool CanUnlockWithBiometric() => !IsBusy;
+#pragma warning restore S2325
 
         partial void OnIsBusyChanged(bool value)
         {

@@ -122,8 +122,17 @@ Três frentes vindas do uso real:
 | 2 | Backups fora da pasta do cofre (`IVaultBackupStore`) | ✅ Concluída | [#15](https://github.com/betinn/GDSB.MAUI/pull/15) |
 | 3 | Proteções configuráveis por cofre (`VaultSettings`) | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
 | 4 | Tela de edição do cofre | ✅ Concluída | [#16](https://github.com/betinn/GDSB.MAUI/pull/16) |
-| 5 | Recuperação de backup | 🔜 Próxima | — |
-| 6 | Fechamento (README, contexto, testes, build) | ⬜ Planejada | — |
+| 5 | Recuperação de backup | ✅ Concluída | [#17](https://github.com/betinn/GDSB.MAUI/pull/17) |
+| 6 | Fechamento (README, contexto, testes, build) | ✅ Concluída | [#17](https://github.com/betinn/GDSB.MAUI/pull/17) |
+
+**Rodada concluída.** As fases 5 e 6 foram implementadas na mesma sessão que também corrigiu os 75
+issues abertos do SonarCloud (ver seção própria abaixo) — as duas frentes foram pedidas juntas e
+foram pro mesmo PR, a pedido explícito de quem pediu a sessão. Essa sessão também não tinha Android
+SDK disponível (mesmo bloqueio de rede a `dl.google.com` das sessões anteriores); instalou o .NET 10
+SDK e o workload `maui-android` via `apt` (mesmo caminho que já funcionou nas fases 3/4), as duas
+suítes de teste passaram (87 testes: 20 em GDSB.Infrastructure.Tests + 67 em GDSB.MAUI.Tests), mas
+`dotnet build -p:GdsbAndroidOnly=true` e o roteiro manual das fases 1, 4 e 5 continuam pendentes de
+verificação num ambiente com Android SDK — ver o PR para detalhes.
 
 Dependências: **2 antes de 5** (a tela de recuperação lê o store criado na fase 2) e **3 antes de 4**
 (a tela de edição edita o `VaultSettings` criado na fase 3). A fase 1 é independente das demais.
@@ -182,7 +191,14 @@ Depois de qualquer push, confira o check antes de considerar a fase pronta: a Qu
 passar (sem bloquear o merge) mesmo com **New Issues** abertas — "0 New issues" é o alvo, não só
 "Quality Gate passed". Para ver a lista, é preciso pedir pro usuário colar o conteúdo da aba
 "Issues" do PR no SonarCloud (`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por
-`WebFetch` quanto por `curl`/API) — a mensagem do check só traz a contagem, não o detalhe.
+`WebFetch` quanto por `curl`/API, mesmo com token — confirmado de novo nesta sessão) — a mensagem
+do check só traz a contagem, não o detalhe.
+
+Um plano gerado a partir de um relatório do SonarCloud de 2026-09-01 (75 issues: 2 vulnerabilidades,
+1 bug, 72 code smells) foi executado nesta sessão, no mesmo PR das fases 5/6 — ver o PR pra a lista
+completa do que foi corrigido. Como o Sonar continua inacessível daqui, o "0 issues" em New Code e
+Overall Code não pôde ser confirmado por esta sessão; precisa de confirmação humana (ou de uma
+sessão com rede liberada) olhando o SonarCloud direto.
 
 Achados recorrentes de falso positivo neste projeto, todos ligados a como o Sonar resolve símbolos
 gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm e os campos de

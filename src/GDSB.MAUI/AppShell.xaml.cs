@@ -10,6 +10,7 @@ namespace GDSB.MAUI
             Routing.RegisterRoute(nameof(VaultPage), typeof(VaultPage));
             Routing.RegisterRoute(nameof(CreateVaultPage), typeof(CreateVaultPage));
             Routing.RegisterRoute(nameof(VaultSettingsPage), typeof(VaultSettingsPage));
+            Routing.RegisterRoute(nameof(BackupRecoveryPage), typeof(BackupRecoveryPage));
         }
     }
 }

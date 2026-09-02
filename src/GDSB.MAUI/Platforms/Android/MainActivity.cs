@@ -67,14 +67,10 @@ namespace GDSB.MAUI
 
             if (requestCode == RequestStorageId)
             {
-                if (grantResults.Length > 0 && grantResults[0] == Permission.Granted)
-                {
-                    // Permission granted, proceed with file access
-                }
-                else
-                {
-                    // Permission denied, handle accordingly
-                }
+                var granted = grantResults.Length > 0 && grantResults[0] == Permission.Granted;
+                System.Diagnostics.Debug.WriteLine(granted
+                    ? "GDSB: legacy storage permission granted."
+                    : "GDSB: legacy storage permission denied; file access relies on the Storage Access Framework picker instead.");
             }
         }
     }

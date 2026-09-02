@@ -82,6 +82,7 @@ namespace GDSB.MAUI
             services.AddTransient<VaultViewModel>();
             services.AddTransient<CreateVaultViewModel>();
             services.AddTransient<VaultSettingsViewModel>();
+            services.AddTransient<BackupRecoveryViewModel>();
         }
 
         private static void RegisterPages(IServiceCollection services)
@@ -90,6 +91,7 @@ namespace GDSB.MAUI
             services.AddTransient<VaultPage>();
             services.AddTransient<CreateVaultPage>();
             services.AddTransient<VaultSettingsPage>();
+            services.AddTransient<BackupRecoveryPage>();
             services.AddTransient<AppShell>();
         }
     }

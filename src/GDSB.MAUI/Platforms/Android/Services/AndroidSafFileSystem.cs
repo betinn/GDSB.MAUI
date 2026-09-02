@@ -50,7 +50,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
             var uri = global::Android.Net.Uri.Parse(location);
 
             // "wt" = write + truncate: sem isso, alguns provedores concatenam em vez de substituir.
-            using var stream = resolver.OpenOutputStream(uri!, "wt")
+            using var stream = resolver.OpenOutputStream(uri, "wt")
                 ?? throw new FileNotFoundException($"Não foi possível gravar o cofre em {location}.");
             stream.Write(data, 0, data.Length);
         }
@@ -62,7 +62,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
         {
             var resolver = global::Android.App.Application.Context.ContentResolver;
             var uri = global::Android.Net.Uri.Parse(location);
-            return resolver?.OpenInputStream(uri!);
+            return resolver?.OpenInputStream(uri);
         }
     }
 }

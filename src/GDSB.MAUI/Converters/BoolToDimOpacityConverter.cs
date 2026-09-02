@@ -14,7 +14,11 @@ namespace GDSB.MAUI.Converters
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
             value is bool b && b ? EnabledOpacity : DisabledOpacity;
 
+        // ConvertBack faz parte da interface IValueConverter (método de instância) - não pode
+        // virar static sem quebrar a implementação da interface, apesar de não usar estado aqui.
+#pragma warning disable S2325
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
             throw new NotSupportedException();
+#pragma warning restore S2325
     }
 }

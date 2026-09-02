@@ -13,7 +13,8 @@ namespace GDSB.MAUI.Services
 
         public async Task SetTextAsync(string text)
         {
-            _pendingClear?.Cancel();
+            if (_pendingClear is not null)
+                await _pendingClear.CancelAsync();
 
             await Clipboard.SetTextAsync(text);
 

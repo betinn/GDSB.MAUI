@@ -113,9 +113,16 @@ namespace GDSB.MAUI.ViewModels
         [ObservableProperty]
         private string? validationError;
 
-        public string PasswordDisplay => SelectedItem is null
-            ? string.Empty
-            : (IsPasswordVisible ? SelectedItem.Pass : "••••••••••");
+        // Bloco de propriedades computadas somente leitura, todas derivadas de propriedades
+        // geradas por [ObservableProperty] - o Sonar não reconhece esse acesso como "dado de
+        // instância" e sugere static (S2325); tornar qualquer uma delas estática quebraria o
+        // binding de XAML que as consome.
+#pragma warning disable S2325
+        public string PasswordDisplay => SelectedItem switch
+        {
+            null => string.Empty,
+            _ => IsPasswordVisible ? SelectedItem.Pass : "••••••••••",
+        };
 
         public string RevealPasswordGlyph => IsPasswordVisible ? "🙈" : "👁";
 
@@ -153,6 +160,7 @@ namespace GDSB.MAUI.ViewModels
         public string EditorHeaderTitle => SelectedItem is null ? "Novo item" : SelectedItem.BoxName;
 
         public string EditorHeaderInitial => SelectedItem?.Initial ?? "+";
+#pragma warning restore S2325
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
@@ -170,7 +178,10 @@ namespace GDSB.MAUI.ViewModels
                 _password = password;
         }
 
+        // Idem justificativa de S2325 acima - escreve em IsWideLayout ([ObservableProperty]).
+#pragma warning disable S2325
         public void OnSizeChanged(double width) => IsWideLayout = width >= ResponsiveBreakpoints.TabletMinWidth;
+#pragma warning restore S2325
 
         partial void OnSearchTextChanged(string value) => RefreshItems();
 
@@ -427,7 +438,11 @@ namespace GDSB.MAUI.ViewModels
                 SecretUpdated?.Invoke(this, EventArgs.Empty);
         }
 
+        // Idem justificativa de S2325 acima - CanExecute de [RelayCommand], não pode virar static
+        // sem quebrar o CommunityToolkit.Mvvm.
+#pragma warning disable S2325
         private bool CanSaveItem() => !IsBusy;
+#pragma warning restore S2325
 
         [RelayCommand]
         private void CloseEditor()
