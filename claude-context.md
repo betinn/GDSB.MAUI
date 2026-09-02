@@ -182,8 +182,10 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
 
 ## Como trabalhar
 
-- **Uma branch por fase**, criada a partir da `main` (ex.: `fase-1-retencao-backups`). Quando a
-  sessão já vier com uma branch designada, use a designada.
+- **Uma branch por fase, sempre nomeada `fase-<N>-<nome-curto>`** (ex.: `fase-1-retencao-backups`),
+  criada a partir da `main`. Vale mesmo quando a sessão já vier com uma branch designada genérica
+  (tipo `claude/...`): crie a branch da fase a partir dela (ou da `main`) e faça o PR a partir da
+  branch com nome de fase, não da genérica.
 - **Um PR por fase.** Use a lista de arquivos e o "Pronto quando" da fase, no artifact, como
   checklist do PR.
 - Ao terminar a implementação da fase (código pronto e commitado), **abra o PR automaticamente, sem

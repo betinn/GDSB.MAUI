@@ -74,12 +74,15 @@ namespace GDSB.Infrastructure.Backup
                 return (fileName, filePath);
 
             var stem = fileName[..^VaultBackupNaming.RollingSuffix.Length];
-            for (var attempt = 2; ; attempt++)
+            var attempt = 2;
+            while (true)
             {
                 var candidateName = $"{stem} ({attempt}){VaultBackupNaming.RollingSuffix}";
                 var candidatePath = Path.Combine(folder, candidateName);
                 if (!File.Exists(candidatePath))
                     return (candidateName, candidatePath);
+
+                attempt++;
             }
         }
 
