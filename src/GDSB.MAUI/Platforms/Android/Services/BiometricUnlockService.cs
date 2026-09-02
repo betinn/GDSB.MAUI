@@ -229,9 +229,13 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
             // errorCode/errString não são usados: qualquer erro (cancelamento, timeout, bloqueio
             // por tentativas) tem o mesmo tratamento aqui - falha e deixa o chamador cair pro
-            // campo de senha. Assinatura imposta pela classe base do AndroidX.Biometric.
+            // campo de senha. Assinatura imposta pela classe base do AndroidX.Biometric (override),
+            // então os parâmetros não podem ser removidos - o prefixo "_" não basta pro Sonar, daí a
+            // supressão explícita abaixo.
+#pragma warning disable S1172
             public override void OnAuthenticationError(int _errorCode, Java.Lang.ICharSequence _errString) =>
                 _tcs.TrySetResult(null);
+#pragma warning restore S1172
 
             // Não resolve a task aqui: uma tentativa falha (dedo errado) deixa o prompt aberto pro
             // usuário tentar de novo - só OnAuthenticationSucceeded/OnAuthenticationError encerram.
