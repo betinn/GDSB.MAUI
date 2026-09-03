@@ -126,11 +126,14 @@ explicar — na ordem inversa, as mesmas telas seriam reabertas duas vezes.
 | 0 | Contexto e plano (este arquivo + artifact) | — | — | ✅ Concluída | — |
 | 1 | Retenção no domínio e no store | Backups | — | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
 | 2 | Bloco BACKUPS nas telas | Backups | 1 | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
-| 3 | Infra de ajuda e obrigatoriedade | Onboarding | — | ⬜ A fazer | — |
-| 4 | Tutorial de primeiro acesso | Onboarding | 3 | ⬜ A fazer | — |
-| 5 | Cofre novo e segredo novo | Onboarding | 2, 3 | ⬜ A fazer | — |
-| 6 | Backup e edição do cofre | Onboarding | 2, 3 | ⬜ A fazer | — |
-| 7 | Fechamento (README, contexto, testes, build) | — | todas | ⬜ A fazer | — |
+| 3 | Infra de ajuda e obrigatoriedade | Onboarding | — | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
+| 4 | Tutorial de primeiro acesso | Onboarding | 3 | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
+| 5 | Cofre novo e segredo novo | Onboarding | 2, 3 | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
+| 6 | Backup e edição do cofre | Onboarding | 2, 3 | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
+| 7 | Fechamento (README, contexto, testes, build) | — | todas | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
+
+**Rodada encerrada.** Todas as sete fases estão fechadas. Uma rodada nova começa por um
+`claude-context.md` novo e um artifact de plano novo, como as anteriores.
 
 Dependências:
 
@@ -143,9 +146,22 @@ Dependências:
 As fases **1** e **3** não dependem de nada e podem ser feitas em paralelo, em sessões diferentes.
 As fases 5 e 6 só abrem depois de 2 e 3, porque as duas colocam um "?" na sessão `BACKUPS`.
 
-**Exceção já usada:** as fases 1 e 2 foram implementadas e mergeadas juntas no PR #19, a pedido
-explícito do usuário ("elas se complementam"). A regra de "um PR por fase" (seção "Como
-trabalhar") continua valendo por padrão — só quebre de novo se o usuário pedir.
+**Exceções já usadas:** as fases 1 e 2 foram implementadas e mergeadas juntas no PR #19, a pedido
+explícito do usuário ("elas se complementam"); as fases 3 a 7 saíram juntas no PR #20, também a
+pedido explícito ("em vez de você fazer só a próxima fase, quero que faça todas as fases até a
+finalização da feature completa") - e por isso o PR #20 sai da branch `claude/...` designada, em
+vez de uma `fase-<N>-<nome>`. A regra de "um PR por fase" e a de nomenclatura de branch (seção
+"Como trabalhar") continuam valendo por padrão - só quebre de novo se o usuário pedir.
+
+**Auditoria de permissões do Android (PR #20).** Feita a pedido do usuário, de olho na publicação
+na Play Store. O manifesto passou a declarar **uma única** permissão, `USE_BIOMETRIC`; saíram
+`READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE`, `INTERNET` e `ACCESS_NETWORK_STATE`, nenhuma
+com uso no código (o acesso a arquivo é 100% Storage Access Framework e o app é offline por
+inteiro), junto com o `RequestStoragePermissions()` do `MainActivity` que as pedia na primeira
+abertura. **Regra permanente:** nada de declarar permissão "por precaução" - cada uma precisa de um
+uso demonstrável no código, senão vira justificativa a dar na Play Console. As injetadas por
+biblioteca (`USE_FINGERPRINT` da AndroidX.Biometric, `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` da
+AndroidX.Core) foram mantidas e conferidas nos `.aar` dos pacotes restaurados.
 
 ### Decisões já fechadas com o usuário
 
@@ -282,6 +298,16 @@ espelham os mesmos campos de PROTEÇÕES/BACKUPS) — resolvida com a classe bas
 propriedades `[ObservableProperty]`, as listas de opções `static` e os comandos `Select*`
 compartilhados. `SaveProtectionsAsync`/`CreateVaultAsync` continuam em cada ViewModel — fazem
 coisas fundamentalmente diferentes com esses valores, não são candidatos a extração.
+
+### Limitação de rede deste ambiente (Claude Code na web)
+
+A política de egress bloqueia `dl.google.com` e `builds.dotnet.microsoft.com` (403 no proxy), então
+**o Android SDK não pode ser instalado aqui e o alvo `net10.0-android` não compila** (para em
+`XA5300`). O SDK do .NET 10 vem do apt (`apt-get update && apt-get install -y dotnet-sdk-10.0`) e o
+workload MAUI restaura normalmente, então `dotnet test` e o build dos projetos `net10.0` funcionam -
+mas **a compilação do XAML só é validada pelo job `build-android` do CI**. Não tente contornar o
+bloqueio; conte com o CI e compense com verificação estática (XML bem formado, todo
+`{StaticResource}` resolvendo, ids de ajuda batendo com o catálogo) antes do push.
 
 ## Como manter este arquivo
 
