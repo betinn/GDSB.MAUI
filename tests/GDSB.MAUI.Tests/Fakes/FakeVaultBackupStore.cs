@@ -9,7 +9,7 @@ namespace GDSB.MAUI.Tests.Fakes
 
         public List<string> DeleteAllForCalls { get; } = new();
 
-        public VaultBackupInfo Store(string originLocation, string vaultName, byte[] previousBytes, VaultBackupKind kind)
+        public VaultBackupInfo Store(string originLocation, string vaultName, byte[] previousBytes, VaultBackupKind kind, BackupRetentionPolicy? retention = null)
         {
             var info = new VaultBackupInfo(
                 Id: $"{originLocation}::backup",

@@ -124,8 +124,8 @@ explicar — na ordem inversa, as mesmas telas seriam reabertas duas vezes.
 | # | Fase | Frente | Depende de | Status | PR |
 |---|------|--------|------------|--------|-----|
 | 0 | Contexto e plano (este arquivo + artifact) | — | — | ✅ Concluída | — |
-| 1 | Retenção no domínio e no store | Backups | — | ⬜ A fazer | — |
-| 2 | Bloco BACKUPS nas telas | Backups | 1 | ⬜ A fazer | — |
+| 1 | Retenção no domínio e no store | Backups | — | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
+| 2 | Bloco BACKUPS nas telas | Backups | 1 | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
 | 3 | Infra de ajuda e obrigatoriedade | Onboarding | — | ⬜ A fazer | — |
 | 4 | Tutorial de primeiro acesso | Onboarding | 3 | ⬜ A fazer | — |
 | 5 | Cofre novo e segredo novo | Onboarding | 2, 3 | ⬜ A fazer | — |
@@ -142,6 +142,10 @@ Dependências:
 
 As fases **1** e **3** não dependem de nada e podem ser feitas em paralelo, em sessões diferentes.
 As fases 5 e 6 só abrem depois de 2 e 3, porque as duas colocam um "?" na sessão `BACKUPS`.
+
+**Exceção já usada:** as fases 1 e 2 foram implementadas e mergeadas juntas no PR #19, a pedido
+explícito do usuário ("elas se complementam"). A regra de "um PR por fase" (seção "Como
+trabalhar") continua valendo por padrão — só quebre de novo se o usuário pedir.
 
 ### Decisões já fechadas com o usuário
 
@@ -182,28 +186,41 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
 
 ## Como trabalhar
 
-- **Uma branch por fase**, criada a partir da `main` (ex.: `fase-1-retencao-backups`). Quando a
-  sessão já vier com uma branch designada, use a designada.
+- **Uma branch por fase, sempre nomeada `fase-<N>-<nome-curto>`** (ex.: `fase-1-retencao-backups`),
+  criada a partir da `main`. Vale mesmo quando a sessão já vier com uma branch designada genérica
+  (tipo `claude/...`): crie a branch da fase a partir dela (ou da `main`) e faça o PR a partir da
+  branch com nome de fase, não da genérica.
 - **Um PR por fase.** Use a lista de arquivos e o "Pronto quando" da fase, no artifact, como
   checklist do PR.
 - Ao terminar a implementação da fase (código pronto e commitado), **abra o PR automaticamente, sem
   perguntar antes** — é parte padrão do fluxo. O PR fica aberto para review do usuário; não faça
   merge sozinho.
 - O PR nunca é "mudo": a descrição sempre explica o que mudou e por quê.
-- **Não fique monitorando o PR** depois de aberto — gasta token à toa. Se precisar de ajuste, o
-  usuário avisa.
+- **Não fique monitorando o PR** depois de aberto além do necessário pra fechar o ciclo do Sonar
+  (ver "Regra permanente" na seção SonarCloud, logo abaixo) — gasta token à toa. Fora isso, se
+  precisar de ajuste, o usuário avisa.
 - Não pule fases nem inverta as dependências listadas acima.
 
 ### SonarCloud
 
 O repositório roda o SonarCloud Code Analysis como check automático em todo push pro PR (não é um
 step do workflow do GitHub Actions — é uma integração via GitHub App, sem log acessível por aqui).
-Depois de qualquer push, confira o check antes de considerar a fase pronta: a Quality Gate pode
-passar (sem bloquear o merge) mesmo com **New Issues** abertas — "0 New issues" é o alvo, não só
-"Quality Gate passed". Para ver a lista, é preciso pedir pro usuário colar o conteúdo da aba
-"Issues" do PR no SonarCloud (`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por
-`WebFetch` quanto por `curl`/API, mesmo com token — confirmado de novo nesta sessão) — a mensagem
-do check só traz a contagem, não o detalhe.
+
+**Regra permanente:** depois de todo push num PR — e também ao abrir um PR novo — espere as
+workflows do GitHub Actions e o check do SonarCloud terminarem, leia o comentário que o
+`sonarqubecloud[bot]` posta no PR (isso funciona por aqui: é um comentário normal de PR, acessível
+pelas ferramentas de GitHub, mesmo com `sonarcloud.io` bloqueado pela rede deste ambiente) e
+corrija o que for corrigível — **mesmo que a Quality Gate passe**. O alvo é o código mais limpo
+possível, não só o check verde: "0 New issues" importa tanto quanto "Quality Gate passed", e vale
+apagar apontamentos mesmo quando eles não bloqueiam o merge. Ao corrigir, siga os "Achados
+recorrentes de falso positivo" catalogados logo abaixo (pragma comentado em vez de mudar
+comportamento) em vez de reinventar a correção a cada vez.
+
+O comentário do `sonarqubecloud[bot]` normalmente só traz a contagem/condições da Quality Gate
+(ex.: "4.6% Duplication on New Code (required ≤ 3%)"), não a lista de issues linha a linha. Pra ver
+o detalhe é preciso pedir pro usuário colar o conteúdo da aba "Issues" do PR no SonarCloud
+(`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por `WebFetch` quanto por
+`curl`/API, mesmo com token — confirmado de novo nesta sessão).
 
 Na rodada anterior, os 75 issues abertos do relatório de 2026-09-01 (2 vulnerabilidades, 1 bug,
 72 code smells) foram corrigidos junto com as fases 5 e 6, no PR #17. Como o Sonar continua
@@ -236,6 +253,35 @@ Essas issues só aparecem como "New" na primeira vez que a linha em questão é 
 o mesmo padrão já existe, sem supressão, em ViewModels mais antigos (`CanInteract => !IsBusy` em
 `UnlockViewModel`/`CreateVaultViewModel`, por exemplo), só não é reportado ali por ser código de
 antes da janela de "New Code" do Sonar.
+
+### Duplicação de código (métrica "Overall Code", não só "New Code")
+
+O bloco `Button.Triggers` + `DataTrigger` + 3 `Setter` (destacar um chip quando um valor bate) se
+repetia dezenas de vezes em `VaultPage.xaml`, `VaultSettingsPage.xaml` e `CreateVaultPage.xaml` —
+era a maior fonte de duplicação do projeto. Resolvido com dois componentes reutilizáveis, em vez de
+copiar o bloco de novo:
+
+- `GDSB.MAUI.Controls.SelectableChip` (`src/GDSB.MAUI/Controls/SelectableChip.cs`) — subclasse de
+  `Button` com a propriedade bindable `IsSelected`; aplica o destaque em C# (lendo as cores do
+  `Application.Current.Resources`) em vez de um `DataTrigger` por instância. **Cuidado**:
+  `BindableObject.SetDynamicResource`/`RemoveDynamicResource` são `internal` ao assembly do MAUI,
+  não públicos — por isso o controle usa `ClearValue` pra voltar ao valor da `Style` (que precisa
+  de `ApplyToDerivedTypes="True"`, já que o `TargetType` dela é `Button`, não `SelectableChip`).
+- `GDSB.MAUI.Converters.EqualsConverter` (registrado globalmente em `App.xaml`, não por página) —
+  compara o valor bindado com o `ConverterParameter` do chip (sempre como string, já que
+  `CommandParameter`/`ConverterParameter` do XAML sempre chegam como string).
+
+Uso: `<controls:SelectableChip ... IsSelected="{Binding X, Converter={StaticResource
+EqualsConverter}, ConverterParameter=20}" />` pra grupos de valor único (substitui o `DataTrigger`
+com `Value="20"`), ou `IsSelected="{Binding AlgumBool}"` direto pra chips de modo (substitui
+`Value="True"`). **Todo chip novo usa `SelectableChip`, nunca mais `Button` + `DataTrigger`.**
+
+Duplicação também apareceu entre `VaultSettingsViewModel` e `CreateVaultViewModel` (as duas telas
+espelham os mesmos campos de PROTEÇÕES/BACKUPS) — resolvida com a classe base
+`VaultProtectionsFormViewModelBase` (`src/GDSB.MAUI.ViewModels/ViewModels/`), que carrega as
+propriedades `[ObservableProperty]`, as listas de opções `static` e os comandos `Select*`
+compartilhados. `SaveProtectionsAsync`/`CreateVaultAsync` continuam em cada ViewModel — fazem
+coisas fundamentalmente diferentes com esses valores, não são candidatos a extração.
 
 ## Como manter este arquivo
 

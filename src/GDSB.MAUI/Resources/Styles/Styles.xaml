@@ -455,7 +455,9 @@
         <Setter Property="BorderWidth" Value="1" />
     </Style>
 
-    <Style x:Key="FilterChipStyle" TargetType="Button">
+    <!-- ApplyToDerivedTypes: SelectableChip (GDSB.MAUI.Controls) é subclasse de Button e usa
+         essa mesma Style. -->
+    <Style x:Key="FilterChipStyle" TargetType="Button" ApplyToDerivedTypes="True">
         <Setter Property="TextColor" Value="{StaticResource TextSecondaryDark}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="BorderColor" Value="{StaticResource Gray600}" />

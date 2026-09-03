@@ -8,9 +8,10 @@ namespace GDSB.Domain.Interfaces
     public interface IVaultBackupStore
     {
         // Grava previousBytes (o conteúdo do cofre de antes da sobrescrita) como backup de
-        // originLocation e devolve o VaultBackupInfo resultante. Rolling sobrescreve o backup
-        // anterior do mesmo cofre; LegacyV1 nunca sobrescreve um já existente.
-        VaultBackupInfo Store(string originLocation, string vaultName, byte[] previousBytes, VaultBackupKind kind);
+        // originLocation e devolve o VaultBackupInfo resultante. Rolling acumula uma versão por
+        // save (nome com timestamp) e poda pelo retention logo em seguida; LegacyV1 nunca
+        // sobrescreve um já existente e nunca é podado.
+        VaultBackupInfo Store(string originLocation, string vaultName, byte[] previousBytes, VaultBackupKind kind, BackupRetentionPolicy retention);
 
         IReadOnlyList<VaultBackupInfo> List();
 

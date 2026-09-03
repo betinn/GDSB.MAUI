@@ -12,7 +12,7 @@ using System.Text;
 // Precisa continuar batendo com o nome registrado em AppShell.xaml.cs.
 namespace GDSB.MAUI.ViewModels
 {
-    public partial class VaultSettingsViewModel : ObservableObject, IQueryAttributable
+    public partial class VaultSettingsViewModel : VaultProtectionsFormViewModelBase, IQueryAttributable
     {
         private const int MinPasswordLength = 8;
         private const string GenericSaveErrorMessage = "Não foi possível salvar o cofre. Tente novamente.";
@@ -63,27 +63,11 @@ namespace GDSB.MAUI.ViewModels
         /// </summary>
         public event EventHandler? SettingsSaved;
 
-        public static IReadOnlyList<int> ClipboardClearSecondsOptions { get; } = new[] { 20, 45, 90 };
-
-        public static IReadOnlyList<int> AutoLockMinutesOptions { get; } = new[] { 1, 2, 5, 15 };
-
         [ObservableProperty]
         private string vaultName = string.Empty;
 
         [ObservableProperty]
         private string? nameErrorMessage;
-
-        [ObservableProperty]
-        private bool clipboardClearEnabled;
-
-        [ObservableProperty]
-        private int clipboardClearSeconds;
-
-        [ObservableProperty]
-        private bool autoLockEnabled;
-
-        [ObservableProperty]
-        private int autoLockMinutes;
 
         [ObservableProperty]
         private string currentPassword = string.Empty;
@@ -136,6 +120,9 @@ namespace GDSB.MAUI.ViewModels
                 ClipboardClearSeconds = profile.Settings.ClipboardClearSeconds;
                 AutoLockEnabled = profile.Settings.AutoLockEnabled;
                 AutoLockMinutes = profile.Settings.AutoLockMinutes;
+                BackupRetentionMode = profile.Settings.BackupRetentionMode;
+                BackupRetentionCount = profile.Settings.BackupRetentionCount;
+                BackupRetentionDays = profile.Settings.BackupRetentionDays;
             }
 
             if (query.TryGetValue("Location", out var locationValue) && locationValue is string location)
@@ -184,16 +171,6 @@ namespace GDSB.MAUI.ViewModels
             }
         }
 
-        // Recebe string, não int: o CommandParameter do XAML sempre chega como string (o binding
-        // não converte pro tipo do parâmetro do RelayCommand), e RelayCommand<int> lança
-        // InvalidCastException ao tentar converter esse valor - o clique simplesmente não fazia
-        // nada, sem erro visível.
-        [RelayCommand]
-        private void SelectClipboardClearSeconds(string seconds) => ClipboardClearSeconds = int.Parse(seconds);
-
-        [RelayCommand]
-        private void SelectAutoLockMinutes(string minutes) => AutoLockMinutes = int.Parse(minutes);
-
         [RelayCommand(CanExecute = nameof(CanInteract))]
         private async Task SaveProtectionsAsync()
         {
@@ -209,6 +186,9 @@ namespace GDSB.MAUI.ViewModels
                     ClipboardClearSeconds = ClipboardClearSeconds,
                     AutoLockEnabled = AutoLockEnabled,
                     AutoLockMinutes = AutoLockMinutes,
+                    BackupRetentionMode = BackupRetentionMode,
+                    BackupRetentionCount = BackupRetentionCount,
+                    BackupRetentionDays = BackupRetentionDays,
                 };
 
                 await Task.Run(() => _profileFileService.Save(_location, _profile, _password));

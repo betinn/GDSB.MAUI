@@ -12,40 +12,113 @@ namespace GDSB.Infrastructure.Backup
     // por cofre que o Android já tinha antes (dois cofres de mesmo nome não colidem); o nome
     // legível (BuildName) fica só no arquivo em si e no meta.json, que é o que a tela de
     // recuperação (fase 5) mostra.
-    public class FileSystemVaultBackupStore(string root) : IVaultBackupStore
+    public class FileSystemVaultBackupStore(string root, Func<DateTime>? utcNow = null) : IVaultBackupStore
     {
         private const string MetaFileName = "meta.json";
 
-        public VaultBackupInfo Store(string originLocation, string vaultName, byte[] previousBytes, VaultBackupKind kind)
+        // Injetável só em teste - é o que torna a poda por dias testável sem depender do relógio
+        // real da máquina.
+        private readonly Func<DateTime> _utcNow = utcNow ?? (() => DateTime.UtcNow);
+
+        public VaultBackupInfo Store(string originLocation, string vaultName, byte[] previousBytes, VaultBackupKind kind, BackupRetentionPolicy retention)
         {
             var folder = FolderFor(originLocation);
             Directory.CreateDirectory(folder);
 
-            var suffix = kind == VaultBackupKind.LegacyV1 ? VaultBackupNaming.LegacySuffix : VaultBackupNaming.RollingSuffix;
-            var fileName = VaultBackupNaming.BuildName($"{vaultName}.GDSBX", suffix);
-            var filePath = Path.Combine(folder, fileName);
-
             var meta = ReadMeta(folder) ?? new FolderMeta(originLocation, new Dictionary<string, EntryMeta>());
+            meta = meta with { OriginLocation = originLocation };
 
-            // LegacyV1 preserva o original importado - nunca sobrescreve um já existente. Rolling
-            // sempre sobrescreve (é sempre "a versão de antes do último save").
-            if (kind == VaultBackupKind.LegacyV1
-                && File.Exists(filePath)
-                && meta.Entries.TryGetValue(fileName, out var existingEntry))
+            if (kind == VaultBackupKind.LegacyV1)
             {
-                return new VaultBackupInfo(
-                    filePath, fileName, existingEntry.VaultName, meta.OriginLocation,
-                    existingEntry.Kind, existingEntry.CreatedAtUtc, new FileInfo(filePath).Length);
+                var fileName = VaultBackupNaming.BuildName($"{vaultName}.GDSBX", VaultBackupNaming.LegacySuffix);
+                var filePath = Path.Combine(folder, fileName);
+
+                // LegacyV1 preserva o original importado - nunca sobrescreve um já existente.
+                if (File.Exists(filePath) && meta.Entries.TryGetValue(fileName, out var existingEntry))
+                {
+                    return new VaultBackupInfo(
+                        filePath, fileName, existingEntry.VaultName, meta.OriginLocation,
+                        existingEntry.Kind, existingEntry.CreatedAtUtc, new FileInfo(filePath).Length);
+                }
+
+                File.WriteAllBytes(filePath, previousBytes);
+
+                var legacyCreatedAtUtc = _utcNow();
+                meta.Entries[fileName] = new EntryMeta(vaultName, kind, legacyCreatedAtUtc);
+                WriteMeta(folder, meta);
+
+                return new VaultBackupInfo(filePath, fileName, vaultName, originLocation, kind, legacyCreatedAtUtc, previousBytes.LongLength);
             }
 
-            File.WriteAllBytes(filePath, previousBytes);
+            // Rolling agora acumula uma versão por save, em vez de sobrescrever a anterior.
+            var createdAtUtc = _utcNow();
+            var (rollingFileName, rollingFilePath) = BuildUniqueRollingPath(folder, vaultName, createdAtUtc);
 
-            var createdAtUtc = DateTime.UtcNow;
-            meta = meta with { OriginLocation = originLocation };
-            meta.Entries[fileName] = new EntryMeta(vaultName, kind, createdAtUtc);
-            WriteMeta(folder, meta);
+            File.WriteAllBytes(rollingFilePath, previousBytes);
+            meta.Entries[rollingFileName] = new EntryMeta(vaultName, kind, createdAtUtc);
 
-            return new VaultBackupInfo(filePath, fileName, vaultName, originLocation, kind, createdAtUtc, previousBytes.LongLength);
+            var result = new VaultBackupInfo(rollingFilePath, rollingFileName, vaultName, originLocation, kind, createdAtUtc, previousBytes.LongLength);
+
+            Prune(folder, meta, retention);
+
+            return result;
+        }
+
+        // Dois saves no mesmo segundo geram o mesmo nome (timestamp com granularidade de
+        // segundo) - sufixa "(2)", "(3)"... antes da extensão até achar um caminho livre.
+        private static (string fileName, string filePath) BuildUniqueRollingPath(string folder, string vaultName, DateTime createdAtUtc)
+        {
+            var fileName = VaultBackupNaming.BuildName($"{vaultName}.GDSBX", VaultBackupNaming.RollingSuffix, createdAtUtc);
+            var filePath = Path.Combine(folder, fileName);
+            if (!File.Exists(filePath))
+                return (fileName, filePath);
+
+            var stem = fileName[..^VaultBackupNaming.RollingSuffix.Length];
+            var attempt = 2;
+            while (true)
+            {
+                var candidateName = $"{stem} ({attempt}){VaultBackupNaming.RollingSuffix}";
+                var candidatePath = Path.Combine(folder, candidateName);
+                if (!File.Exists(candidatePath))
+                    return (candidateName, candidatePath);
+
+                attempt++;
+            }
+        }
+
+        // Regras: só entradas Rolling entram na conta; LegacyV1 nunca é podado. Nos dois modos
+        // vale o teto rígido (HardCeiling) e o piso de nunca apagar a versão mais recente.
+        // Aproveita a passada para limpar do meta.json entradas cujo arquivo já sumiu.
+        private void Prune(string folder, FolderMeta meta, BackupRetentionPolicy retention)
+        {
+            foreach (var orphan in meta.Entries.Where(e => !File.Exists(Path.Combine(folder, e.Key))).Select(e => e.Key).ToList())
+                meta.Entries.Remove(orphan);
+
+            var rollingByRecency = meta.Entries
+                .Where(e => e.Value.Kind == VaultBackupKind.Rolling)
+                .OrderByDescending(e => e.Value.CreatedAtUtc)
+                .ToList();
+
+            var eligible = retention.Mode == BackupRetentionMode.Days
+                ? rollingByRecency.Where(e => e.Value.CreatedAtUtc >= _utcNow() - TimeSpan.FromDays(retention.Days))
+                : rollingByRecency.Take(Math.Max(retention.Count, 0));
+
+            var toKeep = eligible.Take(BackupRetentionPolicy.HardCeiling).Select(e => e.Key).ToHashSet();
+
+            // Piso: se a regra apagaria tudo, mantém pelo menos a versão mais recente.
+            if (toKeep.Count == 0 && rollingByRecency.Count > 0)
+                toKeep.Add(rollingByRecency[0].Key);
+
+            foreach (var (fileName, _) in rollingByRecency.Where(e => !toKeep.Contains(e.Key)))
+            {
+                var path = Path.Combine(folder, fileName);
+                if (File.Exists(path))
+                    File.Delete(path);
+
+                meta.Entries.Remove(fileName);
+            }
+
+            RemoveFolderIfEmpty(folder, meta);
         }
 
         public IReadOnlyList<VaultBackupInfo> List()

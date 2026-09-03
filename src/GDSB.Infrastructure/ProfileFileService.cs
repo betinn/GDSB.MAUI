@@ -42,14 +42,14 @@ namespace GDSB.Infrastructure
 
         public void Save(string location, Profile profile, string password)
         {
-            BackupBeforeOverwrite(location, profile.Nome);
+            BackupBeforeOverwrite(location, profile.Nome, BackupRetentionPolicy.From(profile.Settings));
 
             var json = JsonSerializer.Serialize(profile);
             var fileBytes = fileCryptoServiceV2.Encrypt(json, password);
             fileSystem.WriteAllBytes(location, fileBytes);
         }
 
-        private void BackupBeforeOverwrite(string location, string vaultName)
+        private void BackupBeforeOverwrite(string location, string vaultName, BackupRetentionPolicy retention)
         {
             if (!fileSystem.Exists(location))
                 return;
@@ -63,11 +63,11 @@ namespace GDSB.Infrastructure
             if (currentBytes.Length == 0)
                 return;
 
-            // Rolling ("corrente", sempre a versão de antes do último save) ou LegacyV1 (o
+            // Rolling (acumula uma versão por save, podada pelo retention) ou LegacyV1 (o
             // original importado) - qual das duas, e se ela sobrescreve uma já existente, é regra
             // do próprio IVaultBackupStore.
             var kind = IsV2Format(currentBytes) ? VaultBackupKind.Rolling : VaultBackupKind.LegacyV1;
-            backupStore.Store(location, vaultName, currentBytes, kind);
+            backupStore.Store(location, vaultName, currentBytes, kind, retention);
         }
 
         private static bool IsV2Format(byte[] fileBytes) =>

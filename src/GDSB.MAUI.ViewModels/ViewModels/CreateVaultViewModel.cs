@@ -10,7 +10,7 @@ using GDSB.MAUI.Services;
 // Precisa continuar batendo com o nome registrado em AppShell.xaml.cs.
 namespace GDSB.MAUI.ViewModels
 {
-    public partial class CreateVaultViewModel : ObservableObject
+    public partial class CreateVaultViewModel : VaultProtectionsFormViewModelBase
     {
         private const int MinPasswordLength = 8;
 
@@ -48,32 +48,6 @@ namespace GDSB.MAUI.ViewModels
 
         [ObservableProperty]
         private string confirmPassword = string.Empty;
-
-        public static IReadOnlyList<int> ClipboardClearSecondsOptions { get; } = new[] { 20, 45, 90 };
-
-        public static IReadOnlyList<int> AutoLockMinutesOptions { get; } = new[] { 1, 2, 5, 15 };
-
-        [ObservableProperty]
-        private bool clipboardClearEnabled = true;
-
-        [ObservableProperty]
-        private int clipboardClearSeconds = 20;
-
-        [ObservableProperty]
-        private bool autoLockEnabled = true;
-
-        [ObservableProperty]
-        private int autoLockMinutes = 2;
-
-        // Recebe string, não int: o CommandParameter do XAML sempre chega como string (o binding
-        // não converte pro tipo do parâmetro do RelayCommand), e RelayCommand<int> lança
-        // InvalidCastException ao tentar converter esse valor - o clique simplesmente não fazia
-        // nada, sem erro visível.
-        [RelayCommand]
-        private void SelectClipboardClearSeconds(string seconds) => ClipboardClearSeconds = int.Parse(seconds);
-
-        [RelayCommand]
-        private void SelectAutoLockMinutes(string minutes) => AutoLockMinutes = int.Parse(minutes);
 
         [ObservableProperty]
         private bool isBusy;
@@ -143,6 +117,9 @@ namespace GDSB.MAUI.ViewModels
                         ClipboardClearSeconds = ClipboardClearSeconds,
                         AutoLockEnabled = AutoLockEnabled,
                         AutoLockMinutes = AutoLockMinutes,
+                        BackupRetentionMode = BackupRetentionMode,
+                        BackupRetentionCount = BackupRetentionCount,
+                        BackupRetentionDays = BackupRetentionDays,
                     },
                 };
                 var enteredPassword = Password;

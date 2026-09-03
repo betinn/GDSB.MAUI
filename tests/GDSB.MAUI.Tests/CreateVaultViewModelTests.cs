@@ -1,3 +1,4 @@
+using GDSB.Domain.Entities;
 using GDSB.MAUI.Tests.Fakes;
 using GDSB.MAUI.ViewModels;
 using Xunit;
@@ -119,6 +120,69 @@ namespace GDSB.MAUI.Tests
             sut.ViewModel.SelectAutoLockMinutesCommand.Execute("15");
 
             Assert.Equal(15, sut.ViewModel.AutoLockMinutes);
+        }
+
+        [Fact]
+        public void NewViewModel_DefaultsToCountAndTen()
+        {
+            var sut = new Sut();
+
+            Assert.Equal(BackupRetentionMode.Count, sut.ViewModel.BackupRetentionMode);
+            Assert.Equal(10, sut.ViewModel.BackupRetentionCount);
+            Assert.Equal(5, sut.ViewModel.BackupRetentionDays);
+            Assert.True(sut.ViewModel.IsBackupRetentionByCount);
+            Assert.False(sut.ViewModel.IsBackupRetentionByDays);
+        }
+
+        [Fact]
+        public void SelectBackupRetentionCountCommand_ParsesStringParameter()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectBackupRetentionCountCommand.Execute("50");
+
+            Assert.Equal(50, sut.ViewModel.BackupRetentionCount);
+        }
+
+        [Fact]
+        public void SelectBackupRetentionDaysCommand_ParsesStringParameter()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectBackupRetentionDaysCommand.Execute("30");
+
+            Assert.Equal(30, sut.ViewModel.BackupRetentionDays);
+        }
+
+        [Fact]
+        public void SelectBackupRetentionModeDaysCommand_SwitchesModeAndFlipsVisibilityFlags()
+        {
+            var sut = new Sut();
+
+            sut.ViewModel.SelectBackupRetentionModeDaysCommand.Execute(null);
+
+            Assert.Equal(BackupRetentionMode.Days, sut.ViewModel.BackupRetentionMode);
+            Assert.False(sut.ViewModel.IsBackupRetentionByCount);
+            Assert.True(sut.ViewModel.IsBackupRetentionByDays);
+        }
+
+        [Fact]
+        public async Task CreateVaultAsync_Success_BackupRetentionReachesSavedProfile()
+        {
+            const string sampleUnlockCode = "senha12345";
+
+            var sut = new Sut();
+            sut.ViewModel.VaultName = "Meu Cofre";
+            sut.ViewModel.Password = sampleUnlockCode;
+            sut.ViewModel.ConfirmPassword = sampleUnlockCode;
+            sut.ViewModel.SelectBackupRetentionModeDaysCommand.Execute(null);
+            sut.ViewModel.SelectBackupRetentionDaysCommand.Execute("30");
+
+            await sut.ViewModel.CreateVaultCommand.ExecuteAsync(null);
+
+            var save = Assert.Single(sut.ProfileFileService.SaveCalls);
+            Assert.Equal(BackupRetentionMode.Days, save.Profile.Settings.BackupRetentionMode);
+            Assert.Equal(30, save.Profile.Settings.BackupRetentionDays);
         }
     }
 }
