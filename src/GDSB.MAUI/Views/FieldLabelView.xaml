@@ -21,7 +21,7 @@
         <Label x:Name="TextLabel" Style="{StaticResource FieldLabelStyle}" VerticalOptions="Center" />
         <Label x:Name="RequiredMark" Text="*" Style="{StaticResource RequiredMarkStyle}"
                VerticalOptions="Center" IsVisible="False" />
-        <views:HelpButton x:Name="HelpButton" Style="{StaticResource HelpButtonStyle}"
+        <views:HelpButton x:Name="HelpAction" Style="{StaticResource HelpButtonStyle}"
                           VerticalOptions="Center" />
     </HorizontalStackLayout>
 </ContentView>

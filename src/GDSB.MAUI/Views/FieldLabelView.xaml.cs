@@ -61,7 +61,7 @@ public partial class FieldLabelView : ContentView
         var view = (FieldLabelView)bindable;
 
         // O HelpButton já se esconde sozinho quando o TopicId é vazio - aqui só se repassa o valor.
-        view.HelpButton.TopicId = newValue as string;
+        view.HelpAction.TopicId = newValue as string;
         view.RefreshHelpSemantics();
     }
 #pragma warning restore S1172
@@ -71,5 +71,5 @@ public partial class FieldLabelView : ContentView
     /// que ele fala.
     /// </summary>
     private void RefreshHelpSemantics() =>
-        SemanticProperties.SetDescription(HelpButton, $"Ajuda sobre {Text}");
+        SemanticProperties.SetDescription(HelpAction, $"Ajuda sobre {Text}");
 }
