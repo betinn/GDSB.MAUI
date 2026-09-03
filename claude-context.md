@@ -196,20 +196,31 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
   perguntar antes** — é parte padrão do fluxo. O PR fica aberto para review do usuário; não faça
   merge sozinho.
 - O PR nunca é "mudo": a descrição sempre explica o que mudou e por quê.
-- **Não fique monitorando o PR** depois de aberto — gasta token à toa. Se precisar de ajuste, o
-  usuário avisa.
+- **Não fique monitorando o PR** depois de aberto além do necessário pra fechar o ciclo do Sonar
+  (ver "Regra permanente" na seção SonarCloud, logo abaixo) — gasta token à toa. Fora isso, se
+  precisar de ajuste, o usuário avisa.
 - Não pule fases nem inverta as dependências listadas acima.
 
 ### SonarCloud
 
 O repositório roda o SonarCloud Code Analysis como check automático em todo push pro PR (não é um
 step do workflow do GitHub Actions — é uma integração via GitHub App, sem log acessível por aqui).
-Depois de qualquer push, confira o check antes de considerar a fase pronta: a Quality Gate pode
-passar (sem bloquear o merge) mesmo com **New Issues** abertas — "0 New issues" é o alvo, não só
-"Quality Gate passed". Para ver a lista, é preciso pedir pro usuário colar o conteúdo da aba
-"Issues" do PR no SonarCloud (`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por
-`WebFetch` quanto por `curl`/API, mesmo com token — confirmado de novo nesta sessão) — a mensagem
-do check só traz a contagem, não o detalhe.
+
+**Regra permanente:** depois de todo push num PR — e também ao abrir um PR novo — espere as
+workflows do GitHub Actions e o check do SonarCloud terminarem, leia o comentário que o
+`sonarqubecloud[bot]` posta no PR (isso funciona por aqui: é um comentário normal de PR, acessível
+pelas ferramentas de GitHub, mesmo com `sonarcloud.io` bloqueado pela rede deste ambiente) e
+corrija o que for corrigível — **mesmo que a Quality Gate passe**. O alvo é o código mais limpo
+possível, não só o check verde: "0 New issues" importa tanto quanto "Quality Gate passed", e vale
+apagar apontamentos mesmo quando eles não bloqueiam o merge. Ao corrigir, siga os "Achados
+recorrentes de falso positivo" catalogados logo abaixo (pragma comentado em vez de mudar
+comportamento) em vez de reinventar a correção a cada vez.
+
+O comentário do `sonarqubecloud[bot]` normalmente só traz a contagem/condições da Quality Gate
+(ex.: "4.6% Duplication on New Code (required ≤ 3%)"), não a lista de issues linha a linha. Pra ver
+o detalhe é preciso pedir pro usuário colar o conteúdo da aba "Issues" do PR no SonarCloud
+(`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por `WebFetch` quanto por
+`curl`/API, mesmo com token — confirmado de novo nesta sessão).
 
 Na rodada anterior, os 75 issues abertos do relatório de 2026-09-01 (2 vulnerabilidades, 1 bug,
 72 code smells) foram corrigidos junto com as fases 5 e 6, no PR #17. Como o Sonar continua
