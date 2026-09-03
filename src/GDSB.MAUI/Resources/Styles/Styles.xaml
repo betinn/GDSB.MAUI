@@ -476,4 +476,67 @@
         <Setter Property="CharacterSpacing" Value="0.4" />
     </Style>
 
+    <!-- Fase 3: sinalização de campo obrigatório e botão de ajuda contextual. -->
+
+    <!-- O asterisco fica em PrimaryDark (#F27BEB, 8.1:1 sobre o fundo) e não em Danger: campo
+         obrigatório é instrução, não erro - vermelho aqui faria o formulário parecer quebrado
+         antes de o usuário digitar qualquer coisa. -->
+    <Style x:Key="RequiredMarkStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style x:Key="RequiredFieldsLegendStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextMutedDark}" />
+        <Setter Property="FontSize" Value="11.5" />
+    </Style>
+
+    <!-- Círculo de 28px com o "?". Os MinimumHeight/WidthRequest de 44 do Style base de Button
+         são reduzidos aqui de propósito: um alvo de 44px ao lado de um label de 11px empurraria a
+         linha inteira e descolaria o "?" do campo que ele explica. 28px é o mesmo compromisso já
+         adotado nos botões de olho/copiar do app (36px em UnlockPage e ItemEditorView). -->
+    <Style x:Key="HelpButtonStyle" TargetType="Button">
+        <Setter Property="Text" Value="?" />
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceElevatedDark}" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="BorderColor" Value="{StaticResource BorderStrongDark}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="WidthRequest" Value="28" />
+        <Setter Property="HeightRequest" Value="28" />
+        <Setter Property="MinimumWidthRequest" Value="28" />
+        <Setter Property="MinimumHeightRequest" Value="28" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <!-- Faixa onde cada amostra visual do painel de ajuda é embutida: o recuo e a borda são o que
+         faz a réplica ler como "isto é uma ilustração do controle", e não como um controle de
+         verdade no meio do texto. -->
+    <Style x:Key="HelpVisualFrameStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceDark}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderDarkBrush}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="Padding" Value="16,18" />
+    </Style>
+
+    <Style x:Key="HelpVisualCaptionStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextMutedDark}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="HelpHeadingStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="HelpTextStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryDark}" />
+        <Setter Property="FontSize" Value="13.5" />
+    </Style>
+
 </ResourceDictionary>

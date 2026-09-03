@@ -9,6 +9,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <!-- Depois de Styles.xaml de propósito: as amostras do painel de ajuda usam os
+                     estilos de verdade declarados lá (FilterChipStyle, CardBorderStyle...). -->
+                <ResourceDictionary Source="Resources/HelpVisuals.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Global porque é usado por SelectableChip.IsSelected em várias telas (VaultPage,
