@@ -40,8 +40,7 @@ namespace GDSB.MAUI.Tests
                     BiometricUnlockService,
                     PreferencesService,
                     AlertService,
-                    biometricOptIn,
-                    Onboarding);
+                    new UnlockOverlays(biometricOptIn, Onboarding));
             }
         }
 

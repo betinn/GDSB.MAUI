@@ -29,6 +29,11 @@ public partial class HelpSheetView : ContentView
 
     public void StopListening() => WeakReferenceMessenger.Default.Unregister<HelpRequestedMessage>(this);
 
+    // S2325 ("make static") é falso positivo em Show/Hide: os dois só tocam TitleLabel, BlocksHost
+    // e Overlay, que são campos de instância gerados pelo InitializeComponent - o Sonar não
+    // resolve esse tipo de campo e conclui que o método não usa estado nenhum. Mesmo caso de
+    // BackupRecoveryPage.OnBackupDeleted e VaultPage.OnSecretDeleted.
+#pragma warning disable S2325
     public void Show(string topicId)
     {
         if (!HelpTopics.TryGet(topicId, out var topic))
@@ -58,6 +63,7 @@ public partial class HelpSheetView : ContentView
         // atrás de um IsVisible=False até a próxima abertura.
         BlocksHost.Clear();
     }
+#pragma warning restore S2325
 
     private void OnDismissClicked(object? sender, EventArgs e) => Hide();
 

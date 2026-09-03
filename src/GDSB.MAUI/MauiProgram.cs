@@ -79,6 +79,7 @@ namespace GDSB.MAUI
             services.AddTransient<BiometricOptInCoordinator>();
 
             services.AddTransient<OnboardingViewModel>();
+            services.AddTransient<UnlockOverlays>();
             services.AddTransient<UnlockViewModel>();
             services.AddTransient<VaultViewModel>();
             services.AddTransient<CreateVaultViewModel>();

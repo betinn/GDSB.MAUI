@@ -41,8 +41,7 @@ namespace GDSB.MAUI.ViewModels
             IBiometricUnlockService biometricUnlockService,
             IPreferencesService preferencesService,
             IAlertService alertService,
-            BiometricOptInCoordinator biometricOptIn,
-            OnboardingViewModel onboarding)
+            UnlockOverlays overlays)
         {
             _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
@@ -51,8 +50,8 @@ namespace GDSB.MAUI.ViewModels
             _preferencesService = preferencesService;
             _alertService = alertService;
             _vaultSessionService = vaultAccess.VaultSessionService;
-            BiometricOptIn = biometricOptIn;
-            Onboarding = onboarding;
+            BiometricOptIn = overlays.BiometricOptIn;
+            Onboarding = overlays.Onboarding;
         }
 
         // Exposto pra UnlockPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
