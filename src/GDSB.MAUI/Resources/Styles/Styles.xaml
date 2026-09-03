@@ -496,7 +496,9 @@
          são reduzidos aqui de propósito: um alvo de 44px ao lado de um label de 11px empurraria a
          linha inteira e descolaria o "?" do campo que ele explica. 28px é o mesmo compromisso já
          adotado nos botões de olho/copiar do app (36px em UnlockPage e ItemEditorView). -->
-    <Style x:Key="HelpButtonStyle" TargetType="Button">
+    <!-- ApplyToDerivedTypes: HelpButton (GDSB.MAUI.Views) é subclasse de Button e usa esta mesma
+         Style, como SelectableChip faz com o FilterChipStyle. -->
+    <Style x:Key="HelpButtonStyle" TargetType="Button" ApplyToDerivedTypes="True">
         <Setter Property="Text" Value="?" />
         <Setter Property="BackgroundColor" Value="{StaticResource SurfaceElevatedDark}" />
         <Setter Property="TextColor" Value="{StaticResource PrimaryDark}" />

@@ -235,5 +235,8 @@
              gravação no arquivo deu certo - ver SealOverlayView/LockSealDrawable. -->
         <views:SealOverlayView x:Name="SealOverlay" />
 
+        <!-- Atende os "?" do ItemEditorView, que é um ContentView e não tem overlay próprio. -->
+        <views:HelpSheetView x:Name="HelpSheet" />
+
     </Grid>
 </ContentPage>

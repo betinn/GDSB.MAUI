@@ -1,6 +1,3 @@
-using CommunityToolkit.Mvvm.Messaging;
-using GDSB.MAUI.Help;
-
 namespace GDSB.MAUI.Views;
 
 public partial class FieldLabelView : ContentView
@@ -33,7 +30,7 @@ public partial class FieldLabelView : ContentView
         set => SetValue(IsRequiredProperty, value);
     }
 
-    /// <summary>Id de um tópico de <see cref="HelpTopics.Ids"/>. Vazio esconde o "?".</summary>
+    /// <summary>Id de um tópico de HelpTopics.Ids. Vazio esconde o "?".</summary>
     public string? HelpTopicId
     {
         get => (string?)GetValue(HelpTopicIdProperty);
@@ -44,12 +41,6 @@ public partial class FieldLabelView : ContentView
     public FieldLabelView()
     {
         InitializeComponent();
-    }
-
-    private void OnHelpClicked(object? sender, EventArgs e)
-    {
-        if (!string.IsNullOrEmpty(HelpTopicId))
-            WeakReferenceMessenger.Default.Send(new HelpRequestedMessage(HelpTopicId));
     }
 
     // oldValue é ignorado de propósito nos três callbacks, mas não dá pra remover: a assinatura é
@@ -68,7 +59,9 @@ public partial class FieldLabelView : ContentView
     private static void OnHelpTopicIdChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var view = (FieldLabelView)bindable;
-        view.HelpButton.IsVisible = !string.IsNullOrEmpty(newValue as string);
+
+        // O HelpButton já se esconde sozinho quando o TopicId é vazio - aqui só se repassa o valor.
+        view.HelpButton.TopicId = newValue as string;
         view.RefreshHelpSemantics();
     }
 #pragma warning restore S1172

@@ -45,7 +45,7 @@
                         <VerticalStackLayout Spacing="16">
 
                             <VerticalStackLayout Spacing="8">
-                                <Label Text="NOME DO COFRE" Style="{StaticResource FieldLabelStyle}" />
+                                <views:FieldLabelView Text="NOME DO COFRE" IsRequired="True" />
                                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                     <Entry Text="{Binding VaultName}" TextColor="{StaticResource TextPrimaryDark}"
@@ -55,7 +55,8 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Spacing="8">
-                                <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+                                <views:FieldLabelView Text="SENHA MESTRA" IsRequired="True"
+                                                      HelpTopicId="vault.masterUnlockCode" />
                                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                     <Entry Text="{Binding Password}" IsPassword="True"
@@ -66,7 +67,7 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Spacing="8">
-                                <Label Text="CONFIRMAR SENHA" Style="{StaticResource FieldLabelStyle}" />
+                                <views:FieldLabelView Text="CONFIRMAR SENHA" IsRequired="True" />
                                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                     <Entry Text="{Binding ConfirmPassword}" IsPassword="True"
@@ -76,6 +77,8 @@
                                            ReturnCommand="{Binding CreateVaultCommand}" />
                                 </Border>
                             </VerticalStackLayout>
+
+                            <Label Text="* campos obrigatórios" Style="{StaticResource RequiredFieldsLegendStyle}" />
 
                             <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
                                    IsVisible="{Binding HasErrorMessage}" />
@@ -89,7 +92,7 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="18">
 
-                            <Label Text="PROTEÇÕES" Style="{StaticResource FieldLabelStyle}" />
+                            <views:FieldLabelView Text="PROTEÇÕES" HelpTopicId="vault.protections" />
 
                             <VerticalStackLayout Spacing="6">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -146,7 +149,7 @@
                             <BoxView HeightRequest="1" Color="{StaticResource BorderDark}" />
 
                             <VerticalStackLayout Spacing="6">
-                                <Label Text="BACKUPS" Style="{StaticResource FieldLabelStyle}" />
+                                <views:FieldLabelView Text="BACKUPS" HelpTopicId="vault.backups" />
                                 <Label Text="Manter quantas versões"
                                        TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
                                 <HorizontalStackLayout Spacing="8">
@@ -205,6 +208,8 @@
         </Grid>
 
         <views:BiometricOptInView BindingContext="{Binding BiometricOptIn}" />
+
+        <views:HelpSheetView x:Name="HelpSheet" />
 
     </Grid>
 </ContentPage>
