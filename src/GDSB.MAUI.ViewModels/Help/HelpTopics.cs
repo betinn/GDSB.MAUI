@@ -1,8 +1,8 @@
 namespace GDSB.MAUI.Help
 {
-    // Catálogo único de todo o texto de ajuda do app. Fica aqui, e não no XAML, por três motivos:
+    // Catálogo único do texto de ajuda do app, inteiro. Fica aqui, e não no XAML, por três motivos:
     // a redação passa a ser revisável num arquivo só, o teste consegue cobri-la (ids existentes,
-    // sem duplicatas, todo tópico com pelo menos uma amostra visual) e a mesma explicação pode ser
+    // sem duplicatas, cada tópico com pelo menos uma amostra visual) e a mesma explicação pode ser
     // reaproveitada por telas diferentes - PROTEÇÕES e BACKUPS aparecem tanto na criação do cofre
     // quanto na edição.
     //

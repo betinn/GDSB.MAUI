@@ -1,7 +1,7 @@
 namespace GDSB.MAUI.Help
 {
     // Um tópico de ajuda não é uma lista de parágrafos: é uma lista de blocos, porque a regra
-    // desta rodada é que todo painel MOSTRE o controle de que fala, não só o descreva. Um painel
+    // desta rodada é que cada painel MOSTRE o controle de que fala, não só o descreva. Um painel
     // só de texto é considerado incompleto - HelpTopicsTests garante isso por teste, em vez de
     // depender de disciplina de quem escreve.
     public enum HelpBlockKind

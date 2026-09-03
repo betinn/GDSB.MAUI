@@ -5,8 +5,8 @@ using Xunit;
 namespace GDSB.MAUI.Tests
 {
     // O catálogo de ajuda é texto, e texto não quebra o build quando sai do lugar - estes testes
-    // são o que segura as regras da rodada: todo id referenciado pelo XAML existe, toda amostra
-    // aponta para uma chave declarada e, principalmente, NENHUM tópico é só texto. A regra "todo
+    // são o que segura as regras da rodada: cada id referenciado pelo XAML existe, cada amostra
+    // aponta para uma chave declarada e, principalmente, NENHUM tópico é só texto. A regra "cada
     // painel mostra o controle de que fala" fica garantida por teste em vez de por disciplina.
     public class HelpTopicsTests
     {
