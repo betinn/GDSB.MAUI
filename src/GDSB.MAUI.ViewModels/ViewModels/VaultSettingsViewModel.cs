@@ -12,7 +12,7 @@ using System.Text;
 // Precisa continuar batendo com o nome registrado em AppShell.xaml.cs.
 namespace GDSB.MAUI.ViewModels
 {
-    public partial class VaultSettingsViewModel : ObservableObject, IQueryAttributable
+    public partial class VaultSettingsViewModel : VaultProtectionsFormViewModelBase, IQueryAttributable
     {
         private const int MinPasswordLength = 8;
         private const string GenericSaveErrorMessage = "Não foi possível salvar o cofre. Tente novamente.";
@@ -63,40 +63,11 @@ namespace GDSB.MAUI.ViewModels
         /// </summary>
         public event EventHandler? SettingsSaved;
 
-        public static IReadOnlyList<int> ClipboardClearSecondsOptions { get; } = new[] { 20, 45, 90 };
-
-        public static IReadOnlyList<int> AutoLockMinutesOptions { get; } = new[] { 1, 2, 5, 15 };
-
-        public static IReadOnlyList<int> BackupRetentionCountOptions { get; } = new[] { 5, 10, 20, 50 };
-
-        public static IReadOnlyList<int> BackupRetentionDaysOptions { get; } = new[] { 3, 5, 15, 30 };
-
         [ObservableProperty]
         private string vaultName = string.Empty;
 
         [ObservableProperty]
         private string? nameErrorMessage;
-
-        [ObservableProperty]
-        private bool clipboardClearEnabled;
-
-        [ObservableProperty]
-        private int clipboardClearSeconds;
-
-        [ObservableProperty]
-        private bool autoLockEnabled;
-
-        [ObservableProperty]
-        private int autoLockMinutes;
-
-        [ObservableProperty]
-        private BackupRetentionMode backupRetentionMode;
-
-        [ObservableProperty]
-        private int backupRetentionCount;
-
-        [ObservableProperty]
-        private int backupRetentionDays;
 
         [ObservableProperty]
         private string currentPassword = string.Empty;
@@ -137,10 +108,6 @@ namespace GDSB.MAUI.ViewModels
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         public bool CanInteract => !IsBusy;
-
-        public bool IsBackupRetentionByCount => BackupRetentionMode == BackupRetentionMode.Count;
-
-        public bool IsBackupRetentionByDays => BackupRetentionMode == BackupRetentionMode.Days;
 #pragma warning restore S2325
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -203,28 +170,6 @@ namespace GDSB.MAUI.ViewModels
                 IsBusy = false;
             }
         }
-
-        // Recebe string, não int: o CommandParameter do XAML sempre chega como string (o binding
-        // não converte pro tipo do parâmetro do RelayCommand), e RelayCommand<int> lança
-        // InvalidCastException ao tentar converter esse valor - o clique simplesmente não fazia
-        // nada, sem erro visível.
-        [RelayCommand]
-        private void SelectClipboardClearSeconds(string seconds) => ClipboardClearSeconds = int.Parse(seconds);
-
-        [RelayCommand]
-        private void SelectAutoLockMinutes(string minutes) => AutoLockMinutes = int.Parse(minutes);
-
-        [RelayCommand]
-        private void SelectBackupRetentionModeCount() => BackupRetentionMode = BackupRetentionMode.Count;
-
-        [RelayCommand]
-        private void SelectBackupRetentionModeDays() => BackupRetentionMode = BackupRetentionMode.Days;
-
-        [RelayCommand]
-        private void SelectBackupRetentionCount(string count) => BackupRetentionCount = int.Parse(count);
-
-        [RelayCommand]
-        private void SelectBackupRetentionDays(string days) => BackupRetentionDays = int.Parse(days);
 
         [RelayCommand(CanExecute = nameof(CanInteract))]
         private async Task SaveProtectionsAsync()
@@ -421,12 +366,6 @@ namespace GDSB.MAUI.ViewModels
             SaveProtectionsCommand.NotifyCanExecuteChanged();
             ChangePasswordCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(CanInteract));
-        }
-
-        partial void OnBackupRetentionModeChanged(BackupRetentionMode value)
-        {
-            OnPropertyChanged(nameof(IsBackupRetentionByCount));
-            OnPropertyChanged(nameof(IsBackupRetentionByDays));
         }
 
         partial void OnNameErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasNameErrorMessage));

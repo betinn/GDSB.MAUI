@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
+             xmlns:controls="clr-namespace:GDSB.MAUI.Controls"
              x:Class="GDSB.MAUI.VaultPage"
              x:Name="ThisPage"
              BackgroundColor="{StaticResource SurfaceDark}">
@@ -145,24 +146,10 @@
                             Command="{Binding AddNewItemCommand}" />
                 </Grid>
                 <HorizontalStackLayout Spacing="8">
-                    <Button Text="Todos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterAllCommand}">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsAllFilterSelected}" Value="True">
-                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-                    <Button Text="Favoritos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterFavoritesCommand}">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding FilterFavoritesOnly}" Value="True">
-                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
+                    <controls:SelectableChip Text="Todos" Style="{StaticResource FilterChipStyle}"
+                            Command="{Binding SetFilterAllCommand}" IsSelected="{Binding IsAllFilterSelected}" />
+                    <controls:SelectableChip Text="Favoritos" Style="{StaticResource FilterChipStyle}"
+                            Command="{Binding SetFilterFavoritesCommand}" IsSelected="{Binding FilterFavoritesOnly}" />
                 </HorizontalStackLayout>
             </VerticalStackLayout>
 
@@ -211,24 +198,10 @@
                                 Command="{Binding AddNewItemCommand}" />
                     </Grid>
                     <HorizontalStackLayout Spacing="8">
-                        <Button Text="Todos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterAllCommand}">
-                            <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsAllFilterSelected}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                    <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                    <Setter Property="TextColor" Value="{StaticResource White}" />
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
-                        <Button Text="Favoritos" Style="{StaticResource FilterChipStyle}" Command="{Binding SetFilterFavoritesCommand}">
-                            <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding FilterFavoritesOnly}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                    <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                    <Setter Property="TextColor" Value="{StaticResource White}" />
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
+                        <controls:SelectableChip Text="Todos" Style="{StaticResource FilterChipStyle}"
+                                Command="{Binding SetFilterAllCommand}" IsSelected="{Binding IsAllFilterSelected}" />
+                        <controls:SelectableChip Text="Favoritos" Style="{StaticResource FilterChipStyle}"
+                                Command="{Binding SetFilterFavoritesCommand}" IsSelected="{Binding FilterFavoritesOnly}" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
                 <CollectionView Grid.Row="1" Margin="12,10" ItemsSource="{Binding Items}"

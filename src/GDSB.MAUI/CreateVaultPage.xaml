@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
+             xmlns:controls="clr-namespace:GDSB.MAUI.Controls"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              x:Class="GDSB.MAUI.CreateVaultPage"
@@ -100,36 +101,15 @@
                                 <Label Text="Ao copiar uma senha ou usuário, o app apaga o valor da área de transferência depois do tempo escolhido."
                                        TextColor="{StaticResource TextSecondaryDark}" FontSize="12" />
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding ClipboardClearEnabled}">
-                                    <Button Text="20s" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="20">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding ClipboardClearSeconds}" Value="20">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="45s" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="45">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding ClipboardClearSeconds}" Value="45">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="90s" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="90">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding ClipboardClearSeconds}" Value="90">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
+                                    <controls:SelectableChip Text="20s" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="20"
+                                            IsSelected="{Binding ClipboardClearSeconds, Converter={StaticResource EqualsConverter}, ConverterParameter=20}" />
+                                    <controls:SelectableChip Text="45s" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="45"
+                                            IsSelected="{Binding ClipboardClearSeconds, Converter={StaticResource EqualsConverter}, ConverterParameter=45}" />
+                                    <controls:SelectableChip Text="90s" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="90"
+                                            IsSelected="{Binding ClipboardClearSeconds, Converter={StaticResource EqualsConverter}, ConverterParameter=90}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
@@ -148,46 +128,18 @@
                                        TextColor="{StaticResource Danger}" FontSize="12"
                                        IsVisible="{Binding AutoLockEnabled, Converter={StaticResource InvertedBoolConverter}}" />
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding AutoLockEnabled}">
-                                    <Button Text="1 min" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="1">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="1">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="2 min" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="2">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="2">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="5 min" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="5">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="5">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="15 min" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="15">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding AutoLockMinutes}" Value="15">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
+                                    <controls:SelectableChip Text="1 min" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="1"
+                                            IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=1}" />
+                                    <controls:SelectableChip Text="2 min" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="2"
+                                            IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=2}" />
+                                    <controls:SelectableChip Text="5 min" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="5"
+                                            IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=5}" />
+                                    <controls:SelectableChip Text="15 min" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="15"
+                                            IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=15}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
@@ -198,112 +150,42 @@
                                 <Label Text="Manter quantas versões"
                                        TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
                                 <HorizontalStackLayout Spacing="8">
-                                    <Button Text="Por quantidade" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionModeCountCommand}">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding IsBackupRetentionByCount}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="Por tempo" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionModeDaysCommand}">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding IsBackupRetentionByDays}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
+                                    <controls:SelectableChip Text="Por quantidade" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionModeCountCommand}"
+                                            IsSelected="{Binding IsBackupRetentionByCount}" />
+                                    <controls:SelectableChip Text="Por tempo" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionModeDaysCommand}"
+                                            IsSelected="{Binding IsBackupRetentionByDays}" />
                                 </HorizontalStackLayout>
 
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsBackupRetentionByCount}">
-                                    <Button Text="5" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="5">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="5">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="10" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="10">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="10">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="20" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="20">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="20">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="50" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="50">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionCount}" Value="50">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
+                                    <controls:SelectableChip Text="5" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="5"
+                                            IsSelected="{Binding BackupRetentionCount, Converter={StaticResource EqualsConverter}, ConverterParameter=5}" />
+                                    <controls:SelectableChip Text="10" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="10"
+                                            IsSelected="{Binding BackupRetentionCount, Converter={StaticResource EqualsConverter}, ConverterParameter=10}" />
+                                    <controls:SelectableChip Text="20" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="20"
+                                            IsSelected="{Binding BackupRetentionCount, Converter={StaticResource EqualsConverter}, ConverterParameter=20}" />
+                                    <controls:SelectableChip Text="50" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionCountCommand}" CommandParameter="50"
+                                            IsSelected="{Binding BackupRetentionCount, Converter={StaticResource EqualsConverter}, ConverterParameter=50}" />
                                 </HorizontalStackLayout>
 
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsBackupRetentionByDays}">
-                                    <Button Text="3 dias" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="3">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="3">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="5 dias" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="5">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="5">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="15 dias" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="15">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="15">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                    <Button Text="30 dias" Style="{StaticResource FilterChipStyle}"
-                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="30">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding BackupRetentionDays}" Value="30">
-                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="BorderColor" Value="{StaticResource Primary}" />
-                                                <Setter Property="TextColor" Value="{StaticResource White}" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
+                                    <controls:SelectableChip Text="3 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="3"
+                                            IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=3}" />
+                                    <controls:SelectableChip Text="5 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="5"
+                                            IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=5}" />
+                                    <controls:SelectableChip Text="15 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="15"
+                                            IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=15}" />
+                                    <controls:SelectableChip Text="30 dias" Style="{StaticResource FilterChipStyle}"
+                                            Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="30"
+                                            IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=30}" />
                                 </HorizontalStackLayout>
 
                                 <Label Text="Ao passar do limite de versões, a mais antiga é apagada. A versão mais recente nunca é apagada."

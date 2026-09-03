@@ -243,6 +243,35 @@ o mesmo padrão já existe, sem supressão, em ViewModels mais antigos (`CanInte
 `UnlockViewModel`/`CreateVaultViewModel`, por exemplo), só não é reportado ali por ser código de
 antes da janela de "New Code" do Sonar.
 
+### Duplicação de código (métrica "Overall Code", não só "New Code")
+
+O bloco `Button.Triggers` + `DataTrigger` + 3 `Setter` (destacar um chip quando um valor bate) se
+repetia dezenas de vezes em `VaultPage.xaml`, `VaultSettingsPage.xaml` e `CreateVaultPage.xaml` —
+era a maior fonte de duplicação do projeto. Resolvido com dois componentes reutilizáveis, em vez de
+copiar o bloco de novo:
+
+- `GDSB.MAUI.Controls.SelectableChip` (`src/GDSB.MAUI/Controls/SelectableChip.cs`) — subclasse de
+  `Button` com a propriedade bindable `IsSelected`; aplica o destaque em C# (lendo as cores do
+  `Application.Current.Resources`) em vez de um `DataTrigger` por instância. **Cuidado**:
+  `BindableObject.SetDynamicResource`/`RemoveDynamicResource` são `internal` ao assembly do MAUI,
+  não públicos — por isso o controle usa `ClearValue` pra voltar ao valor da `Style` (que precisa
+  de `ApplyToDerivedTypes="True"`, já que o `TargetType` dela é `Button`, não `SelectableChip`).
+- `GDSB.MAUI.Converters.EqualsConverter` (registrado globalmente em `App.xaml`, não por página) —
+  compara o valor bindado com o `ConverterParameter` do chip (sempre como string, já que
+  `CommandParameter`/`ConverterParameter` do XAML sempre chegam como string).
+
+Uso: `<controls:SelectableChip ... IsSelected="{Binding X, Converter={StaticResource
+EqualsConverter}, ConverterParameter=20}" />` pra grupos de valor único (substitui o `DataTrigger`
+com `Value="20"`), ou `IsSelected="{Binding AlgumBool}"` direto pra chips de modo (substitui
+`Value="True"`). **Todo chip novo usa `SelectableChip`, nunca mais `Button` + `DataTrigger`.**
+
+Duplicação também apareceu entre `VaultSettingsViewModel` e `CreateVaultViewModel` (as duas telas
+espelham os mesmos campos de PROTEÇÕES/BACKUPS) — resolvida com a classe base
+`VaultProtectionsFormViewModelBase` (`src/GDSB.MAUI.ViewModels/ViewModels/`), que carrega as
+propriedades `[ObservableProperty]`, as listas de opções `static` e os comandos `Select*`
+compartilhados. `SaveProtectionsAsync`/`CreateVaultAsync` continuam em cada ViewModel — fazem
+coisas fundamentalmente diferentes com esses valores, não são candidatos a extração.
+
 ## Como manter este arquivo
 
 Ao final de cada fase (PR aberto):

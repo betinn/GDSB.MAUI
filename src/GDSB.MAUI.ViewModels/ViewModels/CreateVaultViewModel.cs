@@ -10,7 +10,7 @@ using GDSB.MAUI.Services;
 // Precisa continuar batendo com o nome registrado em AppShell.xaml.cs.
 namespace GDSB.MAUI.ViewModels
 {
-    public partial class CreateVaultViewModel : ObservableObject
+    public partial class CreateVaultViewModel : VaultProtectionsFormViewModelBase
     {
         private const int MinPasswordLength = 8;
 
@@ -49,57 +49,6 @@ namespace GDSB.MAUI.ViewModels
         [ObservableProperty]
         private string confirmPassword = string.Empty;
 
-        public static IReadOnlyList<int> ClipboardClearSecondsOptions { get; } = new[] { 20, 45, 90 };
-
-        public static IReadOnlyList<int> AutoLockMinutesOptions { get; } = new[] { 1, 2, 5, 15 };
-
-        public static IReadOnlyList<int> BackupRetentionCountOptions { get; } = new[] { 5, 10, 20, 50 };
-
-        public static IReadOnlyList<int> BackupRetentionDaysOptions { get; } = new[] { 3, 5, 15, 30 };
-
-        [ObservableProperty]
-        private bool clipboardClearEnabled = true;
-
-        [ObservableProperty]
-        private int clipboardClearSeconds = 20;
-
-        [ObservableProperty]
-        private bool autoLockEnabled = true;
-
-        [ObservableProperty]
-        private int autoLockMinutes = 2;
-
-        [ObservableProperty]
-        private BackupRetentionMode backupRetentionMode = BackupRetentionMode.Count;
-
-        [ObservableProperty]
-        private int backupRetentionCount = 10;
-
-        [ObservableProperty]
-        private int backupRetentionDays = 5;
-
-        // Recebe string, não int: o CommandParameter do XAML sempre chega como string (o binding
-        // não converte pro tipo do parâmetro do RelayCommand), e RelayCommand<int> lança
-        // InvalidCastException ao tentar converter esse valor - o clique simplesmente não fazia
-        // nada, sem erro visível.
-        [RelayCommand]
-        private void SelectClipboardClearSeconds(string seconds) => ClipboardClearSeconds = int.Parse(seconds);
-
-        [RelayCommand]
-        private void SelectAutoLockMinutes(string minutes) => AutoLockMinutes = int.Parse(minutes);
-
-        [RelayCommand]
-        private void SelectBackupRetentionModeCount() => BackupRetentionMode = BackupRetentionMode.Count;
-
-        [RelayCommand]
-        private void SelectBackupRetentionModeDays() => BackupRetentionMode = BackupRetentionMode.Days;
-
-        [RelayCommand]
-        private void SelectBackupRetentionCount(string count) => BackupRetentionCount = int.Parse(count);
-
-        [RelayCommand]
-        private void SelectBackupRetentionDays(string days) => BackupRetentionDays = int.Parse(days);
-
         [ObservableProperty]
         private bool isBusy;
 
@@ -114,10 +63,6 @@ namespace GDSB.MAUI.ViewModels
         public bool CanInteract => !IsBusy;
 
         public string CreateButtonText => IsBusy ? "Criando..." : "Criar cofre";
-
-        public bool IsBackupRetentionByCount => BackupRetentionMode == BackupRetentionMode.Count;
-
-        public bool IsBackupRetentionByDays => BackupRetentionMode == BackupRetentionMode.Days;
 #pragma warning restore S2325
 
         [RelayCommand]
@@ -232,11 +177,5 @@ namespace GDSB.MAUI.ViewModels
         }
 
         partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasErrorMessage));
-
-        partial void OnBackupRetentionModeChanged(BackupRetentionMode value)
-        {
-            OnPropertyChanged(nameof(IsBackupRetentionByCount));
-            OnPropertyChanged(nameof(IsBackupRetentionByDays));
-        }
     }
 }

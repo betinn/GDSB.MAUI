@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GDSB.MAUI"
+             xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              x:Class="GDSB.MAUI.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,11 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Global porque é usado por SelectableChip.IsSelected em várias telas (VaultPage,
+                 VaultSettingsPage, CreateVaultPage) - registrar por página repetiria a mesma
+                 declaração em cada uma. -->
+            <converters:EqualsConverter x:Key="EqualsConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
