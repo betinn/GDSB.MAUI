@@ -45,9 +45,13 @@ namespace GDSB.MAUI.Controls
         }
 #pragma warning restore S1172
 
-        private static Color ResourceColor(string key) =>
-            Application.Current?.Resources.TryGetValue(key, out var value) is true && value is Color color
-                ? color
-                : Colors.Transparent;
+        private static Color ResourceColor(string key)
+        {
+            var resources = Application.Current?.Resources;
+            if (resources is not null && resources.TryGetValue(key, out var value) && value is Color color)
+                return color;
+
+            return Colors.Transparent;
+        }
     }
 }
