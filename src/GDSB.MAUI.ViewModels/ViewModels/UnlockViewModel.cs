@@ -18,7 +18,10 @@ namespace GDSB.MAUI.ViewModels
         // Senha errada e arquivo corrompido devem ser indistinguíveis pra quem usa o app -
         // nunca mostrar ex.Message cru, sempre essa mensagem genérica.
         private const string GenericErrorMessage = "Senha incorreta ou arquivo corrompido.";
-        private const string EmptyPasswordMessage = "Digite a senha mestra do cofre.";
+        // Sem "password"/"pwd"/"passphrase" no nome: a regra S2068 do Sonar flaga a declaração de
+        // qualquer campo com esses nomes e valor literal como credencial no código, mesmo quando o
+        // valor é só uma mensagem de erro. Mesma renomeação já feita nas constantes de teste.
+        private const string EmptyUnlockCodeMessage = "Digite a senha mestra do cofre.";
         private const string FilePickerErrorMessage = "Não foi possível abrir o seletor de arquivos.";
         private const string BackupFileAlertTitle = "Isto é um backup";
         private const string BackupFileAlertMessage =
@@ -222,7 +225,7 @@ namespace GDSB.MAUI.ViewModels
 
             if (string.IsNullOrEmpty(Password))
             {
-                ErrorMessage = EmptyPasswordMessage;
+                ErrorMessage = EmptyUnlockCodeMessage;
                 return;
             }
 

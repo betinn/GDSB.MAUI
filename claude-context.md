@@ -258,6 +258,20 @@ gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm 
   `static` sem quebrar o binding/o comportamento; a correção é suprimir com
   `#pragma warning disable S2325` / `restore S2325` em volta do trecho, com um comentário curto
   explicando o porquê (não usar `[SuppressMessage]` nem desabilitar a regra no projeto inteiro).
+- **S1135 "Complete the task associated to this 'TODO' comment"**: a regra procura a palavra
+  `TODO` isolada e **não distingue idioma** - o português "todo" (em "todo painel", "todo tópico",
+  "todo id") vira um apontamento cada. É provavelmente a armadilha mais fácil de cair neste
+  repositório, já que os comentários são todos em português. Escreva "cada" ou reformule; "toda",
+  "todos" e "todas" não disparam, só a forma exata "todo".
+- **Como ver os apontamentos sem o SonarCloud.** `sonarcloud.io` é bloqueado pela rede deste
+  ambiente, mas o pacote `SonarAnalyzer.CSharp` vem do nuget.org normalmente. Um
+  `Directory.Build.props` temporário na raiz com
+  `<PackageReference Include="SonarAnalyzer.CSharp" Version="*" PrivateAssets="all" />` faz o
+  `dotnet build` cuspir os mesmos `warning S####`, com arquivo e linha. **Apague o arquivo antes de
+  commitar.** Para o projeto `src/GDSB.MAUI`, que não compila aqui (sem Android SDK), dá para
+  montar um projeto `net10.0` de scratch que inclui os `.cs` de verdade por caminho absoluto mais
+  um arquivo de stubs com os campos que o `InitializeComponent()` geraria - foi assim que a
+  varredura desta rodada cobriu os code-behinds.
 - Bloco `catch (Exception) { }` vazio sem tratamento: preencha com um comentário de uma linha
   explicando por que ignorar é intencional (regra de "empty block"/"handle the exception").
 - `CommandParameter` de `Button`/etc. no XAML sempre chega como `string` ao `ICommand` ligado, não
