@@ -8,6 +8,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
+             xmlns:views="clr-namespace:GDSB.MAUI.Views"
              x:Class="GDSB.MAUI.Views.ItemEditorView">
 
     <VerticalStackLayout Spacing="16">
@@ -103,7 +104,7 @@
         <VerticalStackLayout Spacing="16" IsVisible="{Binding IsEditingItem}">
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="NOME" Style="{StaticResource FieldLabelStyle}" />
+                <views:FieldLabelView Text="NOME" IsRequired="True" />
                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
                     <Entry Text="{Binding EditBoxName}" Placeholder="Ex.: Netflix"
@@ -113,7 +114,7 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="URL" Style="{StaticResource FieldLabelStyle}" />
+                <views:FieldLabelView Text="URL" HelpTopicId="secret.url" />
                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
                     <Entry Text="{Binding EditUrl}" Placeholder="site.com" Keyboard="Url"
@@ -123,7 +124,7 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="USUÁRIO" Style="{StaticResource FieldLabelStyle}" />
+                <views:FieldLabelView Text="USUÁRIO" />
                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
                     <Entry Text="{Binding EditUser}"
@@ -133,7 +134,7 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="SENHA" Style="{StaticResource FieldLabelStyle}" />
+                <views:FieldLabelView Text="SENHA" IsRequired="True" HelpTopicId="secret.storedValue" />
                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="46">
                     <Entry Text="{Binding EditPassword}" IsPassword="True"
@@ -143,7 +144,7 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="OBSERVAÇÕES" Style="{StaticResource FieldLabelStyle}" />
+                <views:FieldLabelView Text="OBSERVAÇÕES" />
                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                         StrokeShape="RoundRectangle 12" Padding="14,10">
                     <Editor Text="{Binding EditObs}" AutoSize="TextChanges" MinimumHeightRequest="72"
@@ -155,7 +156,11 @@
             <HorizontalStackLayout Spacing="10">
                 <CheckBox IsChecked="{Binding EditFavorito}" Color="{StaticResource FavoriteGold}" />
                 <Label Text="Marcar como favorito" TextColor="{StaticResource TextPrimaryDark}" FontSize="14" VerticalOptions="Center" />
+                <views:HelpButton TopicId="secret.favorite" Style="{StaticResource HelpButtonStyle}"
+                                  VerticalOptions="Center" />
             </HorizontalStackLayout>
+
+            <Label Text="* campos obrigatórios" Style="{StaticResource RequiredFieldsLegendStyle}" />
 
             <Label Text="{Binding ValidationError}" TextColor="{StaticResource Danger}" FontSize="13"
                    IsVisible="{Binding HasValidationError}" />

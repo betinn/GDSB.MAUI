@@ -1,4 +1,4 @@
-using GDSB.MAUI.ViewModels;
+﻿using GDSB.MAUI.ViewModels;
 using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
@@ -29,11 +29,22 @@ public partial class VaultPage : ContentPage
     {
         base.OnAppearing();
 
+        // O painel de ajuda só atende enquanto esta página está à vista: com Shell, a página
+        // anterior continua carregada na pilha, e sem isso o "?" de uma tela abriria o painel da
+        // outra também.
+        HelpSheet.StartListening();
+
 #if ANDROID
         // O teclado virtual pode continuar aberto do Entry de senha da tela anterior
         // (Unlock/CreateVault) - fecha explicitamente ao entrar no cofre.
         Platforms.Android.KeyboardDismissal.Hide();
 #endif
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        HelpSheet.StopListening();
     }
 
     private async void OnToastRequested(object? sender, string message)

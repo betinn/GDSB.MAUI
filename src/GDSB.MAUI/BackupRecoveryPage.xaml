@@ -56,8 +56,16 @@
                             <TapGestureRecognizer Command="{Binding GoBackCommand}" />
                         </Label.GestureRecognizers>
                     </Label>
-                    <Label Text="Recuperar backup" FontSize="22" FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextPrimaryDark}" />
+                    <!-- Um "?" só para a tela inteira, no cabeçalho: o painel dele cobre as
+                         quatro seções (como as cópias aparecem, restaurar, excluir e excluir
+                         todos). Nada de "?" nos cartões, nos botões nem no "Excluir todos" -
+                         numa lista com N cartões isso viraria N vezes o mesmo ícone. -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Recuperar backup" FontSize="22" FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimaryDark}" VerticalOptions="Center" />
+                        <views:HelpButton TopicId="backup.recovery" Style="{StaticResource HelpButtonStyle}"
+                                          VerticalOptions="Center" />
+                    </HorizontalStackLayout>
                     <Label Text="Backups são gerados automaticamente antes de cada gravação. Restaurar sempre cria um arquivo novo - o cofre original nunca é sobrescrito."
                            TextColor="{StaticResource TextSecondaryDark}" FontSize="13" Margin="0,4,0,0" />
                 </VerticalStackLayout>
@@ -179,5 +187,7 @@
              store - mesma animação/overlay de VaultPage, deixando visível a destruição do item em
              vez de só a lista encolher em silêncio. -->
         <views:SealOverlayView x:Name="SealOverlay" />
+
+        <views:HelpSheetView x:Name="HelpSheet" />
     </Grid>
 </ContentPage>

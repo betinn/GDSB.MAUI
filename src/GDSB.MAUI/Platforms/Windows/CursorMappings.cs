@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using GDSB.MAUI.Behaviors;
 using Microsoft.Maui.Handlers;
 using Microsoft.UI.Input;
@@ -11,6 +11,11 @@ namespace GDSB.MAUI.Platforms.Windows
     // .NET MAUI/WinUI pra esse cenário, não um hack instável específico deste app.
     internal static class CursorMappings
     {
+        // Chave dos quatro AppendToMapping abaixo. Constante porque o Sonar (S1192) cobra a partir
+        // da terceira repetição do mesmo literal - e porque um erro de digitação em um deles
+        // passaria despercebido: o mapeamento simplesmente não valeria, sem erro nenhum.
+        private const string MappingKey = "HoverCursor";
+
         private static readonly PropertyInfo? ProtectedCursorProperty =
             typeof(UIElement).GetProperty("ProtectedCursor", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -20,17 +25,26 @@ namespace GDSB.MAUI.Platforms.Windows
         public static void Apply()
         {
             // Todo Button do app é uma ação clicável (copiar, editar, favoritar, excluir, filtros...).
-            ButtonHandler.Mapper.AppendToMapping("HoverCursor", (handler, _) => SetHand(handler.PlatformView));
+            ButtonHandler.Mapper.AppendToMapping(MappingKey, (handler, _) => SetHand(handler.PlatformView));
 
             // Label/Grid usados como área clicável via TapGestureRecognizer (link de URL, linha da lista)
             // precisam de opt-in explícito via Behaviors.HoverCursor.IsHand="True" no XAML.
-            LabelHandler.Mapper.AppendToMapping("HoverCursor", (handler, view) =>
+            LabelHandler.Mapper.AppendToMapping(MappingKey, (handler, view) =>
             {
                 if (view is BindableObject element && HoverCursor.GetIsHand(element))
                     SetHand(handler.PlatformView);
             });
 
-            LayoutHandler.Mapper.AppendToMapping("HoverCursor", (handler, view) =>
+            LayoutHandler.Mapper.AppendToMapping(MappingKey, (handler, view) =>
+            {
+                if (view is BindableObject element && HoverCursor.GetIsHand(element))
+                    SetHand(handler.PlatformView);
+            });
+
+            // Border não passa por LayoutHandler nem por LabelHandler - tem handler próprio. Sem
+            // este mapeamento, uma pílula/cartão clicável (a entrada "Como funciona?" da tela de
+            // desbloqueio) ficava com o cursor de seta, sem nenhuma pista de que dá para clicar.
+            BorderHandler.Mapper.AppendToMapping(MappingKey, (handler, view) =>
             {
                 if (view is BindableObject element && HoverCursor.GetIsHand(element))
                     SetHand(handler.PlatformView);

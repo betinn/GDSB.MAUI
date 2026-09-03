@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Painel de ajuda contextual. Mesmo padrão de overlay dos três modais de BackupRecoveryPage.xaml e
+  do BiometricOptInView (#CC141414 por cima da tela inteira), e não um DisplayAlert do sistema: o
+  alerta nativo não aceita as cores do app nem consegue mostrar a réplica do controle explicado,
+  que é justamente o ponto desta ajuda.
+
+  O conteúdo é montado no code-behind a partir do catálogo em GDSB.MAUI.Help.HelpTopics - o XAML
+  aqui é só a moldura (título, área rolável e o "Entendi").
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GDSB.MAUI.Views.HelpSheetView">
+
+    <Grid x:Name="Overlay" IsVisible="False" BackgroundColor="#CC141414" Padding="20,44">
+        <Border Style="{StaticResource CardBorderStyle}" Padding="0" StrokeShape="RoundRectangle 20"
+                VerticalOptions="Fill" HorizontalOptions="Fill" MaximumWidthRequest="460">
+            <Grid RowDefinitions="Auto,*,Auto" RowSpacing="16" Padding="22">
+
+                <Label x:Name="TitleLabel" Grid.Row="0"
+                       FontFamily="OpenSansSemibold" FontSize="18"
+                       TextColor="{StaticResource TextPrimaryDark}" />
+
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout x:Name="BlocksHost" Spacing="14" />
+                </ScrollView>
+
+                <Button Grid.Row="2" Text="Entendi" Style="{StaticResource PrimaryActionButtonStyle}"
+                        Clicked="OnDismissClicked" />
+
+            </Grid>
+        </Border>
+    </Grid>
+</ContentView>

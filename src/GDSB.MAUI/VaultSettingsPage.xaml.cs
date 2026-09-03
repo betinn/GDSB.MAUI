@@ -1,4 +1,4 @@
-using GDSB.MAUI.ViewModels;
+﻿using GDSB.MAUI.ViewModels;
 using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
@@ -13,6 +13,20 @@ public partial class VaultSettingsPage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
         _viewModel.SettingsSaved += OnSettingsSaved;
+    }
+
+    // O painel de ajuda só atende enquanto esta página está à vista: com Shell, a página anterior
+    // continua carregada na pilha, e sem isso o "?" de uma tela abriria o painel da outra também.
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        HelpSheet.StartListening();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        HelpSheet.StopListening();
     }
 
     // S2325 ("make static") é falso positivo: SealOverlay é um elemento nomeado do XAML (campo de

@@ -18,7 +18,10 @@ namespace GDSB.MAUI.ViewModels
         // Senha errada e arquivo corrompido devem ser indistinguíveis pra quem usa o app -
         // nunca mostrar ex.Message cru, sempre essa mensagem genérica.
         private const string GenericErrorMessage = "Senha incorreta ou arquivo corrompido.";
-        private const string EmptyPasswordMessage = "Digite a senha mestra do cofre.";
+        // Sem "password"/"pwd"/"passphrase" no nome: a regra S2068 do Sonar flaga a declaração de
+        // qualquer campo com esses nomes e valor literal como credencial no código, mesmo quando o
+        // valor é só uma mensagem de erro. Mesma renomeação já feita nas constantes de teste.
+        private const string EmptyUnlockCodeMessage = "Digite a senha mestra do cofre.";
         private const string FilePickerErrorMessage = "Não foi possível abrir o seletor de arquivos.";
         private const string BackupFileAlertTitle = "Isto é um backup";
         private const string BackupFileAlertMessage =
@@ -41,7 +44,7 @@ namespace GDSB.MAUI.ViewModels
             IBiometricUnlockService biometricUnlockService,
             IPreferencesService preferencesService,
             IAlertService alertService,
-            BiometricOptInCoordinator biometricOptIn)
+            UnlockOverlays overlays)
         {
             _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
@@ -50,12 +53,17 @@ namespace GDSB.MAUI.ViewModels
             _preferencesService = preferencesService;
             _alertService = alertService;
             _vaultSessionService = vaultAccess.VaultSessionService;
-            BiometricOptIn = biometricOptIn;
+            BiometricOptIn = overlays.BiometricOptIn;
+            Onboarding = overlays.Onboarding;
         }
 
         // Exposto pra UnlockPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
         // BiometricOptIn}") - ver GDSB.MAUI.ViewModels.BiometricOptInCoordinator.
         public BiometricOptInCoordinator BiometricOptIn { get; }
+
+        // Exposto pra UnlockPage.xaml hospedar a OnboardingView (BindingContext="{Binding
+        // Onboarding}"), do mesmo jeito que a BiometricOptInView.
+        public OnboardingViewModel Onboarding { get; }
 
         [ObservableProperty]
         private string? selectedVaultLocation;
@@ -106,6 +114,11 @@ namespace GDSB.MAUI.ViewModels
 
         [RelayCommand]
         private void ToggleShowPassword() => IsPasswordHidden = !IsPasswordHidden;
+
+        // O link "Como funciona?" no topo da tela. Reabre o tutorial a qualquer momento, sem olhar
+        // a preferência de "já vi": quem pediu pra rever quer rever.
+        [RelayCommand]
+        private void ShowOnboarding() => Onboarding.ShowFromStart();
 
         [RelayCommand]
         private Task GoToCreateVaultAsync() => _navigationService.NavigateToAsync("CreateVaultPage");
@@ -171,7 +184,18 @@ namespace GDSB.MAUI.ViewModels
         {
             await RefreshBiometricAvailabilityAsync();
 
-            if (CanUseBiometric && CanUnlockWithBiometric())
+            // O tutorial não pode brigar com a biometria: com ela armada, este mesmo método já
+            // dispara o prompt do sistema logo abaixo, e os dois por cima um do outro deixariam o
+            // usuário sem saber em qual responder. No primeiro acesso de verdade isso nunca
+            // acontece (não há cofre lembrado em Preferences), mas a guarda precisa existir para
+            // quem já usa o app e ainda não viu os slides.
+            if (!CanUseBiometric)
+            {
+                Onboarding.MaybeShowOnFirstRun();
+                return;
+            }
+
+            if (CanUnlockWithBiometric())
                 await UnlockWithBiometricAsync();
         }
 
@@ -201,7 +225,7 @@ namespace GDSB.MAUI.ViewModels
 
             if (string.IsNullOrEmpty(Password))
             {
-                ErrorMessage = EmptyPasswordMessage;
+                ErrorMessage = EmptyUnlockCodeMessage;
                 return;
             }
 

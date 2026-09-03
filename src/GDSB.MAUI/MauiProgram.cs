@@ -1,4 +1,4 @@
-using GDSB.Domain.Interfaces;
+﻿using GDSB.Domain.Interfaces;
 using GDSB.Infrastructure;
 using GDSB.Infrastructure.Backup;
 using GDSB.Infrastructure.Encryption.Legacy;
@@ -78,6 +78,8 @@ namespace GDSB.MAUI
             // precisa da sua própria instância, com seu próprio TaskCompletionSource pendente.
             services.AddTransient<BiometricOptInCoordinator>();
 
+            services.AddTransient<OnboardingViewModel>();
+            services.AddTransient<UnlockOverlays>();
             services.AddTransient<UnlockViewModel>();
             services.AddTransient<VaultViewModel>();
             services.AddTransient<CreateVaultViewModel>();

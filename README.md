@@ -50,6 +50,19 @@ preservado como backup — nunca ao lado do cofre, ver "Backups" abaixo.
   recuperação, alcançada pela tela de desbloqueio ("Recuperar de um backup"), lista todos os
   backups e permite restaurar um deles para um arquivo novo (o cofre original nunca é sobrescrito)
   ou excluir backups, um por vez ou todos de uma vez.
+- **Histórico de backups com retenção configurável.** Cada gravação guarda uma versão nova (o nome
+  leva data e hora), em vez de sobrescrever sempre a mesma cópia. Quantas versões ficam é definido
+  **por cofre**, gravado dentro do próprio arquivo: "até N versões" ou "até N dias", com poda
+  automática ao passar do limite. A versão mais recente nunca é apagada, e os backups importados de
+  arquivos v1 nunca são podados. Há ainda um teto rígido de 100 arquivos por cofre, válido nos dois
+  modos.
+- **Primeiro acesso guiado.** Um tutorial de três slides aparece sozinho na primeira abertura e
+  continua acessível pelo link "Como funciona?", no topo da tela de desbloqueio. Ao lado das
+  funcionalidades que não se explicam sozinhas há um "?" que abre um painel no estilo do app — e
+  todo painel **mostra** o controle de que fala: uma réplica inerte do botão, campo ou chip em
+  questão, com um indicador de toque animado apontando onde tocar. Nos formulários, campo
+  obrigatório é marcado com asterisco em cor de destaque, com a legenda "* campos obrigatórios" no
+  fim do bloco; campo opcional não recebe marca nenhuma.
 - **Edição de cofre.** Uma tela própria (ícone de engrenagem no cabeçalho do cofre) permite
   renomear o cofre e trocar a senha mestra — as duas únicas mudanças que afetam o ponto de
   desbloqueio, então, depois de gravar no arquivo atual, a tela oferece salvar também num arquivo
@@ -65,7 +78,8 @@ preservado como backup — nunca ao lado do cofre, ver "Backups" abaixo.
   como alternativa.
 - Layout responsivo: lista + bottom-sheet no celular, mestre-detalhe lado a lado no tablet.
 - No Android, acesso a arquivo via Storage Access Framework, permitindo cofres sincronizados por
-  provedores como Google Drive ou OneDrive.
+  provedores como Google Drive ou OneDrive. Como o SAF dispensa permissão de armazenamento e o app
+  é offline por inteiro, o manifesto declara **uma única** permissão: `USE_BIOMETRIC`.
 
 ## Build e testes
 
