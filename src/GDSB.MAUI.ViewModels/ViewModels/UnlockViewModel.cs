@@ -41,7 +41,8 @@ namespace GDSB.MAUI.ViewModels
             IBiometricUnlockService biometricUnlockService,
             IPreferencesService preferencesService,
             IAlertService alertService,
-            BiometricOptInCoordinator biometricOptIn)
+            BiometricOptInCoordinator biometricOptIn,
+            OnboardingViewModel onboarding)
         {
             _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
@@ -51,11 +52,16 @@ namespace GDSB.MAUI.ViewModels
             _alertService = alertService;
             _vaultSessionService = vaultAccess.VaultSessionService;
             BiometricOptIn = biometricOptIn;
+            Onboarding = onboarding;
         }
 
         // Exposto pra UnlockPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
         // BiometricOptIn}") - ver GDSB.MAUI.ViewModels.BiometricOptInCoordinator.
         public BiometricOptInCoordinator BiometricOptIn { get; }
+
+        // Exposto pra UnlockPage.xaml hospedar a OnboardingView (BindingContext="{Binding
+        // Onboarding}"), do mesmo jeito que a BiometricOptInView.
+        public OnboardingViewModel Onboarding { get; }
 
         [ObservableProperty]
         private string? selectedVaultLocation;
@@ -106,6 +112,11 @@ namespace GDSB.MAUI.ViewModels
 
         [RelayCommand]
         private void ToggleShowPassword() => IsPasswordHidden = !IsPasswordHidden;
+
+        // O link "Como funciona?" no topo da tela. Reabre o tutorial a qualquer momento, sem olhar
+        // a preferência de "já vi": quem pediu pra rever quer rever.
+        [RelayCommand]
+        private void ShowOnboarding() => Onboarding.ShowFromStart();
 
         [RelayCommand]
         private Task GoToCreateVaultAsync() => _navigationService.NavigateToAsync("CreateVaultPage");
@@ -171,7 +182,18 @@ namespace GDSB.MAUI.ViewModels
         {
             await RefreshBiometricAvailabilityAsync();
 
-            if (CanUseBiometric && CanUnlockWithBiometric())
+            // O tutorial não pode brigar com a biometria: com ela armada, este mesmo método já
+            // dispara o prompt do sistema logo abaixo, e os dois por cima um do outro deixariam o
+            // usuário sem saber em qual responder. No primeiro acesso de verdade isso nunca
+            // acontece (não há cofre lembrado em Preferences), mas a guarda precisa existir para
+            // quem já usa o app e ainda não viu os slides.
+            if (!CanUseBiometric)
+            {
+                Onboarding.MaybeShowOnFirstRun();
+                return;
+            }
+
+            if (CanUnlockWithBiometric())
                 await UnlockWithBiometricAsync();
         }
 

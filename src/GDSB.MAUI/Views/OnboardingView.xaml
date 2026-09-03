@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Tutorial de primeiro acesso: três slides por cima da tela de desbloqueio. Mesmo overlay dos
+  outros diálogos do app (#CC141414), e não uma página separada, para o usuário nunca perder de
+  vista onde está - o tutorial explica ESTA tela, então ela continua atrás dele.
+
+  Cada slide traz uma ilustração antes do texto. As duas últimas não são desenhos genéricos: são
+  réplicas inertes dos controles de verdade desta mesma tela, com a mãozinha em cima. O slide
+  "Criar um cofre" aponta o link que o usuário vai tocar assim que fechar o tutorial, e "Abrir
+  depois" aponta o botão de biometria - é o que transforma o tutorial em orientação ("é ali") em
+  vez de texto solto.
+
+  A troca de slide é por IsVisible + EqualsConverter sobre CurrentIndex (o mesmo conversor global
+  que os chips já usam), sem CarouselView: são três telas fixas, e o CarouselView traria gesto de
+  arraste concorrendo com o scroll do texto.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             x:Class="GDSB.MAUI.Views.OnboardingView">
+
+    <Grid IsVisible="{Binding IsVisible}" BackgroundColor="#CC141414" Padding="24,40">
+        <Border Style="{StaticResource CardBorderStyle}" Padding="0" StrokeShape="RoundRectangle 20"
+                VerticalOptions="Center" HorizontalOptions="Fill" MaximumWidthRequest="420">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="18" Padding="24">
+
+                <!-- ===== Ilustração do slide ===== -->
+                <Grid Grid.Row="0" HeightRequest="150">
+
+                    <!-- Slide 1: o cofre é um arquivo que mora com você, não no app. -->
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center"
+                                         IsVisible="{Binding CurrentIndex, Converter={StaticResource EqualsConverter}, ConverterParameter=0}">
+                        <Border WidthRequest="112" HeightRequest="112" StrokeShape="RoundRectangle 16"
+                                BackgroundColor="{StaticResource SurfaceElevatedDark}"
+                                Stroke="{StaticResource BorderStrongDarkBrush}" StrokeThickness="1"
+                                HorizontalOptions="Center">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                <GraphicsView x:Name="VaultFileMark" WidthRequest="52" HeightRequest="52"
+                                              HorizontalOptions="Center" />
+                                <Label Text="meu-cofre.GDSBX" FontSize="10"
+                                       TextColor="{StaticResource TextSecondaryDark}"
+                                       HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Label Text="Um arquivo seu, guardado onde você quiser"
+                               FontSize="11.5" TextColor="{StaticResource TextMutedDark}"
+                               HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- Slide 2: réplica do link "Criar um cofre novo" desta mesma tela. -->
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center"
+                                         IsVisible="{Binding CurrentIndex, Converter={StaticResource EqualsConverter}, ConverterParameter=1}">
+                        <Border Style="{StaticResource HelpVisualFrameStyle}" HorizontalOptions="Center">
+                            <Grid InputTransparent="True" Padding="0,0,0,20">
+                                <Label Text="Criar um cofre novo" TextColor="{StaticResource PrimaryDark}"
+                                       FontSize="14" VerticalOptions="Start" HorizontalOptions="Center" />
+                                <views:TapHintView HorizontalOptions="Center" VerticalOptions="Start"
+                                                   Margin="0,10,0,0" />
+                            </Grid>
+                        </Border>
+                        <Label Text="É este link, logo abaixo do cartão de senha"
+                               FontSize="11.5" TextColor="{StaticResource TextMutedDark}"
+                               HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- Slide 3: réplica do botão de biometria, com o mesmo ícone vetorial do real. -->
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center"
+                                         IsVisible="{Binding CurrentIndex, Converter={StaticResource EqualsConverter}, ConverterParameter=2}">
+                        <Border Style="{StaticResource HelpVisualFrameStyle}" HorizontalOptions="Center">
+                            <Grid InputTransparent="True" Padding="0,0,0,20">
+                                <Grid VerticalOptions="Start" WidthRequest="220">
+                                    <Button Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46" />
+                                    <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center"
+                                                           Spacing="9" InputTransparent="True">
+                                        <GraphicsView x:Name="BiometricSampleIcon" WidthRequest="18" HeightRequest="18"
+                                                      VerticalOptions="Center" />
+                                        <Label Text="Desbloquear com biometria" TextColor="{StaticResource White}"
+                                               FontFamily="OpenSansSemibold" FontSize="14" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                                <views:TapHintView HorizontalOptions="Center" VerticalOptions="Start"
+                                                   Margin="0,18,0,0" />
+                            </Grid>
+                        </Border>
+                        <Label Text="Aparece no lugar do campo de senha depois que você liga a digital"
+                               FontSize="11.5" TextColor="{StaticResource TextMutedDark}"
+                               HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                </Grid>
+
+                <!-- ===== Texto do slide ===== -->
+                <VerticalStackLayout Grid.Row="1" Spacing="10">
+                    <Label Text="{Binding CurrentSlide.Title}" FontFamily="OpenSansSemibold" FontSize="19"
+                           TextColor="{StaticResource TextPrimaryDark}" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding CurrentSlide.Body}" FontSize="13.5"
+                           TextColor="{StaticResource TextSecondaryDark}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <IndicatorView Grid.Row="2"
+                               Count="{Binding SlideCount}" Position="{Binding CurrentIndex}"
+                               IndicatorColor="{StaticResource BorderStrongDark}"
+                               SelectedIndicatorColor="{StaticResource PrimaryDark}"
+                               IndicatorSize="7" HorizontalOptions="Center" />
+
+                <VerticalStackLayout Grid.Row="3" Spacing="10">
+                    <Button Text="{Binding AdvanceButtonText}" Style="{StaticResource PrimaryActionButtonStyle}"
+                            Command="{Binding AdvanceCommand}" />
+                    <Button Text="Pular" Style="{StaticResource SecondaryActionButtonStyle}"
+                            Command="{Binding SkipCommand}" IsVisible="{Binding ShowSkip}" />
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+    </Grid>
+</ContentView>

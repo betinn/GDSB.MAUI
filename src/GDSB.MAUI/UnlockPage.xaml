@@ -17,6 +17,31 @@
 
         <Grid RowDefinitions="*,Auto,*" Padding="32">
 
+            <!-- Porta de entrada do tutorial, fixa no topo e não junto dos links de rodapé: quem
+                 não entendeu a tela precisa achar isto ANTES de tentar mexer no bloco de
+                 desbloqueio. Vem em forma de pílula com o mesmo "?" dos campos, pra ser reconhecida
+                 como ajuda à primeira vista. -->
+            <Border Grid.Row="0" VerticalOptions="Start" HorizontalOptions="Center" Margin="0,4,0,0"
+                    BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderStrongDarkBrush}"
+                    StrokeThickness="1" StrokeShape="RoundRectangle 17" Padding="13,7"
+                    behaviors:HoverCursor.IsHand="True"
+                    SemanticProperties.Description="Como o GDSB funciona: rever o tutorial">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ShowOnboardingCommand}" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="7">
+                    <Border WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9"
+                            BackgroundColor="{StaticResource SurfaceElevatedDark}"
+                            Stroke="{StaticResource BorderStrongDarkBrush}" StrokeThickness="1"
+                            VerticalOptions="Center" InputTransparent="True">
+                        <Label Text="?" TextColor="{StaticResource PrimaryDark}" FontFamily="OpenSansSemibold"
+                               FontSize="10" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Text="Como funciona?" TextColor="{StaticResource TextSecondaryDark}"
+                           FontSize="13" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
             <VerticalStackLayout Grid.Row="1" Spacing="32">
 
                 <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
@@ -190,6 +215,10 @@
         </Grid>
 
         <views:BiometricOptInView BindingContext="{Binding BiometricOptIn}" />
+
+        <!-- Depois da BiometricOptInView de propósito: se as duas caírem juntas na tela, o tutorial
+             fica por cima - ele é que explica o que a outra está perguntando. -->
+        <views:OnboardingView BindingContext="{Binding Onboarding}" />
 
     </Grid>
 </ContentPage>

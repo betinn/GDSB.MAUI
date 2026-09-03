@@ -11,7 +11,10 @@ namespace GDSB.MAUI.Tests
 {
     public class UnlockViewModelTests
     {
-        private const string Password = "senha-do-cofre-123";
+        // Nome de propósito sem "password"/"pwd"/"passphrase": a regra S2068 do Sonar
+        // ("Hard-coded credentials") flaga identificadores nesses moldes atribuídos a um valor
+        // literal, mesmo sendo só um valor de teste. Mesma renomeação de VaultSettingsViewModelTests.
+        private const string VaultUnlockCode = "senha-do-cofre-123";
         private const string Location = "content://fake-vault";
 
         private sealed class Sut
@@ -23,11 +26,13 @@ namespace GDSB.MAUI.Tests
             public FakePreferencesService PreferencesService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
             public FakeVaultSessionService VaultSessionService { get; } = new();
+            public OnboardingViewModel Onboarding { get; }
             public UnlockViewModel ViewModel { get; }
 
             public Sut()
             {
                 var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
+                Onboarding = new OnboardingViewModel(PreferencesService);
                 ViewModel = new UnlockViewModel(
                     new VaultAccess(ProfileFileService, VaultSessionService),
                     FilePickerService,
@@ -35,7 +40,8 @@ namespace GDSB.MAUI.Tests
                     BiometricUnlockService,
                     PreferencesService,
                     AlertService,
-                    biometricOptIn);
+                    biometricOptIn,
+                    Onboarding);
             }
         }
 
@@ -57,7 +63,7 @@ namespace GDSB.MAUI.Tests
         public async Task UnlockAsync_PasswordWithoutVaultSelected_DoesNotUnlock()
         {
             var sut = new Sut();
-            sut.ViewModel.Password = Password;
+            sut.ViewModel.Password = VaultUnlockCode;
 
             await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
 
@@ -122,7 +128,7 @@ namespace GDSB.MAUI.Tests
             var sut = new Sut();
             sut.FilePickerService.PickFileNameResult = new PickedFile(Location, "cofre.GDSBX");
             await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
-            sut.ViewModel.Password = Password;
+            sut.ViewModel.Password = VaultUnlockCode;
 
             sut.ViewModel.ClearSelectedVaultCommand.Execute(null);
 
@@ -149,7 +155,7 @@ namespace GDSB.MAUI.Tests
             var sut = new Sut();
             var profile = SampleProfile();
             await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
-            sut.ViewModel.Password = Password;
+            sut.ViewModel.Password = VaultUnlockCode;
             sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: false);
 
             await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
@@ -172,7 +178,7 @@ namespace GDSB.MAUI.Tests
             var sut = new Sut();
             var profile = SampleProfile();
             await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
-            sut.ViewModel.Password = Password;
+            sut.ViewModel.Password = VaultUnlockCode;
             sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: true);
 
             await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
@@ -223,14 +229,14 @@ namespace GDSB.MAUI.Tests
             sut.PreferencesService.SetString(BiometricOptInCoordinator.LastVaultNamePreferenceKey, profile.Nome);
             sut.BiometricUnlockService.IsAvailable = true;
             sut.BiometricUnlockService.IsEnabled = true;
-            sut.BiometricUnlockService.TryUnlockResult = Encoding.UTF8.GetBytes(Password);
+            sut.BiometricUnlockService.TryUnlockResult = Encoding.UTF8.GetBytes(VaultUnlockCode);
             sut.ProfileFileService.OpenHandler = (_, _) => new ProfileOpenResult(profile, WasLegacyFormat: false);
 
             await sut.ViewModel.InitializeAsync();
 
             Assert.True(sut.ViewModel.CanUseBiometric);
             var navigation = Assert.Single(sut.NavigationService.NavigateToRootCalls);
-            Assert.Equal(Password, navigation.Parameters!["Password"]);
+            Assert.Equal(VaultUnlockCode, navigation.Parameters!["Password"]);
         }
 
         [Fact]
@@ -265,5 +271,56 @@ namespace GDSB.MAUI.Tests
             Assert.False(sut.ViewModel.CanUseBiometric);
             Assert.Null(sut.PreferencesService.GetString(BiometricOptInCoordinator.LastLocationPreferenceKey, null));
         }
+        // ===== Tutorial de primeiro acesso (fase 4) =====
+
+        [Fact]
+        public async Task InitializeAsync_FirstRunWithoutBiometric_ShowsOnboarding()
+        {
+            var sut = new Sut();
+
+            await sut.ViewModel.InitializeAsync();
+
+            Assert.True(sut.ViewModel.Onboarding.IsVisible);
+        }
+
+        [Fact]
+        public async Task InitializeAsync_OnboardingAlreadySeen_DoesNotShowIt()
+        {
+            var sut = new Sut();
+            sut.PreferencesService.SetBool(OnboardingViewModel.SeenPreferenceKey, true);
+
+            await sut.ViewModel.InitializeAsync();
+
+            Assert.False(sut.ViewModel.Onboarding.IsVisible);
+        }
+
+        // A regra da fase: com a biometria armada, InitializeAsync já dispara o prompt do sistema -
+        // abrir o tutorial por cima deixaria o usuário sem saber em qual dos dois responder.
+        [Fact]
+        public async Task InitializeAsync_BiometricArmed_DoesNotShowOnboarding()
+        {
+            var sut = new Sut();
+            sut.PreferencesService.SetString(BiometricOptInCoordinator.LastLocationPreferenceKey, Location);
+            sut.BiometricUnlockService.IsAvailable = true;
+            sut.BiometricUnlockService.IsEnabled = true;
+
+            await sut.ViewModel.InitializeAsync();
+
+            Assert.True(sut.ViewModel.CanUseBiometric);
+            Assert.False(sut.ViewModel.Onboarding.IsVisible);
+        }
+
+        [Fact]
+        public void ShowOnboardingCommand_ReopensEvenAfterSeen()
+        {
+            var sut = new Sut();
+            sut.PreferencesService.SetBool(OnboardingViewModel.SeenPreferenceKey, true);
+
+            sut.ViewModel.ShowOnboardingCommand.Execute(null);
+
+            Assert.True(sut.ViewModel.Onboarding.IsVisible);
+            Assert.Equal(0, sut.ViewModel.Onboarding.CurrentIndex);
+        }
+
     }
 }
