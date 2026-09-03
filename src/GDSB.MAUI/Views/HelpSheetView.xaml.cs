@@ -95,7 +95,12 @@ public partial class HelpSheetView : ContentView
     /// </summary>
     private static View? ResolveVisual(string visualId)
     {
-        if (Application.Current?.Resources.TryGetValue(visualId, out var resource) == true
+        // Guardar o dicionário numa variável, em vez de encadear o acesso condicional e comparar o
+        // bool? resultante com um literal, é o mesmo desenho de SelectableChip.ResourceColor.
+        var resources = Application.Current?.Resources;
+
+        if (resources is not null
+            && resources.TryGetValue(visualId, out var resource)
             && resource is DataTemplate template
             && template.CreateContent() is View view)
         {
@@ -110,8 +115,12 @@ public partial class HelpSheetView : ContentView
 #endif
     }
 
-    private static Style? FindStyle(string key) =>
-        Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Style style
+    private static Style? FindStyle(string key)
+    {
+        var resources = Application.Current?.Resources;
+
+        return resources is not null && resources.TryGetValue(key, out var value) && value is Style style
             ? style
             : null;
+    }
 }

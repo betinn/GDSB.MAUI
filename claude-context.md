@@ -263,6 +263,10 @@ gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm 
   "todo id") vira um apontamento cada. É provavelmente a armadilha mais fácil de cair neste
   repositório, já que os comentários são todos em português. Escreva "cada" ou reformule; "toda",
   "todos" e "todas" não disparam, só a forma exata "todo".
+- **S1125 "Remove the unnecessary Boolean literal"**: `Application.Current?.Resources.TryGetValue(...) == true`
+  é flagado, mesmo o `== true` sendo o que destrincha o `bool?` que o acesso condicional produz. O
+  desenho que o projeto já usa e que não dispara nada está em `SelectableChip.ResourceColor`:
+  guardar `Application.Current?.Resources` numa variável e testar `resources is not null && ...`.
 - **Como ver os apontamentos sem o SonarCloud.** `sonarcloud.io` é bloqueado pela rede deste
   ambiente, mas o pacote `SonarAnalyzer.CSharp` vem do nuget.org normalmente. Um
   `Directory.Build.props` temporário na raiz com
@@ -272,6 +276,11 @@ gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm 
   montar um projeto `net10.0` de scratch que inclui os `.cs` de verdade por caminho absoluto mais
   um arquivo de stubs com os campos que o `InitializeComponent()` geraria - foi assim que a
   varredura desta rodada cobriu os code-behinds.
+  **Atenção ao limite disso:** o perfil padrão do pacote NuGet é mais estreito que o "Sonar way" do
+  SonarCloud. Nesta rodada, as três últimas issues (S2325 em `OnboardingViewModel.ShowFromStart` e
+  duas S1125 em `HelpSheetView`) **não apareceram** no analisador local, só no SonarCloud. Ou seja:
+  local limpo reduz muito o ruído, mas não substitui a leitura da aba "Issues" do PR - que, com o
+  `sonarcloud.io` bloqueado, precisa ser colada pelo usuário.
 - Bloco `catch (Exception) { }` vazio sem tratamento: preencha com um comentário de uma linha
   explicando por que ignorar é intencional (regra de "empty block"/"handle the exception").
 - `CommandParameter` de `Button`/etc. no XAML sempre chega como `string` ao `ICommand` ligado, não

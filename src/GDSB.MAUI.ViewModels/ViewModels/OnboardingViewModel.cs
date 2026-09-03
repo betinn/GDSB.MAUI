@@ -80,11 +80,17 @@ namespace GDSB.MAUI.ViewModels
         /// Abre o tutorial do zero. Usado pelo link "Como funciona?", que é o caminho de revisão -
         /// por isso não olha a preferência: quem pediu para rever quer rever.
         /// </summary>
+        // S2325 é falso positivo: as duas atribuições são em propriedades geradas por
+        // [ObservableProperty], que o Sonar não reconhece como estado de instância. Tornar o método
+        // static quebraria o binding - e o UnlockViewModel o chama numa instância. Mesma
+        // justificativa das propriedades de UnlockViewModel.
+#pragma warning disable S2325
         public void ShowFromStart()
         {
             CurrentIndex = 0;
             IsVisible = true;
         }
+#pragma warning restore S2325
 
         /// <summary>
         /// Abre sozinho, só uma vez na vida do app. Quem decide se é hora de chamar isto é o
