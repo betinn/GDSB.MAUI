@@ -14,12 +14,19 @@ namespace GDSB.MAUI.Controls
         public static readonly BindableProperty IsSelectedProperty = BindableProperty.Create(
             nameof(IsSelected), typeof(bool), typeof(SelectableChip), false, propertyChanged: OnIsSelectedChanged);
 
+        // S2325 é falso positivo: GetValue/SetValue são métodos de instância de BindableObject -
+        // uma bindable property não existe sem instância, então isto não pode virar static.
+#pragma warning disable S2325
         public bool IsSelected
         {
             get => (bool)GetValue(IsSelectedProperty);
             set => SetValue(IsSelectedProperty, value);
         }
+#pragma warning restore S2325
 
+        // oldValue é ignorado de propósito, mas não dá pra remover: a assinatura é fixa pelo
+        // delegate BindablePropertyChangedDelegate esperado por BindableProperty.Create.
+#pragma warning disable S1172
         private static void OnIsSelectedChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var chip = (SelectableChip)bindable;
@@ -36,9 +43,10 @@ namespace GDSB.MAUI.Controls
                 chip.ClearValue(TextColorProperty);
             }
         }
+#pragma warning restore S1172
 
         private static Color ResourceColor(string key) =>
-            Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color
+            Application.Current?.Resources.TryGetValue(key, out var value) is true && value is Color color
                 ? color
                 : Colors.Transparent;
     }
