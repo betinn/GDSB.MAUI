@@ -28,7 +28,7 @@
 		<ApplicationTitle>GDSB.MAUI</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.gdsb.maui</ApplicationId>
+		<ApplicationId>gdsb.app</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
