@@ -14,9 +14,29 @@
 			</intent-filter>
 		</activity>
 	</application>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<!--
+	  Só o que o app realmente usa. Toda permissão a mais aqui vira uma pergunta a responder na
+	  Play Console e um motivo a mais para a publicação travar, então a lista é mantida no mínimo:
+
+	  USE_BIOMETRIC - BiometricPrompt/BiometricManager, em
+	                  Platforms/Android/Services/BiometricUnlockService.cs.
+
+	  Removidas nesta rodada, por não terem uso nenhum no código:
+
+	  READ_EXTERNAL_STORAGE / WRITE_EXTERNAL_STORAGE - o app nunca toca em caminho de arquivo do
+	      Android. Abrir e gravar um cofre é 100% Storage Access Framework (ActionOpenDocument /
+	      ActionCreateDocument em FilePickerService, e ContentResolver.OpenInputStream/
+	      OpenOutputStream sobre content:// em AndroidSafFileSystem), que por definição dispensa
+	      permissão - é o usuário quem escolhe o arquivo no seletor do sistema. Os backups ficam em
+	      FileSystem.AppDataDirectory, área privada do app. Além disso a WRITE_EXTERNAL_STORAGE não
+	      tem mais efeito desde o Android 11 e a READ_EXTERNAL_STORAGE desde o Android 13, e as duas
+	      estão na lista de permissões que o Google cobra justificativa para publicar.
+
+	  INTERNET / ACCESS_NETWORK_STATE - o GDSB é offline por inteiro: não há HttpClient,
+	      WebView nem uso de Connectivity em lugar nenhum. Abrir a URL de um item é
+	      Launcher.Default.OpenAsync, que dispara um Intent para o navegador - quem acessa a rede
+	      é o navegador, com a permissão dele. (Em build de Debug o SDK do Android injeta a
+	      INTERNET sozinho, para o depurador; o Release sai sem ela.)
+	-->
 	<uses-permission android:name="android.permission.USE_BIOMETRIC" />
 </manifest>
