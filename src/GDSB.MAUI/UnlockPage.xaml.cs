@@ -1,4 +1,4 @@
-using GDSB.MAUI.ViewModels;
+﻿using GDSB.MAUI.ViewModels;
 using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
@@ -21,6 +21,18 @@ public partial class UnlockPage : ContentPage
             StrokeWidth = 1.7f,
             Compact = true,
         };
+    }
+
+    // Mantém o conteúdo com pelo menos a altura visível: assim a linha "*" continua centralizando
+    // o bloco de desbloqueio quando sobra espaço, e o ScrollView assume quando não cabe (janela
+    // baixa no Windows, celular pequeno). Sem isto seria um ou outro - ou o conteúdo cola no topo
+    // sempre, ou nunca rola.
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+
+        if (height > 0)
+            UnlockContent.MinimumHeightRequest = Math.Max(0, height - RootScroll.Padding.VerticalThickness);
     }
 
     protected override async void OnAppearing()

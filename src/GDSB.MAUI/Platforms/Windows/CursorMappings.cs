@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using GDSB.MAUI.Behaviors;
 using Microsoft.Maui.Handlers;
 using Microsoft.UI.Input;
@@ -31,6 +31,15 @@ namespace GDSB.MAUI.Platforms.Windows
             });
 
             LayoutHandler.Mapper.AppendToMapping("HoverCursor", (handler, view) =>
+            {
+                if (view is BindableObject element && HoverCursor.GetIsHand(element))
+                    SetHand(handler.PlatformView);
+            });
+
+            // Border não passa por LayoutHandler nem por LabelHandler - tem handler próprio. Sem
+            // este mapeamento, uma pílula/cartão clicável (a entrada "Como funciona?" da tela de
+            // desbloqueio) ficava com o cursor de seta, sem nenhuma pista de que dá para clicar.
+            BorderHandler.Mapper.AppendToMapping("HoverCursor", (handler, view) =>
             {
                 if (view is BindableObject element && HoverCursor.GetIsHand(element))
                     SetHand(handler.PlatformView);
