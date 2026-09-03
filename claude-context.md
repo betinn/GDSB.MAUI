@@ -178,6 +178,11 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
 
 - **Um dropdown (`Picker`) na própria tela inicial**, não um painel sobreposto e não uma tela de
   configurações nova. Aplica e grava **no próprio evento de mudança** — sem botão de confirmar.
+- **A escolha sobrevive ao fechamento do app.** Gravada em `Preferences` (`gdsb.language`) no mesmo
+  instante da troca, e lida na inicialização **antes do primeiro XAML** — o app reabre direto no
+  idioma escolhido, com o dropdown já mostrando qual é. Só a primeira abertura, sem preferência
+  gravada, cai no pt-BR. Verificar matando o app pelo gerenciador de tarefas: mandar para segundo
+  plano não recria o processo e portanto não testa nada.
 - **Troca ao vivo**, sem reiniciar: cada texto é binding para o catálogo, e a tela muda embaixo do
   dedo. Nada de recriar a Shell, nada de voltar para o começo.
 - **Datas e números seguem o idioma**: `02/09/2026 14:30` → `9/2/2026 2:30 PM`; `1,5 KB` → `1.5 KB`.
@@ -215,6 +220,15 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
 - **`CreateVaultPage` e `VaultSettingsPage` são quase clones** nos blocos PROTEÇÕES/BACKUPS (~20
   frases idênticas) e **`VaultPage` duplica o cabeçalho inteiro** (compacto vs largo, 6 frases).
   Mesma chave nos dois lugares, não uma por página.
+- **`LanguageSelectorViewModel.Selected` precisa ser semeado no construtor** com
+  `_localization.Current`, não deixado no `null` do campo gerado. Sem isso o app reabre no idioma
+  certo mas o dropdown aparece **em branco**, porque `SelectedItem` não bate com nenhum item de
+  `Options` — o estado fica correto e a tela mente sobre ele. É por isso que a guarda de igualdade
+  no `OnSelectedChanged` não é opcional: a semeadura dispara o handler durante a construção.
+- **A ordem de aplicação da cultura no `MauiProgram` importa:** o `TrExtension` lê o catálogo na
+  cultura vigente quando o binding avalia pela primeira vez. Aplicada depois que `App` construiu a
+  `AppShell`, a primeira renderização sai em português mesmo com inglês gravado. `builder.Build()`
+  roda antes de `App` ser construído, então é o ponto seguro; qualquer lugar mais tarde não é.
 - **Risco central do plano:** a troca ao vivo depende de o binding `[Chave]` reagir à notificação
   do serviço. `SetLanguage` deve emitir **`PropertyChanged("Item[]")` e `PropertyChanged(null)`** —
   cobre os dois caminhos do `BindingExpression` do MAUI. Isso **só é verificável rodando o app**, e
