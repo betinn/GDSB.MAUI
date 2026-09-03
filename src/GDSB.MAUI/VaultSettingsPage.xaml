@@ -56,7 +56,7 @@
                     <!-- Bloco 1: nome -->
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="14">
-                            <Label Text="NOME DO COFRE" Style="{StaticResource FieldLabelStyle}" />
+                            <views:FieldLabelView Text="NOME DO COFRE" HelpTopicId="vault.name" />
                             <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                     StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                 <Entry Text="{Binding VaultName}" TextColor="{StaticResource TextPrimaryDark}"
@@ -74,7 +74,7 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="18">
 
-                            <Label Text="PROTEÇÕES" Style="{StaticResource FieldLabelStyle}" />
+                            <views:FieldLabelView Text="PROTEÇÕES" HelpTopicId="vault.protections" />
 
                             <VerticalStackLayout Spacing="6">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -134,7 +134,7 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="18">
 
-                            <Label Text="BACKUPS" Style="{StaticResource FieldLabelStyle}" />
+                            <views:FieldLabelView Text="BACKUPS" HelpTopicId="vault.backups" />
 
                             <VerticalStackLayout Spacing="6">
                                 <Label Text="Manter quantas versões"
@@ -196,7 +196,8 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="14">
 
-                            <Label Text="TROCAR SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+                            <views:FieldLabelView Text="TROCAR SENHA MESTRA"
+                                                  HelpTopicId="vault.changeMasterUnlockCode" />
 
                             <VerticalStackLayout Spacing="8">
                                 <Label Text="SENHA ATUAL" Style="{StaticResource FieldLabelStyle}" />
@@ -253,5 +254,7 @@
         <!-- Disparado por SettingsSaved, que só ocorre quando a gravação (nome, proteções ou
              senha) deu certo - ver SealOverlayView/LockSealDrawable. -->
         <views:SealOverlayView x:Name="SealOverlay" />
+
+        <views:HelpSheetView x:Name="HelpSheet" />
     </Grid>
 </ContentPage>
