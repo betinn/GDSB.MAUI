@@ -91,112 +91,153 @@ teste, nem como fallback.
 ## Plano em execução
 
 O plano completo desta rodada — contexto, decisões fechadas, **plano macro**, **plano micro por
-fase** (arquivos a criar/alterar, regras e "Pronto quando") e o **protótipo visual** das telas —
-vive neste documento:
+fase** (arquivos a criar/alterar, regras e "Pronto quando") e o **protótipo visual** da seleção de
+idioma — vive neste documento:
 
-**➜ https://claude.ai/code/artifact/6bd2735a-f8fd-45ad-b7f3-4ff869c8de33**
+**➜ https://claude.ai/code/artifact/f5f89a9f-0e1f-4144-9343-2a673d03adb7**
 
 Ele é a fonte da verdade. `WebFetch` funciona nessa URL. **Leia a seção da fase que você vai
 executar antes de escrever qualquer código**; aqui embaixo fica só o resumo, para você se
 localizar rápido.
 
-O artifact da rodada anterior (desbloqueio, backups fora da pasta do cofre, edição de cofre —
-fases 1 a 6, todas concluídas) continua em
-https://claude.ai/code/artifact/00e12b9d-b9d9-4c72-9a4e-e111477c329d, só como histórico.
+Artifacts das rodadas anteriores, só como histórico:
+https://claude.ai/code/artifact/6bd2735a-f8fd-45ad-b7f3-4ff869c8de33 (rodada 3 — primeiro acesso
+guiado e backups versionados) e
+https://claude.ai/code/artifact/00e12b9d-b9d9-4c72-9a4e-e111477c329d (rodada 2 — desbloqueio,
+backups fora da pasta do cofre, edição de cofre).
 
 ### Objetivo da rodada
 
-Duas frentes, vindas do uso real:
+**Deixar o app multilíngue: português do Brasil (padrão) e inglês.**
 
-1. **Backups versionados.** Hoje o `FileSystemVaultBackupStore.Store` monta sempre o mesmo caminho
-   por cofre (`BKP - <nome>.GDSBX.bak`) e grava por cima: existe **um único** backup, o de antes do
-   último save. Passar a guardar histórico, com um limite configurável **por cofre** — "até N
-   versões" **ou** "até N dias" — e poda automática ao passar do limite.
-2. **Primeiro acesso guiado.** O app não se explica para quem nunca o viu. Adicionar um tutorial de
-   3 slides na tela inicial, um "?" clicável ao lado das funcionalidades que não se explicam
-   sozinhas, e sinalização de campo obrigatório nos formulários.
+Hoje não existe **uma única linha** de infraestrutura de localização no repositório: nenhum
+`.resx`, nenhum `NeutralLanguage`, nenhuma `CultureInfo` sendo lida em lugar nenhum (as três
+ocorrências no código são o parâmetro ignorado de `IValueConverter.Convert`). Todo texto visível é
+literal:
 
-A frente 1 vem primeiro porque cria o bloco de configuração `BACKUPS` que a frente 2 precisa
-explicar — na ordem inversa, as mesmas telas seriam reabertas duas vezes.
+| Onde | Literais | Concentração |
+|---|---|---|
+| XAML (`Text=`, `Placeholder=`, `Span.Text`, `SemanticProperties.Description`) | ~173 (≈103 únicos) | 17 arquivos; `VaultSettingsPage` 38, `CreateVaultPage` 32, `HelpVisuals.xaml` 25, `BackupRecoveryPage` 21, `ItemEditorView` 20 |
+| C# (ViewModels, catálogo de ajuda, code-behinds, plataformas) | ~116 | `Help/HelpTopics.cs` sozinho tem 48 (~5.150 caracteres de prosa) |
+| **Total** | **≈290** | **≈320 chaves de recurso** |
+
+O idioma é **configuração do app**, gravada em `Preferences` (chave `gdsb.language`), ao lado de
+`gdsb.onboardingSeen` — **não** vai em `Profile.Settings`, onde moram as proteções e a retenção de
+backup: um arquivo `.GDSBX` pode ser aberto em qualquer aparelho, e o idioma é preferência de quem
+está lendo a tela, não propriedade do arquivo.
 
 ### Status das fases
 
-| # | Fase | Frente | Depende de | Status | PR |
-|---|------|--------|------------|--------|-----|
-| 0 | Contexto e plano (este arquivo + artifact) | — | — | ✅ Concluída | — |
-| 1 | Retenção no domínio e no store | Backups | — | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
-| 2 | Bloco BACKUPS nas telas | Backups | 1 | ✅ Concluída | [#19](https://github.com/betinn/GDSB.MAUI/pull/19) |
-| 3 | Infra de ajuda e obrigatoriedade | Onboarding | — | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
-| 4 | Tutorial de primeiro acesso | Onboarding | 3 | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
-| 5 | Cofre novo e segredo novo | Onboarding | 2, 3 | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
-| 6 | Backup e edição do cofre | Onboarding | 2, 3 | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
-| 7 | Fechamento (README, contexto, testes, build) | — | todas | ✅ Concluída | [#20](https://github.com/betinn/GDSB.MAUI/pull/20) |
-
-**Rodada encerrada.** Todas as sete fases estão fechadas. Uma rodada nova começa por um
-`claude-context.md` novo e um artifact de plano novo, como as anteriores.
+| # | Fase | Depende de | Status | PR |
+|---|------|------------|--------|-----|
+| 0 | Contexto e plano (este arquivo + artifact) | — | ✅ Concluída | — |
+| 1 | Infra de idioma + seleção na home | — | ⏳ Próxima | — |
+| 2 | Migração do XAML restante | 1 | ⬜ A fazer | — |
+| 3 | Migração dos ViewModels | 1 | ⬜ A fazer | — |
+| 4 | Ajuda (`HelpTopics`) e tutorial | 1 | ⬜ A fazer | — |
+| 5 | Fechamento (revisão do inglês, README, contexto, build) | 2, 3, 4 | ⬜ A fazer | — |
 
 Dependências:
 
 ```
-1 ──► 2 ──┐
-          ├──► 5, 6 ──► 7
-3 ──► 4 ──┘
+                    ┌──► 2  XAML          ──┐
+1  infra + seleção ─┼──► 3  ViewModels    ──┼──► 5  fechamento
+                    └──► 4  ajuda/tutorial──┘
 ```
 
-As fases **1** e **3** não dependem de nada e podem ser feitas em paralelo, em sessões diferentes.
-As fases 5 e 6 só abrem depois de 2 e 3, porque as duas colocam um "?" na sessão `BACKUPS`.
+As fases **2, 3 e 4** são independentes entre si — só compartilham o `.resx`, que cresce por
+adição. A fase 1 trava tudo porque é ela que prova o mecanismo de troca ao vivo.
 
-**Exceções já usadas:** as fases 1 e 2 foram implementadas e mergeadas juntas no PR #19, a pedido
-explícito do usuário ("elas se complementam"); as fases 3 a 7 saíram juntas no PR #20, também a
-pedido explícito ("em vez de você fazer só a próxima fase, quero que faça todas as fases até a
-finalização da feature completa") - e por isso o PR #20 sai da branch `claude/...` designada, em
-vez de uma `fase-<N>-<nome>`. A regra de "um PR por fase" e a de nomenclatura de branch (seção
-"Como trabalhar") continuam valendo por padrão - só quebre de novo se o usuário pedir.
+**Exceção de entrega combinada nesta rodada:** **dois PRs**, não um por fase. A fase 1 sai sozinha
+num PR (é ela que decide a arquitetura e vale revisar antes); as fases 2 a 5, que são migração
+mecânica, saem juntas num segundo PR. A regra de "um PR por fase" da seção "Como trabalhar"
+continua valendo por padrão nas rodadas seguintes.
 
-**Auditoria de permissões do Android (PR #20).** Feita a pedido do usuário, de olho na publicação
-na Play Store. O manifesto passou a declarar **uma única** permissão, `USE_BIOMETRIC`; saíram
-`READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE`, `INTERNET` e `ACCESS_NETWORK_STATE`, nenhuma
-com uso no código (o acesso a arquivo é 100% Storage Access Framework e o app é offline por
-inteiro), junto com o `RequestStoragePermissions()` do `MainActivity` que as pedia na primeira
-abertura. **Regra permanente:** nada de declarar permissão "por precaução" - cada uma precisa de um
-uso demonstrável no código, senão vira justificativa a dar na Play Console. As injetadas por
-biblioteca (`USE_FINGERPRINT` da AndroidX.Biometric, `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` da
-AndroidX.Core) foram mantidas e conferidas nos `.aar` dos pacotes restaurados.
+### Arquitetura escolhida
+
+```
+GDSB.MAUI.ViewModels  (net10.0 — testável, é onde o catálogo TEM que morar)
+├── Resources/AppStrings.resx        ← pt-BR (neutro, embutido no assembly principal)
+├── Resources/AppStrings.en.resx     ← inglês (assembly satélite en/)
+├── Localization/AppLanguage.cs      ← código + endônimo; lista fechada de 2
+├── Localization/ILocalizationService.cs · LocalizationService.cs
+└── Localization/LocalizedObject.cs  ← base que reemite PropertyChanged na troca
+
+GDSB.MAUI  (o app)
+└── Localization/TrExtension.cs      ← {loc:Tr Chave} no XAML → Binding para o serviço
+```
+
+O catálogo mora em `GDSB.MAUI.ViewModels` porque `tests/GDSB.MAUI.Tests` referencia **só**
+`GDSB.Domain` e `GDSB.MAUI.ViewModels` — não consegue referenciar `GDSB.MAUI`, então tudo que
+precisa de teste tem que estar ali. E porque o projeto já é o lugar dos catálogos de texto:
+`Help/HelpTopics.cs` declara no próprio cabeçalho que o texto de ajuda mora ali "e não no XAML".
 
 ### Decisões já fechadas com o usuário
 
 Não relitigar durante a implementação — o detalhamento de cada uma está no artifact.
 
-- Retenção com **dois modos, um por vez**: "até N versões" ou "até N dias". Configuração **por
-  cofre**, gravada dentro do arquivo (`Profile.Settings`), como já são as proteções.
-- Defaults: `Count` / 10 versões / 5 dias. Um cofre v2 antigo, sem a chave no JSON, abre nesses
-  valores pelo inicializador de propriedade — mesmo mecanismo já usado em `VaultSettings`.
-- Além do modo escolhido existe um **teto rígido de 100 arquivos por cofre**, válido nos dois
-  modos. Foi a opção escolhida em vez de uma janela mínima entre backups.
-- **Piso:** a poda nunca apaga o backup mais recente, mesmo que a regra de idade mande apagar
-  todos.
-- Backups `LegacyV1` **nunca são podados** e não contam para o teto; continuam com nome sem
-  timestamp (é a identidade por caminho que garante "nunca sobrescrever o original importado").
-- Backups `Rolling` passam a ter timestamp no nome:
-  `BKP - <nome>.GDSBX - 2026-09-02 14-30-12.bak` (`yyyy-MM-dd HH-mm-ss`, sem `:` — ilegal no
-  Windows).
-- O "?" abre um **painel no estilo do app** (overlay escuro, mesmo padrão dos três modais de
-  `BackupRecoveryPage`), não um `DisplayAlert` nativo. Todo o texto de ajuda vive num catálogo em
-  C# (`HelpTopics`), fora do XAML.
-- **Todo painel de ajuda mostra o controle de que fala**, não só descreve: entre os parágrafos
-  entra uma réplica inerte do botão, campo ou chip em questão, montada com os estilos de verdade de
-  `Styles.xaml`. Por isso um tópico é uma lista de blocos (`Heading` / `Text` / `Visual`), não uma
-  lista de parágrafos. Painel só de texto é considerado incompleto — a regra é garantida por teste
-  na fase 3 ("todo tópico tem pelo menos um bloco `Visual`").
-- **A tela de backup tem um "?" só**, no cabeçalho, e ele cobre a tela inteira (backup automático,
-  restaurar, excluir, excluir todos). Nada de "?" nos cartões nem nos botões. A tela de edição do
-  cofre **continua com um "?" por sessão** — a regra do "?" único vale só para a tela de backup.
-- Campo obrigatório = **asterisco no label** em cor de destaque + legenda `* campos obrigatórios`
-  no fim do bloco. Campos opcionais não recebem marca nenhuma.
-- O tutorial aparece sozinho no primeiro acesso e fica revisível por um link **"Como funciona?" no
-  topo** da tela inicial — acima do bloco de desbloqueio, não junto dos links de rodapé.
-- O tutorial **não abre automaticamente quando a biometria está armada** (`CanUseBiometric`), para
-  não brigar com o prompt do sistema que `UnlockViewModel.InitializeAsync` já dispara.
+- **Um dropdown (`Picker`) na própria tela inicial**, não um painel sobreposto e não uma tela de
+  configurações nova. Aplica e grava **no próprio evento de mudança** — sem botão de confirmar.
+- **A escolha sobrevive ao fechamento do app.** Gravada em `Preferences` (`gdsb.language`) no mesmo
+  instante da troca, e lida na inicialização **antes do primeiro XAML** — o app reabre direto no
+  idioma escolhido, com o dropdown já mostrando qual é. Só a primeira abertura, sem preferência
+  gravada, cai no pt-BR. Verificar matando o app pelo gerenciador de tarefas: mandar para segundo
+  plano não recria o processo e portanto não testa nada.
+- **Troca ao vivo**, sem reiniciar: cada texto é binding para o catálogo, e a tela muda embaixo do
+  dedo. Nada de recriar a Shell, nada de voltar para o começo.
+- **Datas e números seguem o idioma**: `02/09/2026 14:30` → `9/2/2026 2:30 PM`; `1,5 KB` → `1.5 KB`.
+- **Nomes de arquivo continuam invariantes** (`yyyy-MM-dd HH-mm-ss` em `VaultBackupNaming`), sob
+  pena de um backup gravado em português deixar de ser reconhecido em inglês. É o único ponto do
+  plano com risco de corromper dado — confirmar arquivo a arquivo antes de mexer em
+  `DefaultThreadCurrentCulture`.
+- **pt-BR é o idioma neutro**, inglês é satélite: chave faltando em inglês cai no português em vez
+  de sumir da tela (`ResourceManager` faz isso de graça). **Não definir
+  `SatelliteResourceLanguages`** em lugar nenhum — restringir essa lista faria o inglês sumir num
+  build Release.
+- **Os nomes dos idiomas no dropdown nunca são traduzidos**: "Português (Brasil)" e "English (US)"
+  aparecem sempre assim, para quem caiu num idioma que não lê conseguir achar o seu.
+- **Convenção de chave: `Tela_Elemento`**, PascalCase com `_` (vira nome de propriedade C#, então
+  precisa ser identificador válido). Prefixo `Common_` para o que aparece em mais de uma tela —
+  `Excluir` e `Cancelar` aparecem 5× cada hoje.
+- **Fora do catálogo, de propósito:** glifos e entidades (`?`, `*`, `&#9733;`, `&#9881;`, `&#8592;`,
+  `👁`, a máscara `••••••••••`), números soltos de chip, `CommandParameter`, ids de tópico
+  (`vault.backups`), ids de amostra visual (`HelpVisual.BackupCard`), rotas (`"VaultPage"`), a
+  marca `GDSB` e os endônimos do dropdown.
+- **Fora do escopo:** o nome do app (`ApplicationTitle` continua "GDSB" nos dois idiomas — é
+  marca), um terceiro idioma, e traduzir dados do usuário (nomes de cofre, de item, observações).
+
+### Armadilhas conhecidas desta rodada
+
+- **`Resources/HelpVisuals.xaml` é a que se esquece.** Seus 13 `DataTemplate` são réplicas das
+  telas reais e carregam **cópias** dos mesmos textos. Traduzir as páginas e não traduzir ela deixa
+  o painel de ajuda em português dentro de um app em inglês.
+- **`HelpTopics.All` é materializado uma vez** no inicializador estático do tipo — trocar o idioma
+  depois da primeira leitura não muda nada. Precisa reconstruir a partir do catálogo, com cache por
+  cultura. Os **ids** continuam constantes: são chave, não texto.
+- **`HelpBlock.Value` é prosa quando `Kind` é `Heading`/`Text` e id de recurso quando é `Visual`**
+  (aí a prosa está em `Caption`). Um find/replace cego sobre `Value` corrompe o catálogo de
+  amostras.
+- **`CreateVaultPage` e `VaultSettingsPage` são quase clones** nos blocos PROTEÇÕES/BACKUPS (~20
+  frases idênticas) e **`VaultPage` duplica o cabeçalho inteiro** (compacto vs largo, 6 frases).
+  Mesma chave nos dois lugares, não uma por página.
+- **`LanguageSelectorViewModel.Selected` precisa ser semeado no construtor** com
+  `_localization.Current`, não deixado no `null` do campo gerado. Sem isso o app reabre no idioma
+  certo mas o dropdown aparece **em branco**, porque `SelectedItem` não bate com nenhum item de
+  `Options` — o estado fica correto e a tela mente sobre ele. É por isso que a guarda de igualdade
+  no `OnSelectedChanged` não é opcional: a semeadura dispara o handler durante a construção.
+- **A ordem de aplicação da cultura no `MauiProgram` importa:** o `TrExtension` lê o catálogo na
+  cultura vigente quando o binding avalia pela primeira vez. Aplicada depois que `App` construiu a
+  `AppShell`, a primeira renderização sai em português mesmo com inglês gravado. `builder.Build()`
+  roda antes de `App` ser construído, então é o ponto seguro; qualquer lugar mais tarde não é.
+- **Risco central do plano:** a troca ao vivo depende de o binding `[Chave]` reagir à notificação
+  do serviço. `SetLanguage` deve emitir **`PropertyChanged("Item[]")` e `PropertyChanged(null)`** —
+  cobre os dois caminhos do `BindingExpression` do MAUI. Isso **só é verificável rodando o app**, e
+  é por isso que a fase 1 prova o mecanismo numa tela antes de aplicá-lo em 300 lugares. Plano B se
+  falhar no aparelho: `DynamicResource` + o serviço reescrevendo `Application.Current.Resources`.
+- **`BackupItemViewModel` não é `ObservableObject`** — na troca de idioma é o
+  `BackupRecoveryViewModel` que reconstrói a coleção, não cada item que se notifica.
+- **`HelpSheetView.xaml.cs` provavelmente não muda:** `Show` já relê `HelpTopics.TryGet` e
+  `template.CreateContent()` a cada abertura, então acompanha sozinho.
 
 ---
 
@@ -207,7 +248,8 @@ Não relitigar durante a implementação — o detalhamento de cada uma está no
   (tipo `claude/...`): crie a branch da fase a partir dela (ou da `main`) e faça o PR a partir da
   branch com nome de fase, não da genérica.
 - **Um PR por fase.** Use a lista de arquivos e o "Pronto quando" da fase, no artifact, como
-  checklist do PR.
+  checklist do PR. **Nesta rodada (4) vale a exceção combinada com o usuário:** dois PRs — a fase 1
+  sozinha, e as fases 2 a 5 juntas. Ver "Exceção de entrega combinada nesta rodada", acima.
 - Ao terminar a implementação da fase (código pronto e commitado), **abra o PR automaticamente, sem
   perguntar antes** — é parte padrão do fluxo. O PR fica aberto para review do usuário; não faça
   merge sozinho.
@@ -238,11 +280,14 @@ o detalhe é preciso pedir pro usuário colar o conteúdo da aba "Issues" do PR 
 (`sonarcloud.io` está bloqueado pela rede deste ambiente, tanto por `WebFetch` quanto por
 `curl`/API, mesmo com token — confirmado de novo nesta sessão).
 
-Na rodada anterior, os 75 issues abertos do relatório de 2026-09-01 (2 vulnerabilidades, 1 bug,
+Na rodada 2, os 75 issues abertos do relatório de 2026-09-01 (2 vulnerabilidades, 1 bug,
 72 code smells) foram corrigidos junto com as fases 5 e 6, no PR #17. Como o Sonar continua
 inacessível daqui, o "0 issues" em New Code e Overall Code nunca chegou a ser confirmado por uma
-sessão; se isso importar antes de abrir a rodada nova, precisa de confirmação humana olhando o
-SonarCloud direto.
+sessão; se isso importar, precisa de confirmação humana olhando o SonarCloud direto.
+
+**Atenção redobrada na rodada 4 (multilíngue):** a regra **S1135** procura a palavra `TODO` e não
+distingue idioma — o português "todo" em comentário vira um apontamento cada. Esta rodada escreve
+comentários novos em dezenas de arquivos; use "cada" ou reformule.
 
 Achados recorrentes de falso positivo neste projeto, todos ligados a como o Sonar resolve símbolos
 gerados por source generator (o `[ObservableProperty]` do CommunityToolkit.Mvvm e os campos de
