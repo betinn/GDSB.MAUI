@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Interfaces;
 using GDSB.Infrastructure.Backup;
 using GDSB.MAUI.Interfaces;
+using GDSB.MAUI.Localization;
 using GDSB.MAUI.Services;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,7 +14,7 @@ using System.Text;
 // AppShell.xaml.cs.
 namespace GDSB.MAUI.ViewModels
 {
-    public partial class UnlockViewModel : ObservableObject
+    public partial class UnlockViewModel : LocalizedObject
     {
         // Senha errada e arquivo corrompido devem ser indistinguíveis pra quem usa o app -
         // nunca mostrar ex.Message cru, sempre essa mensagem genérica.
@@ -45,6 +46,7 @@ namespace GDSB.MAUI.ViewModels
             IPreferencesService preferencesService,
             IAlertService alertService,
             UnlockOverlays overlays)
+            : base(overlays.Language.LocalizationService)
         {
             _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
@@ -55,6 +57,7 @@ namespace GDSB.MAUI.ViewModels
             _vaultSessionService = vaultAccess.VaultSessionService;
             BiometricOptIn = overlays.BiometricOptIn;
             Onboarding = overlays.Onboarding;
+            Language = overlays.Language;
         }
 
         // Exposto pra UnlockPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
@@ -64,6 +67,10 @@ namespace GDSB.MAUI.ViewModels
         // Exposto pra UnlockPage.xaml hospedar a OnboardingView (BindingContext="{Binding
         // Onboarding}"), do mesmo jeito que a BiometricOptInView.
         public OnboardingViewModel Onboarding { get; }
+
+        // Exposto pra UnlockPage.xaml hospedar a pílula de idioma (Language.Options/Selected),
+        // no mesmo padrão de BiometricOptIn e Onboarding.
+        public LanguageSelectorViewModel Language { get; }
 
         [ObservableProperty]
         private string? selectedVaultLocation;

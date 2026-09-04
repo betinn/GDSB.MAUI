@@ -4,6 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- pt-BR é o idioma neutro: fica embutido no assembly principal, e só o inglês gera um
+         assembly satélite (pasta en/). Não definir SatelliteResourceLanguages em lugar nenhum -
+         restringir essa lista é o que faria o inglês sumir de um build Release. -->
+    <NeutralLanguage>pt-BR</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +20,26 @@
     <!-- Só pra VaultBackupNaming.IsBackupName (UnlockViewModel) - GDSB.Infrastructure não
          referencia este projeto de volta, então não fecha ciclo (diferente de GDSB.MAUI). -->
     <ProjectReference Include="..\GDSB.Infrastructure\GDSB.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <!-- AppStrings.Designer.cs é escrito à mão (não gerado pelo dotnet CLI - ver o comentário no
+       topo do próprio arquivo), mas os metadados abaixo são os mesmos que o Custom Tool
+       PublicResXFileCodeGenerator do Visual Studio grava, para o projeto continuar consistente se
+       algum dia for aberto lá. PublicResXFileCodeGenerator (não o ResXFileCodeGenerator padrão,
+       que gera uma classe internal) porque a classe gerada precisa ser pública. -->
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\AppStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\AppStrings.en.resx">
+      <DependentUpon>AppStrings.resx</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="Resources\AppStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppStrings.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

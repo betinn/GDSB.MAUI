@@ -26,13 +26,16 @@ namespace GDSB.MAUI.Tests
             public FakePreferencesService PreferencesService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
             public FakeVaultSessionService VaultSessionService { get; } = new();
+            public FakeLocalizationService LocalizationService { get; } = new();
             public OnboardingViewModel Onboarding { get; }
+            public LanguageSelectorViewModel Language { get; }
             public UnlockViewModel ViewModel { get; }
 
             public Sut()
             {
                 var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
                 Onboarding = new OnboardingViewModel(PreferencesService);
+                Language = new LanguageSelectorViewModel(LocalizationService);
                 ViewModel = new UnlockViewModel(
                     new VaultAccess(ProfileFileService, VaultSessionService),
                     FilePickerService,
@@ -40,7 +43,7 @@ namespace GDSB.MAUI.Tests
                     BiometricUnlockService,
                     PreferencesService,
                     AlertService,
-                    new UnlockOverlays(biometricOptIn, Onboarding));
+                    new UnlockOverlays(biometricOptIn, Onboarding, Language));
             }
         }
 
