@@ -23,6 +23,7 @@ namespace GDSB.MAUI.Tests
             public FakeFilePickerService FilePickerService { get; } = new();
             public FakeNavigationService NavigationService { get; } = new();
             public FakeVaultSessionService VaultSessionService { get; } = new();
+            public FakeLocalizationService LocalizationService { get; } = new();
             public BackupRecoveryViewModel ViewModel { get; }
 
             public Profile Profile { get; } = new() { Nome = "Cofre de teste" };
@@ -34,7 +35,8 @@ namespace GDSB.MAUI.Tests
                     ProfileFileService,
                     FilePickerService,
                     NavigationService,
-                    VaultSessionService);
+                    VaultSessionService,
+                    LocalizationService);
 
                 ProfileFileService.OpenHandler = (_, password) => password == VaultUnlockCode
                     ? new ProfileOpenResult(Profile, WasLegacyFormat: false)
@@ -69,7 +71,7 @@ namespace GDSB.MAUI.Tests
             sut.ViewModel.RestorePassword = WrongVaultUnlockCode;
             await sut.ViewModel.ConfirmRestoreCommand.ExecuteAsync(null);
 
-            Assert.Equal("Senha incorreta ou arquivo corrompido.", sut.ViewModel.RestoreErrorMessage);
+            Assert.Equal("Unlock_GenericErrorMessage", sut.ViewModel.RestoreErrorMessage);
             Assert.Empty(sut.ProfileFileService.SaveCalls);
             Assert.Empty(sut.NavigationService.NavigateToRootCalls);
             Assert.True(sut.ViewModel.IsRestoring);

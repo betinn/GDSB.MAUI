@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Entities;
+using GDSB.MAUI.Localization;
+using GDSB.MAUI.Services;
 
 namespace GDSB.MAUI.ViewModels
 {
@@ -9,8 +11,16 @@ namespace GDSB.MAUI.ViewModels
     // (edição de um cofre existente) e CreateVaultViewModel (criação), que espelham exatamente
     // os mesmos campos e comandos de seleção. SaveProtectionsAsync/CreateVaultAsync continuam em
     // cada ViewModel, porque os dois fazem coisas fundamentalmente diferentes com esses valores.
-    public abstract partial class VaultProtectionsFormViewModelBase : ObservableObject
+    // Herda de LocalizedObject (em vez de ObservableObject direto) porque os textos dos chips de
+    // opção (CreateVault_.../Protections_.../Backups_...) vêm do XAML via {loc:Tr}, não daqui -
+    // trocar a base cobre VaultSettingsViewModel e CreateVaultViewModel de uma vez só.
+    public abstract partial class VaultProtectionsFormViewModelBase : LocalizedObject
     {
+        protected VaultProtectionsFormViewModelBase(ILocalizationService localizationService)
+            : base(localizationService)
+        {
+        }
+
         public static IReadOnlyList<int> ClipboardClearSecondsOptions { get; } = new[] { 20, 45, 90 };
 
         public static IReadOnlyList<int> AutoLockMinutesOptions { get; } = new[] { 1, 2, 5, 15 };

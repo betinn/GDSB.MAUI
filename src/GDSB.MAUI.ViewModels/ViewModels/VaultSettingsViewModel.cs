@@ -15,14 +15,18 @@ namespace GDSB.MAUI.ViewModels
     public partial class VaultSettingsViewModel : VaultProtectionsFormViewModelBase, IQueryAttributable
     {
         private const int MinPasswordLength = 8;
-        private const string GenericSaveErrorMessage = "Não foi possível salvar o cofre. Tente novamente.";
-        // Nomes de propósito sem "password": a regra S2068 do Sonar flaga qualquer identificador
-        // nesses moldes (declaração ou atribuição) associado a um valor literal, mesmo sendo só
-        // uma mensagem de UI.
-        private const string WrongCurrentCodeMessage = "Senha atual incorreta.";
-        private const string CodesDoNotMatchMessage = "As senhas não coincidem.";
-        private const string BiometricReseloFailedMessage =
-            "A senha foi trocada, mas não foi possível re-selar a biometria. A senha mestra continua valendo normalmente.";
+
+        // Deixam de ser const porque passam a vir do catálogo (ILocalizationService), que resolve
+        // na cultura vigente a cada leitura. Nomes de propósito sem "password": a regra S2068 do
+        // Sonar flaga qualquer identificador nesses moldes associado a um valor literal, mesmo
+        // sendo só uma mensagem de UI.
+        private string GenericSaveErrorMessage => Localization.Get("Vault_GenericSaveErrorMessage");
+
+        private string WrongCurrentCodeMessage => Localization.Get("VaultSettings_WrongCurrentPasswordMessage");
+
+        private string CodesDoNotMatchMessage => Localization.Get("Vault_PasswordsDoNotMatchMessage");
+
+        private string BiometricReseloFailedMessage => Localization.Get("VaultSettings_BiometricResealFailedMessage");
 
         private readonly IProfileFileService _profileFileService;
         private readonly IFilePickerService _filePickerService;
@@ -43,7 +47,9 @@ namespace GDSB.MAUI.ViewModels
             IBiometricUnlockService biometricUnlockService,
             IVaultBackupStore backupStore,
             IAlertService alertService,
+            ILocalizationService localizationService,
             BiometricOptInCoordinator biometricOptIn)
+            : base(localizationService)
         {
             _profileFileService = vaultAccess.ProfileFileService;
             _filePickerService = filePickerService;
@@ -145,7 +151,7 @@ namespace GDSB.MAUI.ViewModels
 
             if (string.IsNullOrWhiteSpace(VaultName))
             {
-                NameErrorMessage = "Dê um nome ao cofre.";
+                NameErrorMessage = Localization.Get("Vault_NameRequiredMessage");
                 return;
             }
 
@@ -215,7 +221,7 @@ namespace GDSB.MAUI.ViewModels
 
             if (NewPassword.Length < MinPasswordLength)
             {
-                PasswordErrorMessage = $"A senha nova precisa ter pelo menos {MinPasswordLength} caracteres.";
+                PasswordErrorMessage = Localization.Format("VaultSettings_MinNewPasswordLengthMessage", MinPasswordLength);
                 return;
             }
 
@@ -255,7 +261,7 @@ namespace GDSB.MAUI.ViewModels
                     {
                         var reselado = await _biometricUnlockService.StoreKeyAsync(secret);
                         if (!reselado)
-                            await _alertService.DisplayAlertAsync(null, BiometricReseloFailedMessage, "Ok");
+                            await _alertService.DisplayAlertAsync(null, BiometricReseloFailedMessage, Localization.Get("Common_Ok"));
                     }
                     finally
                     {
@@ -294,7 +300,7 @@ namespace GDSB.MAUI.ViewModels
             }
             catch (Exception)
             {
-                ErrorMessage = "Não foi possível escolher onde salvar o cofre.";
+                ErrorMessage = Localization.Get("Vault_ChoosePathErrorMessage");
                 return;
             }
 
@@ -332,7 +338,7 @@ namespace GDSB.MAUI.ViewModels
             }
             catch (Exception)
             {
-                ErrorMessage = "Não foi possível salvar o cofre nesse local.";
+                ErrorMessage = Localization.Get("Vault_SaveToLocationErrorMessage");
             }
             finally
             {

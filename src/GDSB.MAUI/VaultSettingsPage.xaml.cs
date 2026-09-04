@@ -1,4 +1,5 @@
-﻿using GDSB.MAUI.ViewModels;
+﻿using GDSB.MAUI.Services;
+using GDSB.MAUI.ViewModels;
 using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
@@ -6,11 +7,13 @@ namespace GDSB.MAUI;
 public partial class VaultSettingsPage : ContentPage
 {
     private readonly VaultSettingsViewModel _viewModel;
+    private readonly ILocalizationService _localization;
 
-    public VaultSettingsPage(VaultSettingsViewModel viewModel)
+    public VaultSettingsPage(VaultSettingsViewModel viewModel, ILocalizationService localization)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _localization = localization;
         BindingContext = _viewModel;
         _viewModel.SettingsSaved += OnSettingsSaved;
     }
@@ -35,6 +38,6 @@ public partial class VaultSettingsPage : ContentPage
     // VaultSettingsViewModel.
 #pragma warning disable S2325
     private async void OnSettingsSaved(object? sender, EventArgs e)
-        => await SealOverlay.PlayAsync(LockSealMode.Update, "Alterações salvas", 620);
+        => await SealOverlay.PlayAsync(LockSealMode.Update, _localization.Get("Seal_SettingsSaved"), 620);
 #pragma warning restore S2325
 }

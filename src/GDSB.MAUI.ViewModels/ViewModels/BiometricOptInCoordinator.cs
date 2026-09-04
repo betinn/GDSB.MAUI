@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Interfaces;
+using GDSB.MAUI.Localization;
 using GDSB.MAUI.Services;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,13 +13,15 @@ namespace GDSB.MAUI.ViewModels
     // depois de criar um novo (CreateVaultViewModel) - por isso vive num lugar só em vez de
     // duplicado nos dois, incluindo as chaves de Preferences que amarram a biometria a um cofre
     // específico (ver RememberVault/ForgetVault).
-    public partial class BiometricOptInCoordinator : ObservableObject
+    public partial class BiometricOptInCoordinator : LocalizedObject
     {
         public const string PromptedPreferenceKey = "gdsb.biometricPrompted";
         public const string LastLocationPreferenceKey = "gdsb.lastVaultLocation";
         public const string LastVaultNamePreferenceKey = "gdsb.lastVaultName";
 
-        private const string UnavailableMessage = "Não foi possível usar a biometria. Digite a senha mestra.";
+        // Deixa de ser const porque passa a vir do catálogo (ILocalizationService), que resolve na
+        // cultura vigente a cada leitura.
+        private string UnavailableMessage => Localization.Get("BiometricOptIn_UnavailableMessage");
 
         private readonly IBiometricUnlockService _biometricUnlockService;
         private readonly IAlertService _alertService;
@@ -29,7 +32,9 @@ namespace GDSB.MAUI.ViewModels
         public BiometricOptInCoordinator(
             IBiometricUnlockService biometricUnlockService,
             IAlertService alertService,
-            IPreferencesService preferencesService)
+            IPreferencesService preferencesService,
+            ILocalizationService localizationService)
+            : base(localizationService)
         {
             _biometricUnlockService = biometricUnlockService;
             _alertService = alertService;
@@ -83,7 +88,7 @@ namespace GDSB.MAUI.ViewModels
             {
                 var stored = await _biometricUnlockService.StoreKeyAsync(secret);
                 if (!stored)
-                    await _alertService.DisplayAlertAsync(null, UnavailableMessage, "Ok");
+                    await _alertService.DisplayAlertAsync(null, UnavailableMessage, Localization.Get("Common_Ok"));
             }
             finally
             {

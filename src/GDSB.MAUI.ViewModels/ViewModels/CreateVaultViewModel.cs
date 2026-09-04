@@ -26,7 +26,9 @@ namespace GDSB.MAUI.ViewModels
             INavigationService navigationService,
             IBiometricUnlockService biometricUnlockService,
             IVaultSessionService vaultSessionService,
+            ILocalizationService localizationService,
             BiometricOptInCoordinator biometricOptIn)
+            : base(localizationService)
         {
             _profileFileService = profileFileService;
             _filePickerService = filePickerService;
@@ -34,14 +36,18 @@ namespace GDSB.MAUI.ViewModels
             _biometricUnlockService = biometricUnlockService;
             _vaultSessionService = vaultSessionService;
             BiometricOptIn = biometricOptIn;
+            VaultName = Localization.Get("CreateVault_DefaultVaultName");
         }
 
         // Exposto pra CreateVaultPage.xaml hospedar a BiometricOptInView (BindingContext="{Binding
         // BiometricOptIn}") - ver GDSB.MAUI.ViewModels.BiometricOptInCoordinator.
         public BiometricOptInCoordinator BiometricOptIn { get; }
 
+        // Valor inicial vem do catálogo (semeado no construtor, ver CreateVault_DefaultVaultName) -
+        // não é um rótulo fixo, é só o nome padrão sugerido; se o usuário não trocar, é esse texto
+        // (traduzido) que é gravado no arquivo, como qualquer outro nome digitado.
         [ObservableProperty]
-        private string vaultName = "Meu Cofre";
+        private string vaultName = string.Empty;
 
         [ObservableProperty]
         private string password = string.Empty;
@@ -62,7 +68,7 @@ namespace GDSB.MAUI.ViewModels
 
         public bool CanInteract => !IsBusy;
 
-        public string CreateButtonText => IsBusy ? "Criando..." : "Criar cofre";
+        public string CreateButtonText => IsBusy ? Localization.Get("CreateVault_ButtonBusyText") : Localization.Get("CreateVault_ButtonIdleText");
 #pragma warning restore S2325
 
         [RelayCommand]
@@ -75,19 +81,19 @@ namespace GDSB.MAUI.ViewModels
 
             if (string.IsNullOrWhiteSpace(VaultName))
             {
-                ErrorMessage = "Dê um nome ao cofre.";
+                ErrorMessage = Localization.Get("Vault_NameRequiredMessage");
                 return;
             }
 
             if (Password.Length < MinPasswordLength)
             {
-                ErrorMessage = $"A senha mestra precisa ter pelo menos {MinPasswordLength} caracteres.";
+                ErrorMessage = Localization.Format("CreateVault_MinPasswordLengthMessage", MinPasswordLength);
                 return;
             }
 
             if (Password != ConfirmPassword)
             {
-                ErrorMessage = "As senhas não coincidem.";
+                ErrorMessage = Localization.Get("Vault_PasswordsDoNotMatchMessage");
                 return;
             }
 
@@ -98,7 +104,7 @@ namespace GDSB.MAUI.ViewModels
             }
             catch (Exception)
             {
-                ErrorMessage = "Não foi possível escolher onde salvar o cofre.";
+                ErrorMessage = Localization.Get("Vault_ChoosePathErrorMessage");
                 return;
             }
 
@@ -155,7 +161,7 @@ namespace GDSB.MAUI.ViewModels
             }
             catch (Exception)
             {
-                ErrorMessage = "Não foi possível criar o cofre nesse local.";
+                ErrorMessage = Localization.Get("CreateVault_SaveErrorMessage");
             }
             finally
             {

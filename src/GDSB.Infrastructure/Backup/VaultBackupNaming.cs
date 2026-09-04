@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace GDSB.Infrastructure.Backup
 {
     // Nome de exibição do arquivo de backup. O prefixo resolve a truncagem em tela pequena (o que
@@ -15,9 +17,11 @@ namespace GDSB.Infrastructure.Backup
 
         // Usado só para Rolling, que agora acumula versões em vez de sobrescrever - o timestamp
         // é o que distingue uma versão da outra. Sem ":" no horário porque é ilegal em nome de
-        // arquivo no Windows.
+        // arquivo no Windows. CultureInfo.InvariantCulture explícito (rodada multilíngue): o
+        // idioma do app não pode mudar o nome gravado em disco, senão um backup criado em
+        // português deixaria de ser reconhecido depois de trocar para inglês.
         public static string BuildName(string vaultFileName, string suffix, DateTime createdAtUtc) =>
-            $"{Prefix}{vaultFileName} - {createdAtUtc:yyyy-MM-dd HH-mm-ss}{suffix}";
+            $"{Prefix}{vaultFileName} - {createdAtUtc.ToString("yyyy-MM-dd HH-mm-ss", CultureInfo.InvariantCulture)}{suffix}";
 
         public static bool IsBackupName(string fileName) =>
             fileName.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase)

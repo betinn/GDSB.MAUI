@@ -1,6 +1,7 @@
 using GDSB.Domain.Entities;
 using GDSB.Domain.Exceptions;
 using GDSB.MAUI.Interfaces;
+using GDSB.MAUI.Localization;
 using GDSB.MAUI.Services;
 using GDSB.MAUI.Tests.Fakes;
 using GDSB.MAUI.ViewModels;
@@ -33,7 +34,7 @@ namespace GDSB.MAUI.Tests
 
             public Sut()
             {
-                var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
+                var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService, LocalizationService);
                 Onboarding = new OnboardingViewModel(PreferencesService);
                 Language = new LanguageSelectorViewModel(LocalizationService);
                 ViewModel = new UnlockViewModel(
@@ -57,7 +58,7 @@ namespace GDSB.MAUI.Tests
 
             await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
 
-            Assert.Equal("Digite a senha mestra do cofre.", sut.ViewModel.ErrorMessage);
+            Assert.Equal("Unlock_EmptyPasswordMessage", sut.ViewModel.ErrorMessage);
             Assert.Empty(sut.NavigationService.NavigateToRootCalls);
         }
 
@@ -108,7 +109,7 @@ namespace GDSB.MAUI.Tests
 
             await sut.ViewModel.PickVaultCommand.ExecuteAsync(null);
 
-            Assert.Equal("Não foi possível abrir o seletor de arquivos.", sut.ViewModel.ErrorMessage);
+            Assert.Equal("Unlock_FilePickerErrorMessage", sut.ViewModel.ErrorMessage);
             Assert.False(sut.ViewModel.HasSelectedVault);
         }
 
@@ -148,7 +149,7 @@ namespace GDSB.MAUI.Tests
 
             await sut.ViewModel.UnlockCommand.ExecuteAsync(null);
 
-            Assert.Equal("Senha incorreta ou arquivo corrompido.", sut.ViewModel.ErrorMessage);
+            Assert.Equal("Unlock_GenericErrorMessage", sut.ViewModel.ErrorMessage);
         }
 
         [Fact]
@@ -324,5 +325,35 @@ namespace GDSB.MAUI.Tests
             Assert.Equal(0, sut.ViewModel.Onboarding.CurrentIndex);
         }
 
+        // Fase 2: usa a LocalizationService de verdade (não o fake, que devolve a própria chave) -
+        // é a prova de ponta a ponta de que uma propriedade calculada de um ViewModel (não só o
+        // catálogo isolado, já coberto por LocalizationServiceTests) muda de texto na troca de
+        // idioma, sem recriar nada.
+        [Fact]
+        public void UnlockButtonText_ReflectsCatalogInBothLanguages()
+        {
+            var preferencesService = new FakePreferencesService();
+            var localizationService = new LocalizationService(preferencesService);
+            var biometricUnlockService = new FakeBiometricUnlockService();
+            var alertService = new FakeAlertService();
+            var biometricOptIn = new BiometricOptInCoordinator(biometricUnlockService, alertService, preferencesService, localizationService);
+            var onboarding = new OnboardingViewModel(preferencesService);
+            var language = new LanguageSelectorViewModel(localizationService);
+            var viewModel = new UnlockViewModel(
+                new VaultAccess(new FakeProfileFileService(), new FakeVaultSessionService()),
+                new FakeFilePickerService(),
+                new FakeNavigationService(),
+                biometricUnlockService,
+                preferencesService,
+                alertService,
+                new UnlockOverlays(biometricOptIn, onboarding, language));
+
+            var ptText = viewModel.UnlockButtonText;
+            localizationService.SetLanguage(AppLanguage.En);
+            var enText = viewModel.UnlockButtonText;
+
+            Assert.Equal("Abrir cofre", ptText);
+            Assert.Equal("Open vault", enText);
+        }
     }
 }

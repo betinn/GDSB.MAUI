@@ -269,5 +269,101 @@ namespace GDSB.MAUI.ViewModels.Resources
         public static string HelpVisual_SampleBackupSize => ResourceManager.GetString("HelpVisual_SampleBackupSize", resourceCulture);
 
         public static string HelpVisual_SampleBackupKind => ResourceManager.GetString("HelpVisual_SampleBackupKind", resourceCulture);
+
+        public static string Unlock_GenericErrorMessage => ResourceManager.GetString("Unlock_GenericErrorMessage", resourceCulture);
+
+        public static string Unlock_EmptyPasswordMessage => ResourceManager.GetString("Unlock_EmptyPasswordMessage", resourceCulture);
+
+        public static string Unlock_FilePickerErrorMessage => ResourceManager.GetString("Unlock_FilePickerErrorMessage", resourceCulture);
+
+        public static string Unlock_BackupFileAlertTitle => ResourceManager.GetString("Unlock_BackupFileAlertTitle", resourceCulture);
+
+        public static string Unlock_BackupFileAlertMessage => ResourceManager.GetString("Unlock_BackupFileAlertMessage", resourceCulture);
+
+        public static string Unlock_ButtonIdleText => ResourceManager.GetString("Unlock_ButtonIdleText", resourceCulture);
+
+        public static string Unlock_ButtonBusyText => ResourceManager.GetString("Unlock_ButtonBusyText", resourceCulture);
+
+        public static string Common_Ok => ResourceManager.GetString("Common_Ok", resourceCulture);
+
+        public static string Vault_GenericSaveErrorMessage => ResourceManager.GetString("Vault_GenericSaveErrorMessage", resourceCulture);
+
+        public static string Vault_PasswordsDoNotMatchMessage => ResourceManager.GetString("Vault_PasswordsDoNotMatchMessage", resourceCulture);
+
+        public static string Vault_NameRequiredMessage => ResourceManager.GetString("Vault_NameRequiredMessage", resourceCulture);
+
+        public static string Vault_ChoosePathErrorMessage => ResourceManager.GetString("Vault_ChoosePathErrorMessage", resourceCulture);
+
+        public static string Vault_SaveToLocationErrorMessage => ResourceManager.GetString("Vault_SaveToLocationErrorMessage", resourceCulture);
+
+        public static string Vault_ConfirmDeleteMessage => ResourceManager.GetString("Vault_ConfirmDeleteMessage", resourceCulture);
+
+        public static string Vault_NewItemTitle => ResourceManager.GetString("Vault_NewItemTitle", resourceCulture);
+
+        public static string Vault_UserCopiedToast => ResourceManager.GetString("Vault_UserCopiedToast", resourceCulture);
+
+        public static string Vault_PasswordCopiedToast => ResourceManager.GetString("Vault_PasswordCopiedToast", resourceCulture);
+
+        public static string Vault_NameValidationMessage => ResourceManager.GetString("Vault_NameValidationMessage", resourceCulture);
+
+        public static string Vault_PasswordValidationMessage => ResourceManager.GetString("Vault_PasswordValidationMessage", resourceCulture);
+
+        public static string Vault_OpenUrlErrorMessage => ResourceManager.GetString("Vault_OpenUrlErrorMessage", resourceCulture);
+
+        public static string VaultSettings_WrongCurrentPasswordMessage => ResourceManager.GetString("VaultSettings_WrongCurrentPasswordMessage", resourceCulture);
+
+        public static string VaultSettings_BiometricResealFailedMessage => ResourceManager.GetString("VaultSettings_BiometricResealFailedMessage", resourceCulture);
+
+        public static string VaultSettings_MinNewPasswordLengthMessage => ResourceManager.GetString("VaultSettings_MinNewPasswordLengthMessage", resourceCulture);
+
+        public static string CreateVault_MinPasswordLengthMessage => ResourceManager.GetString("CreateVault_MinPasswordLengthMessage", resourceCulture);
+
+        public static string CreateVault_SaveErrorMessage => ResourceManager.GetString("CreateVault_SaveErrorMessage", resourceCulture);
+
+        public static string CreateVault_ButtonBusyText => ResourceManager.GetString("CreateVault_ButtonBusyText", resourceCulture);
+
+        public static string CreateVault_ButtonIdleText => ResourceManager.GetString("CreateVault_ButtonIdleText", resourceCulture);
+
+        public static string CreateVault_DefaultVaultName => ResourceManager.GetString("CreateVault_DefaultVaultName", resourceCulture);
+
+        public static string BackupRecovery_EmptyPasswordMessage => ResourceManager.GetString("BackupRecovery_EmptyPasswordMessage", resourceCulture);
+
+        public static string BiometricOptIn_UnavailableMessage => ResourceManager.GetString("BiometricOptIn_UnavailableMessage", resourceCulture);
+
+        public static string Backups_LegacyKindLabel => ResourceManager.GetString("Backups_LegacyKindLabel", resourceCulture);
+
+        public static string Format_DateTimeShort => ResourceManager.GetString("Format_DateTimeShort", resourceCulture);
+
+        public static string Format_SizeBytes => ResourceManager.GetString("Format_SizeBytes", resourceCulture);
+
+        public static string Format_SizeKilobytes => ResourceManager.GetString("Format_SizeKilobytes", resourceCulture);
+
+        public static string Format_SizeMegabytes => ResourceManager.GetString("Format_SizeMegabytes", resourceCulture);
+
+        public static string Seal_SecretCreated => ResourceManager.GetString("Seal_SecretCreated", resourceCulture);
+
+        public static string Seal_SettingsSaved => ResourceManager.GetString("Seal_SettingsSaved", resourceCulture);
+
+        public static string Seal_SecretDeleted => ResourceManager.GetString("Seal_SecretDeleted", resourceCulture);
+
+        public static string Seal_BackupDeleted => ResourceManager.GetString("Seal_BackupDeleted", resourceCulture);
+
+        public static string Seal_AllBackupsDeleted => ResourceManager.GetString("Seal_AllBackupsDeleted", resourceCulture);
+
+        public static string A11y_HelpButtonDescription => ResourceManager.GetString("A11y_HelpButtonDescription", resourceCulture);
+
+        public static string A11y_HelpAbout => ResourceManager.GetString("A11y_HelpAbout", resourceCulture);
+
+        public static string Platform_BiometricActivateSubtitle => ResourceManager.GetString("Platform_BiometricActivateSubtitle", resourceCulture);
+
+        public static string Platform_BiometricUnlockSubtitle => ResourceManager.GetString("Platform_BiometricUnlockSubtitle", resourceCulture);
+
+        public static string Platform_BiometricNegativeButton => ResourceManager.GetString("Platform_BiometricNegativeButton", resourceCulture);
+
+        public static string Platform_WindowsBiometricActivateMessage => ResourceManager.GetString("Platform_WindowsBiometricActivateMessage", resourceCulture);
+
+        public static string Platform_WindowsBiometricUnlockMessage => ResourceManager.GetString("Platform_WindowsBiometricUnlockMessage", resourceCulture);
+
+        public static string Platform_WindowsFileTypeLabel => ResourceManager.GetString("Platform_WindowsFileTypeLabel", resourceCulture);
     }
 }

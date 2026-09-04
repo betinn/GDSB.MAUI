@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging;
 using GDSB.MAUI.Help;
+using GDSB.MAUI.Localization;
 
 namespace GDSB.MAUI.Views;
 
@@ -30,7 +31,10 @@ public class HelpButton : Button
     public HelpButton()
     {
         IsVisible = false;
-        SemanticProperties.SetDescription(this, "Ajuda");
+        // Setado uma vez, na construção - resolvido fora da DI porque o XAML instancia este
+        // controle direto (ver LocalizationServiceLocator). Não reage a uma troca de idioma
+        // durante a vida do botão: é texto só de leitor de tela, e o "?" visível não muda.
+        SemanticProperties.SetDescription(this, LocalizationServiceLocator.Resolve().Get("A11y_HelpButtonDescription"));
         Clicked += OnClicked;
     }
 

@@ -18,11 +18,12 @@ namespace GDSB.MAUI.Tests
             public FakeNavigationService NavigationService { get; } = new();
             public FakeAppLauncherService AppLauncherService { get; } = new();
             public FakeVaultSessionService VaultSessionService { get; } = new();
+            public FakeLocalizationService LocalizationService { get; } = new();
             public VaultViewModel ViewModel { get; }
 
             public Sut()
             {
-                ViewModel = new VaultViewModel(ClipboardService, AlertService, ProfileFileService, NavigationService, AppLauncherService, VaultSessionService);
+                ViewModel = new VaultViewModel(ClipboardService, AlertService, ProfileFileService, NavigationService, AppLauncherService, VaultSessionService, LocalizationService);
             }
 
             public void LoadProfile(Profile profile)
@@ -124,7 +125,7 @@ namespace GDSB.MAUI.Tests
 
             await sut.ViewModel.SaveItemCommand.ExecuteAsync(null);
 
-            Assert.Equal("Informe um nome para o item.", sut.ViewModel.ValidationError);
+            Assert.Equal("Vault_NameValidationMessage", sut.ViewModel.ValidationError);
             Assert.Empty(sut.ProfileFileService.SaveCalls);
         }
 
@@ -187,7 +188,7 @@ namespace GDSB.MAUI.Tests
             await sut.ViewModel.CopyUserCommand.ExecuteAsync(item);
 
             Assert.Equal(new[] { "user" }, sut.ClipboardService.Calls);
-            Assert.Equal("Usuário copiado", toastMessage);
+            Assert.Equal("Vault_UserCopiedToast", toastMessage);
         }
 
         [Fact]
@@ -202,7 +203,7 @@ namespace GDSB.MAUI.Tests
             await sut.ViewModel.CopyPasswordCommand.ExecuteAsync(item);
 
             Assert.Equal(new[] { "pass" }, sut.ClipboardService.Calls);
-            Assert.Equal("Senha copiada", toastMessage);
+            Assert.Equal("Vault_PasswordCopiedToast", toastMessage);
         }
 
         [Fact]

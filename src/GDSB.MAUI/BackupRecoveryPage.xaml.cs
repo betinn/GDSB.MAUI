@@ -1,4 +1,5 @@
-﻿using GDSB.MAUI.ViewModels;
+﻿using GDSB.MAUI.Services;
+using GDSB.MAUI.ViewModels;
 using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
@@ -6,11 +7,13 @@ namespace GDSB.MAUI;
 public partial class BackupRecoveryPage : ContentPage
 {
     private readonly BackupRecoveryViewModel _viewModel;
+    private readonly ILocalizationService _localization;
 
-    public BackupRecoveryPage(BackupRecoveryViewModel viewModel)
+    public BackupRecoveryPage(BackupRecoveryViewModel viewModel, ILocalizationService localization)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _localization = localization;
         BindingContext = _viewModel;
         _viewModel.BackupDeleted += OnBackupDeleted;
         _viewModel.AllBackupsDeleted += OnAllBackupsDeleted;
@@ -38,9 +41,9 @@ public partial class BackupRecoveryPage : ContentPage
     // gerado - mesmo caso de VaultPage.OnSecretDeleted.
 #pragma warning disable S2325
     private async void OnBackupDeleted(object? sender, EventArgs e)
-        => await SealOverlay.PlayAsync(LockSealMode.Delete, "Backup excluído", 740);
+        => await SealOverlay.PlayAsync(LockSealMode.Delete, _localization.Get("Seal_BackupDeleted"), 740);
 
     private async void OnAllBackupsDeleted(object? sender, EventArgs e)
-        => await SealOverlay.PlayAsync(LockSealMode.Delete, "Backups excluídos", 740);
+        => await SealOverlay.PlayAsync(LockSealMode.Delete, _localization.Get("Seal_AllBackupsDeleted"), 740);
 #pragma warning restore S2325
 }

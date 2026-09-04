@@ -397,4 +397,148 @@
   <data name="HelpVisual_SampleBackupKind" xml:space="preserve">
     <value>Automatic</value>
   </data>
+  <data name="Unlock_GenericErrorMessage" xml:space="preserve">
+    <value>Incorrect password or corrupted file.</value>
+  </data>
+  <data name="Unlock_EmptyPasswordMessage" xml:space="preserve">
+    <value>Enter the vault's master password.</value>
+  </data>
+  <data name="Unlock_FilePickerErrorMessage" xml:space="preserve">
+    <value>Couldn't open the file picker.</value>
+  </data>
+  <data name="Unlock_BackupFileAlertTitle" xml:space="preserve">
+    <value>This is a backup</value>
+  </data>
+  <data name="Unlock_BackupFileAlertMessage" xml:space="preserve">
+    <value>This file looks like a backup created automatically by GDSB. You can still open it normally with the vault's master password.</value>
+  </data>
+  <data name="Unlock_ButtonIdleText" xml:space="preserve">
+    <value>Open vault</value>
+  </data>
+  <data name="Unlock_ButtonBusyText" xml:space="preserve">
+    <value>Opening...</value>
+  </data>
+  <data name="Common_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Vault_GenericSaveErrorMessage" xml:space="preserve">
+    <value>Couldn't save the vault. Try again.</value>
+  </data>
+  <data name="Vault_PasswordsDoNotMatchMessage" xml:space="preserve">
+    <value>Passwords don't match.</value>
+  </data>
+  <data name="Vault_NameRequiredMessage" xml:space="preserve">
+    <value>Give the vault a name.</value>
+  </data>
+  <data name="Vault_ChoosePathErrorMessage" xml:space="preserve">
+    <value>Couldn't choose where to save the vault.</value>
+  </data>
+  <data name="Vault_SaveToLocationErrorMessage" xml:space="preserve">
+    <value>Couldn't save the vault to that location.</value>
+  </data>
+  <data name="Vault_ConfirmDeleteMessage" xml:space="preserve">
+    <value>Delete "{0}" from the vault? This action can't be undone.</value>
+  </data>
+  <data name="Vault_NewItemTitle" xml:space="preserve">
+    <value>New item</value>
+  </data>
+  <data name="Vault_UserCopiedToast" xml:space="preserve">
+    <value>Username copied</value>
+  </data>
+  <data name="Vault_PasswordCopiedToast" xml:space="preserve">
+    <value>Password copied</value>
+  </data>
+  <data name="Vault_NameValidationMessage" xml:space="preserve">
+    <value>Enter a name for the item.</value>
+  </data>
+  <data name="Vault_PasswordValidationMessage" xml:space="preserve">
+    <value>Enter the item's password.</value>
+  </data>
+  <data name="Vault_OpenUrlErrorMessage" xml:space="preserve">
+    <value>Error trying to open {0}: {1}</value>
+  </data>
+  <data name="VaultSettings_WrongCurrentPasswordMessage" xml:space="preserve">
+    <value>Current password is incorrect.</value>
+  </data>
+  <data name="VaultSettings_BiometricResealFailedMessage" xml:space="preserve">
+    <value>The password was changed, but the biometric shortcut couldn't be re-sealed. The master password keeps working normally.</value>
+  </data>
+  <data name="VaultSettings_MinNewPasswordLengthMessage" xml:space="preserve">
+    <value>The new password needs at least {0} characters.</value>
+  </data>
+  <data name="CreateVault_MinPasswordLengthMessage" xml:space="preserve">
+    <value>The master password needs at least {0} characters.</value>
+  </data>
+  <data name="CreateVault_SaveErrorMessage" xml:space="preserve">
+    <value>Couldn't create the vault in that location.</value>
+  </data>
+  <data name="CreateVault_ButtonBusyText" xml:space="preserve">
+    <value>Creating...</value>
+  </data>
+  <data name="CreateVault_ButtonIdleText" xml:space="preserve">
+    <value>Create vault</value>
+  </data>
+  <data name="CreateVault_DefaultVaultName" xml:space="preserve">
+    <value>My Vault</value>
+  </data>
+  <data name="BackupRecovery_EmptyPasswordMessage" xml:space="preserve">
+    <value>Enter this backup's master password.</value>
+  </data>
+  <data name="BiometricOptIn_UnavailableMessage" xml:space="preserve">
+    <value>Couldn't use biometrics. Enter the master password.</value>
+  </data>
+  <data name="Backups_LegacyKindLabel" xml:space="preserve">
+    <value>Migrated from the old format</value>
+  </data>
+  <data name="Format_DateTimeShort" xml:space="preserve">
+    <value>M/d/yyyy h:mm tt</value>
+  </data>
+  <data name="Format_SizeBytes" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="Format_SizeKilobytes" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="Format_SizeMegabytes" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Seal_SecretCreated" xml:space="preserve">
+    <value>Secret saved</value>
+  </data>
+  <data name="Seal_SettingsSaved" xml:space="preserve">
+    <value>Changes saved</value>
+  </data>
+  <data name="Seal_SecretDeleted" xml:space="preserve">
+    <value>Secret deleted</value>
+  </data>
+  <data name="Seal_BackupDeleted" xml:space="preserve">
+    <value>Backup deleted</value>
+  </data>
+  <data name="Seal_AllBackupsDeleted" xml:space="preserve">
+    <value>Backups deleted</value>
+  </data>
+  <data name="A11y_HelpButtonDescription" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="A11y_HelpAbout" xml:space="preserve">
+    <value>Help about {0}</value>
+  </data>
+  <data name="Platform_BiometricActivateSubtitle" xml:space="preserve">
+    <value>Confirm your biometrics to turn on quick unlock</value>
+  </data>
+  <data name="Platform_BiometricUnlockSubtitle" xml:space="preserve">
+    <value>Use your biometrics to open the vault</value>
+  </data>
+  <data name="Platform_BiometricNegativeButton" xml:space="preserve">
+    <value>Use password</value>
+  </data>
+  <data name="Platform_WindowsBiometricActivateMessage" xml:space="preserve">
+    <value>Confirm your identity to turn on quick unlock for GDSB.</value>
+  </data>
+  <data name="Platform_WindowsBiometricUnlockMessage" xml:space="preserve">
+    <value>Use Windows Hello to open the vault.</value>
+  </data>
+  <data name="Platform_WindowsFileTypeLabel" xml:space="preserve">
+    <value>GDSB File</value>
+  </data>
 </root>

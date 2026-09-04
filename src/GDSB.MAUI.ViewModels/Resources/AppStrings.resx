@@ -456,4 +456,148 @@
   <data name="HelpVisual_SampleBackupKind" xml:space="preserve">
     <value>Automático</value>
   </data>
+  <data name="Unlock_GenericErrorMessage" xml:space="preserve">
+    <value>Senha incorreta ou arquivo corrompido.</value>
+  </data>
+  <data name="Unlock_EmptyPasswordMessage" xml:space="preserve">
+    <value>Digite a senha mestra do cofre.</value>
+  </data>
+  <data name="Unlock_FilePickerErrorMessage" xml:space="preserve">
+    <value>Não foi possível abrir o seletor de arquivos.</value>
+  </data>
+  <data name="Unlock_BackupFileAlertTitle" xml:space="preserve">
+    <value>Isto é um backup</value>
+  </data>
+  <data name="Unlock_BackupFileAlertMessage" xml:space="preserve">
+    <value>Este arquivo parece ser um backup gerado automaticamente pelo GDSB. Você ainda pode abri-lo normalmente com a senha mestra do cofre.</value>
+  </data>
+  <data name="Unlock_ButtonIdleText" xml:space="preserve">
+    <value>Abrir cofre</value>
+  </data>
+  <data name="Unlock_ButtonBusyText" xml:space="preserve">
+    <value>Abrindo...</value>
+  </data>
+  <data name="Common_Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="Vault_GenericSaveErrorMessage" xml:space="preserve">
+    <value>Não foi possível salvar o cofre. Tente novamente.</value>
+  </data>
+  <data name="Vault_PasswordsDoNotMatchMessage" xml:space="preserve">
+    <value>As senhas não coincidem.</value>
+  </data>
+  <data name="Vault_NameRequiredMessage" xml:space="preserve">
+    <value>Dê um nome ao cofre.</value>
+  </data>
+  <data name="Vault_ChoosePathErrorMessage" xml:space="preserve">
+    <value>Não foi possível escolher onde salvar o cofre.</value>
+  </data>
+  <data name="Vault_SaveToLocationErrorMessage" xml:space="preserve">
+    <value>Não foi possível salvar o cofre nesse local.</value>
+  </data>
+  <data name="Vault_ConfirmDeleteMessage" xml:space="preserve">
+    <value>Excluir "{0}" do cofre? Essa ação não pode ser desfeita.</value>
+  </data>
+  <data name="Vault_NewItemTitle" xml:space="preserve">
+    <value>Novo item</value>
+  </data>
+  <data name="Vault_UserCopiedToast" xml:space="preserve">
+    <value>Usuário copiado</value>
+  </data>
+  <data name="Vault_PasswordCopiedToast" xml:space="preserve">
+    <value>Senha copiada</value>
+  </data>
+  <data name="Vault_NameValidationMessage" xml:space="preserve">
+    <value>Informe um nome para o item.</value>
+  </data>
+  <data name="Vault_PasswordValidationMessage" xml:space="preserve">
+    <value>Informe a senha do item.</value>
+  </data>
+  <data name="Vault_OpenUrlErrorMessage" xml:space="preserve">
+    <value>Erro ao tentar abrir {0}: {1}</value>
+  </data>
+  <data name="VaultSettings_WrongCurrentPasswordMessage" xml:space="preserve">
+    <value>Senha atual incorreta.</value>
+  </data>
+  <data name="VaultSettings_BiometricResealFailedMessage" xml:space="preserve">
+    <value>A senha foi trocada, mas não foi possível re-selar a biometria. A senha mestra continua valendo normalmente.</value>
+  </data>
+  <data name="VaultSettings_MinNewPasswordLengthMessage" xml:space="preserve">
+    <value>A senha nova precisa ter pelo menos {0} caracteres.</value>
+  </data>
+  <data name="CreateVault_MinPasswordLengthMessage" xml:space="preserve">
+    <value>A senha mestra precisa ter pelo menos {0} caracteres.</value>
+  </data>
+  <data name="CreateVault_SaveErrorMessage" xml:space="preserve">
+    <value>Não foi possível criar o cofre nesse local.</value>
+  </data>
+  <data name="CreateVault_ButtonBusyText" xml:space="preserve">
+    <value>Criando...</value>
+  </data>
+  <data name="CreateVault_ButtonIdleText" xml:space="preserve">
+    <value>Criar cofre</value>
+  </data>
+  <data name="CreateVault_DefaultVaultName" xml:space="preserve">
+    <value>Meu Cofre</value>
+  </data>
+  <data name="BackupRecovery_EmptyPasswordMessage" xml:space="preserve">
+    <value>Digite a senha mestra deste backup.</value>
+  </data>
+  <data name="BiometricOptIn_UnavailableMessage" xml:space="preserve">
+    <value>Não foi possível usar a biometria. Digite a senha mestra.</value>
+  </data>
+  <data name="Backups_LegacyKindLabel" xml:space="preserve">
+    <value>Migrado do formato antigo</value>
+  </data>
+  <data name="Format_DateTimeShort" xml:space="preserve">
+    <value>dd/MM/yyyy HH:mm</value>
+  </data>
+  <data name="Format_SizeBytes" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="Format_SizeKilobytes" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="Format_SizeMegabytes" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Seal_SecretCreated" xml:space="preserve">
+    <value>Segredo guardado</value>
+  </data>
+  <data name="Seal_SettingsSaved" xml:space="preserve">
+    <value>Alterações salvas</value>
+  </data>
+  <data name="Seal_SecretDeleted" xml:space="preserve">
+    <value>Segredo excluído</value>
+  </data>
+  <data name="Seal_BackupDeleted" xml:space="preserve">
+    <value>Backup excluído</value>
+  </data>
+  <data name="Seal_AllBackupsDeleted" xml:space="preserve">
+    <value>Backups excluídos</value>
+  </data>
+  <data name="A11y_HelpButtonDescription" xml:space="preserve">
+    <value>Ajuda</value>
+  </data>
+  <data name="A11y_HelpAbout" xml:space="preserve">
+    <value>Ajuda sobre {0}</value>
+  </data>
+  <data name="Platform_BiometricActivateSubtitle" xml:space="preserve">
+    <value>Confirme sua biometria para ativar o desbloqueio rápido</value>
+  </data>
+  <data name="Platform_BiometricUnlockSubtitle" xml:space="preserve">
+    <value>Use sua biometria para abrir o cofre</value>
+  </data>
+  <data name="Platform_BiometricNegativeButton" xml:space="preserve">
+    <value>Usar senha</value>
+  </data>
+  <data name="Platform_WindowsBiometricActivateMessage" xml:space="preserve">
+    <value>Confirme sua identidade para ativar o desbloqueio rápido do GDSB.</value>
+  </data>
+  <data name="Platform_WindowsBiometricUnlockMessage" xml:space="preserve">
+    <value>Use o Windows Hello para abrir o cofre.</value>
+  </data>
+  <data name="Platform_WindowsFileTypeLabel" xml:space="preserve">
+    <value>Arquivo GDSB</value>
+  </data>
 </root>

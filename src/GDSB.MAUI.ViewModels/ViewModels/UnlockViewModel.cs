@@ -17,18 +17,20 @@ namespace GDSB.MAUI.ViewModels
     public partial class UnlockViewModel : LocalizedObject
     {
         // Senha errada e arquivo corrompido devem ser indistinguíveis pra quem usa o app -
-        // nunca mostrar ex.Message cru, sempre essa mensagem genérica.
-        private const string GenericErrorMessage = "Senha incorreta ou arquivo corrompido.";
-        // Sem "password"/"pwd"/"passphrase" no nome: a regra S2068 do Sonar flaga a declaração de
-        // qualquer campo com esses nomes e valor literal como credencial no código, mesmo quando o
-        // valor é só uma mensagem de erro. Mesma renomeação já feita nas constantes de teste.
-        private const string EmptyUnlockCodeMessage = "Digite a senha mestra do cofre.";
-        private const string FilePickerErrorMessage = "Não foi possível abrir o seletor de arquivos.";
-        private const string BackupFileAlertTitle = "Isto é um backup";
-        private const string BackupFileAlertMessage =
-            "Este arquivo parece ser um backup gerado automaticamente pelo GDSB. Você ainda pode " +
-            "abri-lo normalmente com a senha mestra do cofre.";
-        private const string BackupFileAlertCancel = "Entendi";
+        // nunca mostrar ex.Message cru, sempre essa mensagem genérica. Deixam de ser const porque
+        // passam a vir do catálogo (ILocalizationService), que resolve na cultura vigente a cada
+        // leitura.
+        private string GenericErrorMessage => Localization.Get("Unlock_GenericErrorMessage");
+
+        private string EmptyUnlockCodeMessage => Localization.Get("Unlock_EmptyPasswordMessage");
+
+        private string FilePickerErrorMessage => Localization.Get("Unlock_FilePickerErrorMessage");
+
+        private string BackupFileAlertTitle => Localization.Get("Unlock_BackupFileAlertTitle");
+
+        private string BackupFileAlertMessage => Localization.Get("Unlock_BackupFileAlertMessage");
+
+        private string BackupFileAlertCancel => Localization.Get("HelpSheet_DismissButton");
 
         private readonly IProfileFileService _profileFileService;
         private readonly IFilePickerService _filePickerService;
@@ -114,7 +116,7 @@ namespace GDSB.MAUI.ViewModels
 #pragma warning disable S2325
         public bool ShowManualUnlock => !CanUseBiometric;
 
-        public string UnlockButtonText => IsBusy ? "Abrindo..." : "Abrir cofre";
+        public string UnlockButtonText => IsBusy ? Localization.Get("Unlock_ButtonBusyText") : Localization.Get("Unlock_ButtonIdleText");
 
         public string EyeGlyph => IsPasswordHidden ? "👁" : "🙈";
 #pragma warning restore S2325
