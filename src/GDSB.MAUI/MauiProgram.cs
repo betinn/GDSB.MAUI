@@ -31,12 +31,45 @@ namespace GDSB.MAUI
             RegisterServices(builder.Services);
             RegisterViewModels(builder.Services);
             RegisterPages(builder.Services);
+            ConfigurePickerHandler(builder);
 
 #if WINDOWS
             Platforms.Windows.CursorMappings.Apply();
 #endif
 
-            return builder.Build();
+            var app = builder.Build();
+
+            // Precisa rodar aqui, antes do retorno: o host da plataforma constrói a App (e a
+            // AppShell) sob demanda depois disso, e o TrExtension lê o catálogo na cultura vigente
+            // no momento em que cada binding "{loc:Tr ...}" avalia pela primeira vez. Aplicada
+            // depois, a primeira renderização sairia em português mesmo com inglês gravado. O
+            // construtor de LocalizationService já aplica a cultura salva - só precisamos resolvê-lo
+            // uma vez aqui.
+            app.Services.GetRequiredService<ILocalizationService>();
+
+            return app;
+        }
+
+        // Sem isto, o Picker do dropdown de idioma (UnlockPage) não cabe dentro da pílula: o
+        // sublinhado do EditText nativo no Android e a borda do ComboBox no Windows sobram além do
+        // Border que o envolve. É um ajuste global do handler porque hoje só existe este Picker no
+        // app inteiro.
+        private static void ConfigurePickerHandler(MauiAppBuilder builder)
+        {
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+#if ANDROID
+                Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("GdsbPickerNoUnderline", (handler, _) =>
+                {
+                    handler.PlatformView.Background = null;
+                });
+#elif WINDOWS
+                Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("GdsbPickerNoBorder", (handler, _) =>
+                {
+                    handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+                });
+#endif
+            });
         }
 
         private static void RegisterServices(IServiceCollection services)
@@ -67,6 +100,7 @@ namespace GDSB.MAUI
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IIdleLockService, IdleLockService>();
             services.AddSingleton<IPreferencesService, PreferencesService>();
+            services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IAppLauncherService, AppLauncherService>();
             services.AddSingleton<IVaultSessionService, VaultSessionService>();
             services.AddSingleton<VaultAccess>();
@@ -78,6 +112,7 @@ namespace GDSB.MAUI
             // precisa da sua própria instância, com seu próprio TaskCompletionSource pendente.
             services.AddTransient<BiometricOptInCoordinator>();
 
+            services.AddTransient<LanguageSelectorViewModel>();
             services.AddTransient<OnboardingViewModel>();
             services.AddTransient<UnlockOverlays>();
             services.AddTransient<UnlockViewModel>();

@@ -4,6 +4,7 @@
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
+             xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
              x:Class="GDSB.MAUI.UnlockPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
@@ -26,30 +27,55 @@
         <ScrollView x:Name="RootScroll" Padding="32">
             <Grid x:Name="UnlockContent" RowDefinitions="Auto,*" RowSpacing="20">
 
-                <!-- Porta de entrada do tutorial, no topo e não junto dos links de rodapé: quem não
-                     entendeu a tela precisa achar isto ANTES de tentar mexer no bloco de desbloqueio.
-                     Vem em forma de pílula com o mesmo "?" dos campos, pra ser reconhecida como ajuda
-                     à primeira vista. -->
-                <Border Grid.Row="0" HorizontalOptions="Center"
-                        BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderStrongDarkBrush}"
-                        StrokeThickness="1" StrokeShape="RoundRectangle 17" Padding="13,7"
-                        behaviors:HoverCursor.IsHand="True"
-                        SemanticProperties.Description="Como o GDSB funciona: rever o tutorial">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ShowOnboardingCommand}" />
-                    </Border.GestureRecognizers>
-                    <HorizontalStackLayout Spacing="7">
-                        <Border WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9"
-                                BackgroundColor="{StaticResource SurfaceElevatedDark}"
-                                Stroke="{StaticResource BorderStrongDarkBrush}" StrokeThickness="1"
-                                VerticalOptions="Center" InputTransparent="True">
-                            <Label Text="?" TextColor="{StaticResource PrimaryDark}" FontFamily="OpenSansSemibold"
-                                   FontSize="10" HorizontalOptions="Center" VerticalOptions="Center" />
-                        </Border>
-                        <Label Text="Como funciona?" TextColor="{StaticResource TextSecondaryDark}"
-                               FontSize="13" VerticalOptions="Center" />
-                    </HorizontalStackLayout>
-                </Border>
+                <!-- Idioma à esquerda, "Como funciona?" à direita, com uma coluna "*" vazia entre
+                     as duas - antes a pílula de ajuda era a única coisa na linha, centralizada. -->
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+
+                    <!-- Aplica e grava a troca no próprio evento de mudança (LanguageSelectorViewModel),
+                         sem botão de confirmar. O ajuste de handler que tira o sublinhado/borda
+                         nativos do Picker (MauiProgram.ConfigurePickerHandler) é o que permite ele
+                         caber dentro da pílula. -->
+                    <Border Grid.Column="0" VerticalOptions="Center"
+                            BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderStrongDarkBrush}"
+                            StrokeThickness="1" StrokeShape="RoundRectangle 17" Padding="12,0"
+                            SemanticProperties.Description="{loc:Tr Unlock_LanguagePickerDescription}">
+                        <Picker ItemsSource="{Binding Language.Options}"
+                                ItemDisplayBinding="{Binding DisplayName}"
+                                SelectedItem="{Binding Language.Selected}"
+                                TextColor="{StaticResource TextSecondaryDark}"
+                                BackgroundColor="Transparent"
+                                FontSize="13"
+                                MinimumHeightRequest="34"
+                                MinimumWidthRequest="0"
+                                HorizontalTextAlignment="Center"
+                                VerticalOptions="Center" />
+                    </Border>
+
+                    <!-- Porta de entrada do tutorial, não junto dos links de rodapé: quem não
+                         entendeu a tela precisa achar isto ANTES de tentar mexer no bloco de
+                         desbloqueio. Vem em forma de pílula com o mesmo "?" dos campos, pra ser
+                         reconhecida como ajuda à primeira vista. -->
+                    <Border Grid.Column="2"
+                            BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderStrongDarkBrush}"
+                            StrokeThickness="1" StrokeShape="RoundRectangle 17" Padding="13,7"
+                            behaviors:HoverCursor.IsHand="True"
+                            SemanticProperties.Description="{loc:Tr Unlock_HowItWorksDescription}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ShowOnboardingCommand}" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="7">
+                            <Border WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9"
+                                    BackgroundColor="{StaticResource SurfaceElevatedDark}"
+                                    Stroke="{StaticResource BorderStrongDarkBrush}" StrokeThickness="1"
+                                    VerticalOptions="Center" InputTransparent="True">
+                                <Label Text="?" TextColor="{StaticResource PrimaryDark}" FontFamily="OpenSansSemibold"
+                                       FontSize="10" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="{loc:Tr Unlock_HowItWorks}" TextColor="{StaticResource TextSecondaryDark}"
+                                   FontSize="13" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
 
                 <VerticalStackLayout Grid.Row="1" Spacing="32" VerticalOptions="Center">
 
@@ -61,7 +87,7 @@
                                       HorizontalOptions="Center" />
                         <Label Text="GDSB" FontSize="26" FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimaryDark}" HorizontalOptions="Center" />
-                        <Label Text="Seu cofre de senhas" FontSize="13"
+                        <Label Text="{loc:Tr Unlock_Tagline}" FontSize="13"
                                TextColor="{StaticResource TextSecondaryDark}" HorizontalOptions="Center" />
                     </VerticalStackLayout>
 
@@ -79,8 +105,8 @@
                                 <!-- Escolher o arquivo vem antes da senha: só depois de um cofre
                                      selecionado é que faz sentido digitar a senha dele. -->
                                 <VerticalStackLayout Spacing="8">
-                                    <Label Text="ARQUIVO DO COFRE" Style="{StaticResource FieldLabelStyle}" />
-                                    <Button Text="Escolher arquivo do cofre"
+                                    <Label Text="{loc:Tr Unlock_VaultFileLabel}" Style="{StaticResource FieldLabelStyle}" />
+                                    <Button Text="{loc:Tr Unlock_ChooseFileButton}"
                                             Style="{StaticResource SecondaryActionButtonStyle}"
                                             Command="{Binding PickVaultCommand}"
                                             IsVisible="{Binding HasSelectedVault, Converter={StaticResource InvertedBoolConverter}}"
@@ -98,7 +124,7 @@
                                                    TextColor="{StaticResource TextPrimaryDark}"
                                                    VerticalOptions="Center" />
                                             <Button Grid.Column="1"
-                                                    Text="Trocar"
+                                                    Text="{loc:Tr Unlock_ChangeFileButton}"
                                                     Command="{Binding ClearSelectedVaultCommand}"
                                                     BackgroundColor="Transparent"
                                                     TextColor="{StaticResource PrimaryDark}"
@@ -109,14 +135,14 @@
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout Spacing="8">
-                                    <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" />
+                                    <Label Text="{loc:Tr Unlock_MasterPasswordLabel}" Style="{StaticResource FieldLabelStyle}" />
                                     <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                             StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48"
                                             IsEnabled="{Binding HasSelectedVault}"
                                             Opacity="{Binding HasSelectedVault, Converter={StaticResource BoolToDimOpacityConverter}}">
                                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
                                             <Entry Grid.Column="0"
-                                                   Placeholder="Digite sua senha mestra"
+                                                   Placeholder="{loc:Tr Unlock_PasswordPlaceholder}"
                                                    Text="{Binding Password}"
                                                    IsPassword="{Binding IsPasswordHidden}"
                                                    TextColor="{StaticResource TextPrimaryDark}"
@@ -160,7 +186,7 @@
                                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                         StrokeShape="RoundRectangle 12" Padding="14,10">
                                     <VerticalStackLayout Spacing="2">
-                                        <Label Text="BIOMETRIA CONFIGURADA PARA" Style="{StaticResource FieldLabelStyle}" />
+                                        <Label Text="{loc:Tr Unlock_BiometricConfiguredForLabel}" Style="{StaticResource FieldLabelStyle}" />
                                         <Label Text="{Binding BiometricVaultName}"
                                                FontFamily="OpenSansSemibold" FontSize="14"
                                                TextColor="{StaticResource TextPrimaryDark}"
@@ -177,20 +203,20 @@
                                     <Button Style="{StaticResource PrimaryActionButtonStyle}"
                                             Command="{Binding UnlockWithBiometricCommand}"
                                             IsEnabled="{Binding CanInteract}"
-                                            SemanticProperties.Description="Desbloquear com biometria" />
+                                            SemanticProperties.Description="{loc:Tr Unlock_UnlockWithBiometricButton}" />
                                     <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center"
                                                            Spacing="9" InputTransparent="True">
                                         <GraphicsView x:Name="BiometricButtonIcon"
                                                       WidthRequest="18" HeightRequest="18"
                                                       VerticalOptions="Center" />
-                                        <Label Text="Desbloquear com biometria"
+                                        <Label Text="{loc:Tr Unlock_UnlockWithBiometricButton}"
                                                TextColor="{StaticResource White}"
                                                FontFamily="OpenSansSemibold" FontSize="15"
                                                VerticalOptions="Center" />
                                     </HorizontalStackLayout>
                                 </Grid>
 
-                                <Button Text="Trocar cofre"
+                                <Button Text="{loc:Tr Unlock_ChangeVaultButton}"
                                         Style="{StaticResource SecondaryActionButtonStyle}"
                                         Command="{Binding ChangeVaultCommand}"
                                         IsEnabled="{Binding CanInteract}" />
@@ -199,7 +225,7 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <Label Text="Criar um cofre novo"
+                    <Label Text="{loc:Tr Unlock_CreateVaultLink}"
                            TextColor="{StaticResource PrimaryDark}"
                            FontSize="13"
                            HorizontalOptions="Center"
@@ -209,7 +235,7 @@
                         </Label.GestureRecognizers>
                     </Label>
 
-                    <Label Text="Recuperar de um backup"
+                    <Label Text="{loc:Tr Unlock_RecoverBackupLink}"
                            TextColor="{StaticResource TextSecondaryDark}"
                            FontSize="13"
                            HorizontalOptions="Center"
