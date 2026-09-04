@@ -100,4 +100,301 @@
   <data name="Unlock_LanguagePickerDescription" xml:space="preserve">
     <value>App language</value>
   </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Common_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Common_RequiredFieldsLegend" xml:space="preserve">
+    <value>* required fields</value>
+  </data>
+  <data name="Vault_NameFieldLabel" xml:space="preserve">
+    <value>VAULT NAME</value>
+  </data>
+  <data name="Vault_MasterPasswordFieldLabel" xml:space="preserve">
+    <value>MASTER PASSWORD</value>
+  </data>
+  <data name="Vault_MinPasswordPlaceholder" xml:space="preserve">
+    <value>At least 8 characters</value>
+  </data>
+  <data name="Vault_CopyUserButton" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Vault_CopyPasswordButton" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Vault_SearchPlaceholder" xml:space="preserve">
+    <value>Search by name...</value>
+  </data>
+  <data name="Vault_FilterAllChip" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Vault_FilterFavoritesChip" xml:space="preserve">
+    <value>Favorites</value>
+  </data>
+  <data name="Vault_EmptyEditorState" xml:space="preserve">
+    <value>Select an item from the list or create a new one</value>
+  </data>
+  <data name="SaveAsNewFile_Title" xml:space="preserve">
+    <value>Also save to a new file?</value>
+  </data>
+  <data name="SaveAsNewFile_Body" xml:space="preserve">
+    <value>The current file has already been saved with the change. You can also save a copy to a new file, keeping the original intact. Saving ends the session, and you'll choose which of the two to open on the unlock screen.</value>
+  </data>
+  <data name="SaveAsNewFile_DeclineButton" xml:space="preserve">
+    <value>No, thanks</value>
+  </data>
+  <data name="SaveAsNewFile_AcceptButton" xml:space="preserve">
+    <value>Save as a new file</value>
+  </data>
+  <data name="VaultSettings_Title" xml:space="preserve">
+    <value>Edit vault</value>
+  </data>
+  <data name="VaultSettings_SaveNameButton" xml:space="preserve">
+    <value>Save name</value>
+  </data>
+  <data name="VaultSettings_SaveProtectionsButton" xml:space="preserve">
+    <value>Save protections</value>
+  </data>
+  <data name="VaultSettings_SaveBackupsButton" xml:space="preserve">
+    <value>Save backups</value>
+  </data>
+  <data name="VaultSettings_ChangePasswordTitle" xml:space="preserve">
+    <value>CHANGE MASTER PASSWORD</value>
+  </data>
+  <data name="VaultSettings_CurrentPasswordLabel" xml:space="preserve">
+    <value>CURRENT PASSWORD</value>
+  </data>
+  <data name="VaultSettings_NewPasswordLabel" xml:space="preserve">
+    <value>NEW PASSWORD</value>
+  </data>
+  <data name="VaultSettings_ConfirmNewPasswordLabel" xml:space="preserve">
+    <value>CONFIRM NEW PASSWORD</value>
+  </data>
+  <data name="VaultSettings_DeleteOldBackupsLabel" xml:space="preserve">
+    <value>Delete this vault's old backups (they remain encrypted with the old password)</value>
+  </data>
+  <data name="VaultSettings_ChangePasswordButton" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="Protections_SectionLabel" xml:space="preserve">
+    <value>PROTECTIONS</value>
+  </data>
+  <data name="Protections_ClipboardClearLabel" xml:space="preserve">
+    <value>Clear the clipboard</value>
+  </data>
+  <data name="Protections_ClipboardChip20s" xml:space="preserve">
+    <value>20s</value>
+  </data>
+  <data name="Protections_ClipboardChip45s" xml:space="preserve">
+    <value>45s</value>
+  </data>
+  <data name="Protections_ClipboardChip90s" xml:space="preserve">
+    <value>90s</value>
+  </data>
+  <data name="Protections_AutoLockLabel" xml:space="preserve">
+    <value>Automatic lock</value>
+  </data>
+  <data name="Protections_AutoLockWarning" xml:space="preserve">
+    <value>Turning this off leaves the vault open indefinitely in the background.</value>
+  </data>
+  <data name="Protections_AutoLockChip1min" xml:space="preserve">
+    <value>1 min</value>
+  </data>
+  <data name="Protections_AutoLockChip2min" xml:space="preserve">
+    <value>2 min</value>
+  </data>
+  <data name="Protections_AutoLockChip5min" xml:space="preserve">
+    <value>5 min</value>
+  </data>
+  <data name="Protections_AutoLockChip15min" xml:space="preserve">
+    <value>15 min</value>
+  </data>
+  <data name="Backups_SectionLabel" xml:space="preserve">
+    <value>BACKUPS</value>
+  </data>
+  <data name="Backups_RetentionQuestion" xml:space="preserve">
+    <value>How many versions to keep</value>
+  </data>
+  <data name="Backups_ModeByCountChip" xml:space="preserve">
+    <value>By count</value>
+  </data>
+  <data name="Backups_ModeByDaysChip" xml:space="preserve">
+    <value>By time</value>
+  </data>
+  <data name="Backups_DaysChip3" xml:space="preserve">
+    <value>3 days</value>
+  </data>
+  <data name="Backups_DaysChip5" xml:space="preserve">
+    <value>5 days</value>
+  </data>
+  <data name="Backups_DaysChip15" xml:space="preserve">
+    <value>15 days</value>
+  </data>
+  <data name="Backups_DaysChip30" xml:space="preserve">
+    <value>30 days</value>
+  </data>
+  <data name="Backups_RetentionByCountNote" xml:space="preserve">
+    <value>Past the version limit, the oldest one is deleted. The most recent version is never deleted.</value>
+  </data>
+  <data name="Backups_RetentionByDaysNote" xml:space="preserve">
+    <value>Backups older than the chosen limit are deleted. The most recent version is never deleted.</value>
+  </data>
+  <data name="CreateVault_Title" xml:space="preserve">
+    <value>New vault</value>
+  </data>
+  <data name="CreateVault_Subtitle" xml:space="preserve">
+    <value>Choose where to keep it and set the master password</value>
+  </data>
+  <data name="CreateVault_ConfirmPasswordFieldLabel" xml:space="preserve">
+    <value>CONFIRM PASSWORD</value>
+  </data>
+  <data name="CreateVault_ConfirmPasswordPlaceholder" xml:space="preserve">
+    <value>Enter the password again</value>
+  </data>
+  <data name="CreateVault_ClipboardClearHelperText" xml:space="preserve">
+    <value>When you copy a password or username, the app clears the clipboard after the chosen time.</value>
+  </data>
+  <data name="CreateVault_AutoLockHelperText" xml:space="preserve">
+    <value>Returns to the password screen if the app stays in the background past the chosen time.</value>
+  </data>
+  <data name="BackupRecovery_Title" xml:space="preserve">
+    <value>Recover backup</value>
+  </data>
+  <data name="BackupRecovery_HelperText" xml:space="preserve">
+    <value>Backups are created automatically before every save. Restoring always creates a new file - the original vault is never overwritten.</value>
+  </data>
+  <data name="BackupRecovery_EmptyTitle" xml:space="preserve">
+    <value>No backups yet</value>
+  </data>
+  <data name="BackupRecovery_EmptyBody" xml:space="preserve">
+    <value>Backups appear automatically after a vault's first edit.</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllLink" xml:space="preserve">
+    <value>Delete all backups</value>
+  </data>
+  <data name="BackupRecovery_RestoreButton" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="BackupRecovery_RestoreModalTitle" xml:space="preserve">
+    <value>Restore backup</value>
+  </data>
+  <data name="BackupRecovery_RestoreModalHint" xml:space="preserve">
+    <value>Enter this backup's master password. If it predates a password change, use the old password.</value>
+  </data>
+  <data name="BackupRecovery_RestorePasswordPlaceholder" xml:space="preserve">
+    <value>Backup's master password</value>
+  </data>
+  <data name="BackupRecovery_DeleteModalTitle" xml:space="preserve">
+    <value>Delete this backup?</value>
+  </data>
+  <data name="BackupRecovery_DeleteModalWarning" xml:space="preserve">
+    <value>This action can't be undone.</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllModalTitle" xml:space="preserve">
+    <value>Delete all backups?</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllModalWarning" xml:space="preserve">
+    <value>All backups listed on this screen will be deleted. This action can't be undone.</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllConfirmButton" xml:space="preserve">
+    <value>Delete all</value>
+  </data>
+  <data name="ItemEditor_UserLabel" xml:space="preserve">
+    <value>USERNAME</value>
+  </data>
+  <data name="ItemEditor_PasswordLabel" xml:space="preserve">
+    <value>PASSWORD</value>
+  </data>
+  <data name="ItemEditor_ObsLabel" xml:space="preserve">
+    <value>NOTES</value>
+  </data>
+  <data name="ItemEditor_EditButton" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="ItemEditor_NameFieldLabel" xml:space="preserve">
+    <value>NAME</value>
+  </data>
+  <data name="ItemEditor_NamePlaceholder" xml:space="preserve">
+    <value>e.g., Netflix</value>
+  </data>
+  <data name="ItemEditor_UrlFieldLabel" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="ItemEditor_UrlPlaceholder" xml:space="preserve">
+    <value>site.com</value>
+  </data>
+  <data name="ItemEditor_FavoriteCheckboxLabel" xml:space="preserve">
+    <value>Mark as favorite</value>
+  </data>
+  <data name="ItemEditor_SaveButton" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Onboarding_Slide1SampleFileName" xml:space="preserve">
+    <value>my-vault.GDSBX</value>
+  </data>
+  <data name="Onboarding_Slide1Caption" xml:space="preserve">
+    <value>A file that's yours, kept wherever you want</value>
+  </data>
+  <data name="Onboarding_Slide2Caption" xml:space="preserve">
+    <value>It's this link, right below the password card</value>
+  </data>
+  <data name="Onboarding_Slide3Caption" xml:space="preserve">
+    <value>It appears in place of the password field once you turn on fingerprint unlock</value>
+  </data>
+  <data name="Onboarding_SkipButton" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="BiometricOptIn_Title" xml:space="preserve">
+    <value>Unlock with biometrics</value>
+  </data>
+  <data name="BiometricOptIn_Body" xml:space="preserve">
+    <value>Next time, use your fingerprint or face to open this vault without typing the password. The master password keeps working normally whenever you want it.</value>
+  </data>
+  <data name="BiometricOptIn_AcceptButton" xml:space="preserve">
+    <value>Turn on biometrics</value>
+  </data>
+  <data name="BiometricOptIn_DeclineButton" xml:space="preserve">
+    <value>Not now</value>
+  </data>
+  <data name="HelpSheet_DismissButton" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="HelpVisual_SaveAsNewFileShortButton" xml:space="preserve">
+    <value>Save as new</value>
+  </data>
+  <data name="HelpVisual_DeleteOldBackupsLabel" xml:space="preserve">
+    <value>Delete this vault's old backups</value>
+  </data>
+  <data name="HelpVisual_SampleItemName" xml:space="preserve">
+    <value>Netflix</value>
+  </data>
+  <data name="HelpVisual_SampleItemUrl" xml:space="preserve">
+    <value>netflix.com</value>
+  </data>
+  <data name="HelpVisual_SampleItemInitial" xml:space="preserve">
+    <value>N</value>
+  </data>
+  <data name="HelpVisual_SampleVaultName" xml:space="preserve">
+    <value>Personal vault</value>
+  </data>
+  <data name="HelpVisual_SampleBackupFileName" xml:space="preserve">
+    <value>BKP - Cofre pessoal.GDSBX - 2026-09-02 14-30-12.bak</value>
+  </data>
+  <data name="HelpVisual_SampleBackupDate" xml:space="preserve">
+    <value>9/2/2026 2:30 PM</value>
+  </data>
+  <data name="HelpVisual_SampleBackupSize" xml:space="preserve">
+    <value>12 KB</value>
+  </data>
+  <data name="HelpVisual_SampleBackupKind" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
 </root>

@@ -4,6 +4,7 @@
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              xmlns:controls="clr-namespace:GDSB.MAUI.Controls"
+             xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
              x:Class="GDSB.MAUI.VaultPage"
              x:Name="ThisPage"
              BackgroundColor="{StaticResource SurfaceDark}">
@@ -64,12 +65,12 @@
                         </Button>
                     </Grid>
                     <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
-                        <Button Grid.Column="0" Text="Usuário" FontSize="12.5" HeightRequest="36"
+                        <Button Grid.Column="0" Text="{loc:Tr Vault_CopyUserButton}" FontSize="12.5" HeightRequest="36"
                                 BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
                                 IsVisible="{Binding HasUser}"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CopyUserCommand}"
                                 CommandParameter="{Binding .}" />
-                        <Button Grid.Column="1" Text="Senha" FontSize="12.5" HeightRequest="36"
+                        <Button Grid.Column="1" Text="{loc:Tr Vault_CopyPasswordButton}" FontSize="12.5" HeightRequest="36"
                                 BackgroundColor="{StaticResource SurfaceDark}" TextColor="{StaticResource TextPrimaryDark}"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CopyPasswordCommand}"
                                 CommandParameter="{Binding .}" />
@@ -137,7 +138,7 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                             StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
-                        <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
+                        <Entry Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
                                TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
                                BackgroundColor="Transparent" VerticalOptions="Center" />
                     </Border>
@@ -146,9 +147,9 @@
                             Command="{Binding AddNewItemCommand}" />
                 </Grid>
                 <HorizontalStackLayout Spacing="8">
-                    <controls:SelectableChip Text="Todos" Style="{StaticResource FilterChipStyle}"
+                    <controls:SelectableChip Text="{loc:Tr Vault_FilterAllChip}" Style="{StaticResource FilterChipStyle}"
                             Command="{Binding SetFilterAllCommand}" IsSelected="{Binding IsAllFilterSelected}" />
-                    <controls:SelectableChip Text="Favoritos" Style="{StaticResource FilterChipStyle}"
+                    <controls:SelectableChip Text="{loc:Tr Vault_FilterFavoritesChip}" Style="{StaticResource FilterChipStyle}"
                             Command="{Binding SetFilterFavoritesCommand}" IsSelected="{Binding FilterFavoritesOnly}" />
                 </HorizontalStackLayout>
             </VerticalStackLayout>
@@ -189,7 +190,7 @@
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                         <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                                 StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="42">
-                            <Entry Placeholder="Buscar por nome..." Text="{Binding SearchText}"
+                            <Entry Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
                                    TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
                                    BackgroundColor="Transparent" VerticalOptions="Center" />
                         </Border>
@@ -198,9 +199,9 @@
                                 Command="{Binding AddNewItemCommand}" />
                     </Grid>
                     <HorizontalStackLayout Spacing="8">
-                        <controls:SelectableChip Text="Todos" Style="{StaticResource FilterChipStyle}"
+                        <controls:SelectableChip Text="{loc:Tr Vault_FilterAllChip}" Style="{StaticResource FilterChipStyle}"
                                 Command="{Binding SetFilterAllCommand}" IsSelected="{Binding IsAllFilterSelected}" />
-                        <controls:SelectableChip Text="Favoritos" Style="{StaticResource FilterChipStyle}"
+                        <controls:SelectableChip Text="{loc:Tr Vault_FilterFavoritesChip}" Style="{StaticResource FilterChipStyle}"
                                 Command="{Binding SetFilterFavoritesCommand}" IsSelected="{Binding FilterFavoritesOnly}" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
@@ -215,7 +216,7 @@
                 <ScrollView IsVisible="{Binding ShowItemEditor}">
                     <views:ItemEditorView MaximumWidthRequest="560" HorizontalOptions="Start" />
                 </ScrollView>
-                <Label Text="Selecione um item na lista ao lado ou crie um novo" IsVisible="{Binding ShowEmptyState}"
+                <Label Text="{loc:Tr Vault_EmptyEditorState}" IsVisible="{Binding ShowEmptyState}"
                        TextColor="{StaticResource TextSecondaryDark}" FontSize="14"
                        HorizontalOptions="Center" VerticalOptions="Center" />
             </Grid>

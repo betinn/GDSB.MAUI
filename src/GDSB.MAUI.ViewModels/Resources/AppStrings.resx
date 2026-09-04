@@ -159,4 +159,301 @@
   <data name="Unlock_LanguagePickerDescription" xml:space="preserve">
     <value>Idioma do app</value>
   </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>Voltar</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Common_Copy" xml:space="preserve">
+    <value>Copiar</value>
+  </data>
+  <data name="Common_Delete" xml:space="preserve">
+    <value>Excluir</value>
+  </data>
+  <data name="Common_RequiredFieldsLegend" xml:space="preserve">
+    <value>* campos obrigatórios</value>
+  </data>
+  <data name="Vault_NameFieldLabel" xml:space="preserve">
+    <value>NOME DO COFRE</value>
+  </data>
+  <data name="Vault_MasterPasswordFieldLabel" xml:space="preserve">
+    <value>SENHA MESTRA</value>
+  </data>
+  <data name="Vault_MinPasswordPlaceholder" xml:space="preserve">
+    <value>Mínimo de 8 caracteres</value>
+  </data>
+  <data name="Vault_CopyUserButton" xml:space="preserve">
+    <value>Usuário</value>
+  </data>
+  <data name="Vault_CopyPasswordButton" xml:space="preserve">
+    <value>Senha</value>
+  </data>
+  <data name="Vault_SearchPlaceholder" xml:space="preserve">
+    <value>Buscar por nome...</value>
+  </data>
+  <data name="Vault_FilterAllChip" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="Vault_FilterFavoritesChip" xml:space="preserve">
+    <value>Favoritos</value>
+  </data>
+  <data name="Vault_EmptyEditorState" xml:space="preserve">
+    <value>Selecione um item na lista ao lado ou crie um novo</value>
+  </data>
+  <data name="SaveAsNewFile_Title" xml:space="preserve">
+    <value>Salvar também num arquivo novo?</value>
+  </data>
+  <data name="SaveAsNewFile_Body" xml:space="preserve">
+    <value>O arquivo atual já foi gravado com a mudança. Você também pode salvar uma cópia num arquivo novo, mantendo o original intacto. Ao salvar, a sessão é encerrada e você escolhe qual dos dois abrir na tela de desbloqueio.</value>
+  </data>
+  <data name="SaveAsNewFile_DeclineButton" xml:space="preserve">
+    <value>Não, obrigado</value>
+  </data>
+  <data name="SaveAsNewFile_AcceptButton" xml:space="preserve">
+    <value>Salvar como novo arquivo</value>
+  </data>
+  <data name="VaultSettings_Title" xml:space="preserve">
+    <value>Editar cofre</value>
+  </data>
+  <data name="VaultSettings_SaveNameButton" xml:space="preserve">
+    <value>Salvar nome</value>
+  </data>
+  <data name="VaultSettings_SaveProtectionsButton" xml:space="preserve">
+    <value>Salvar proteções</value>
+  </data>
+  <data name="VaultSettings_SaveBackupsButton" xml:space="preserve">
+    <value>Salvar backups</value>
+  </data>
+  <data name="VaultSettings_ChangePasswordTitle" xml:space="preserve">
+    <value>TROCAR SENHA MESTRA</value>
+  </data>
+  <data name="VaultSettings_CurrentPasswordLabel" xml:space="preserve">
+    <value>SENHA ATUAL</value>
+  </data>
+  <data name="VaultSettings_NewPasswordLabel" xml:space="preserve">
+    <value>SENHA NOVA</value>
+  </data>
+  <data name="VaultSettings_ConfirmNewPasswordLabel" xml:space="preserve">
+    <value>CONFIRMAR SENHA NOVA</value>
+  </data>
+  <data name="VaultSettings_DeleteOldBackupsLabel" xml:space="preserve">
+    <value>Excluir os backups antigos deste cofre (continuam cifrados com a senha antiga)</value>
+  </data>
+  <data name="VaultSettings_ChangePasswordButton" xml:space="preserve">
+    <value>Trocar senha</value>
+  </data>
+  <data name="Protections_SectionLabel" xml:space="preserve">
+    <value>PROTEÇÕES</value>
+  </data>
+  <data name="Protections_ClipboardClearLabel" xml:space="preserve">
+    <value>Limpar a área de transferência</value>
+  </data>
+  <data name="Protections_ClipboardChip20s" xml:space="preserve">
+    <value>20s</value>
+  </data>
+  <data name="Protections_ClipboardChip45s" xml:space="preserve">
+    <value>45s</value>
+  </data>
+  <data name="Protections_ClipboardChip90s" xml:space="preserve">
+    <value>90s</value>
+  </data>
+  <data name="Protections_AutoLockLabel" xml:space="preserve">
+    <value>Bloqueio automático</value>
+  </data>
+  <data name="Protections_AutoLockWarning" xml:space="preserve">
+    <value>Desligar deixa o cofre aberto indefinidamente em segundo plano.</value>
+  </data>
+  <data name="Protections_AutoLockChip1min" xml:space="preserve">
+    <value>1 min</value>
+  </data>
+  <data name="Protections_AutoLockChip2min" xml:space="preserve">
+    <value>2 min</value>
+  </data>
+  <data name="Protections_AutoLockChip5min" xml:space="preserve">
+    <value>5 min</value>
+  </data>
+  <data name="Protections_AutoLockChip15min" xml:space="preserve">
+    <value>15 min</value>
+  </data>
+  <data name="Backups_SectionLabel" xml:space="preserve">
+    <value>BACKUPS</value>
+  </data>
+  <data name="Backups_RetentionQuestion" xml:space="preserve">
+    <value>Manter quantas versões</value>
+  </data>
+  <data name="Backups_ModeByCountChip" xml:space="preserve">
+    <value>Por quantidade</value>
+  </data>
+  <data name="Backups_ModeByDaysChip" xml:space="preserve">
+    <value>Por tempo</value>
+  </data>
+  <data name="Backups_DaysChip3" xml:space="preserve">
+    <value>3 dias</value>
+  </data>
+  <data name="Backups_DaysChip5" xml:space="preserve">
+    <value>5 dias</value>
+  </data>
+  <data name="Backups_DaysChip15" xml:space="preserve">
+    <value>15 dias</value>
+  </data>
+  <data name="Backups_DaysChip30" xml:space="preserve">
+    <value>30 dias</value>
+  </data>
+  <data name="Backups_RetentionByCountNote" xml:space="preserve">
+    <value>Ao passar do limite de versões, a mais antiga é apagada. A versão mais recente nunca é apagada.</value>
+  </data>
+  <data name="Backups_RetentionByDaysNote" xml:space="preserve">
+    <value>Backups mais antigos que o limite escolhido são apagados. A versão mais recente nunca é apagada.</value>
+  </data>
+  <data name="CreateVault_Title" xml:space="preserve">
+    <value>Novo cofre</value>
+  </data>
+  <data name="CreateVault_Subtitle" xml:space="preserve">
+    <value>Escolha onde guardar e defina a senha mestra</value>
+  </data>
+  <data name="CreateVault_ConfirmPasswordFieldLabel" xml:space="preserve">
+    <value>CONFIRMAR SENHA</value>
+  </data>
+  <data name="CreateVault_ConfirmPasswordPlaceholder" xml:space="preserve">
+    <value>Digite a senha novamente</value>
+  </data>
+  <data name="CreateVault_ClipboardClearHelperText" xml:space="preserve">
+    <value>Ao copiar uma senha ou usuário, o app apaga o valor da área de transferência depois do tempo escolhido.</value>
+  </data>
+  <data name="CreateVault_AutoLockHelperText" xml:space="preserve">
+    <value>Volta pra tela de senha se o app ficar em segundo plano além do tempo escolhido.</value>
+  </data>
+  <data name="BackupRecovery_Title" xml:space="preserve">
+    <value>Recuperar backup</value>
+  </data>
+  <data name="BackupRecovery_HelperText" xml:space="preserve">
+    <value>Backups são gerados automaticamente antes de cada gravação. Restaurar sempre cria um arquivo novo - o cofre original nunca é sobrescrito.</value>
+  </data>
+  <data name="BackupRecovery_EmptyTitle" xml:space="preserve">
+    <value>Nenhum backup por aqui</value>
+  </data>
+  <data name="BackupRecovery_EmptyBody" xml:space="preserve">
+    <value>Backups aparecem automaticamente depois da primeira edição de um cofre.</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllLink" xml:space="preserve">
+    <value>Excluir todos os backups</value>
+  </data>
+  <data name="BackupRecovery_RestoreButton" xml:space="preserve">
+    <value>Restaurar</value>
+  </data>
+  <data name="BackupRecovery_RestoreModalTitle" xml:space="preserve">
+    <value>Restaurar backup</value>
+  </data>
+  <data name="BackupRecovery_RestoreModalHint" xml:space="preserve">
+    <value>Digite a senha mestra deste backup. Se ele for anterior a uma troca de senha, use a senha antiga.</value>
+  </data>
+  <data name="BackupRecovery_RestorePasswordPlaceholder" xml:space="preserve">
+    <value>Senha mestra do backup</value>
+  </data>
+  <data name="BackupRecovery_DeleteModalTitle" xml:space="preserve">
+    <value>Excluir este backup?</value>
+  </data>
+  <data name="BackupRecovery_DeleteModalWarning" xml:space="preserve">
+    <value>Essa ação não pode ser desfeita.</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllModalTitle" xml:space="preserve">
+    <value>Excluir todos os backups?</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllModalWarning" xml:space="preserve">
+    <value>Todos os backups listados nesta tela serão apagados. Essa ação não pode ser desfeita.</value>
+  </data>
+  <data name="BackupRecovery_DeleteAllConfirmButton" xml:space="preserve">
+    <value>Excluir todos</value>
+  </data>
+  <data name="ItemEditor_UserLabel" xml:space="preserve">
+    <value>USUÁRIO</value>
+  </data>
+  <data name="ItemEditor_PasswordLabel" xml:space="preserve">
+    <value>SENHA</value>
+  </data>
+  <data name="ItemEditor_ObsLabel" xml:space="preserve">
+    <value>OBSERVAÇÕES</value>
+  </data>
+  <data name="ItemEditor_EditButton" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="ItemEditor_NameFieldLabel" xml:space="preserve">
+    <value>NOME</value>
+  </data>
+  <data name="ItemEditor_NamePlaceholder" xml:space="preserve">
+    <value>Ex.: Netflix</value>
+  </data>
+  <data name="ItemEditor_UrlFieldLabel" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="ItemEditor_UrlPlaceholder" xml:space="preserve">
+    <value>site.com</value>
+  </data>
+  <data name="ItemEditor_FavoriteCheckboxLabel" xml:space="preserve">
+    <value>Marcar como favorito</value>
+  </data>
+  <data name="ItemEditor_SaveButton" xml:space="preserve">
+    <value>Salvar</value>
+  </data>
+  <data name="Onboarding_Slide1SampleFileName" xml:space="preserve">
+    <value>meu-cofre.GDSBX</value>
+  </data>
+  <data name="Onboarding_Slide1Caption" xml:space="preserve">
+    <value>Um arquivo seu, guardado onde você quiser</value>
+  </data>
+  <data name="Onboarding_Slide2Caption" xml:space="preserve">
+    <value>É este link, logo abaixo do cartão de senha</value>
+  </data>
+  <data name="Onboarding_Slide3Caption" xml:space="preserve">
+    <value>Aparece no lugar do campo de senha depois que você liga a digital</value>
+  </data>
+  <data name="Onboarding_SkipButton" xml:space="preserve">
+    <value>Pular</value>
+  </data>
+  <data name="BiometricOptIn_Title" xml:space="preserve">
+    <value>Desbloqueio por biometria</value>
+  </data>
+  <data name="BiometricOptIn_Body" xml:space="preserve">
+    <value>Da próxima vez, use sua digital ou rosto pra abrir este cofre sem digitar a senha. A senha mestra continua funcionando normalmente quando você quiser.</value>
+  </data>
+  <data name="BiometricOptIn_AcceptButton" xml:space="preserve">
+    <value>Ativar biometria</value>
+  </data>
+  <data name="BiometricOptIn_DeclineButton" xml:space="preserve">
+    <value>Agora não</value>
+  </data>
+  <data name="HelpSheet_DismissButton" xml:space="preserve">
+    <value>Entendi</value>
+  </data>
+  <data name="HelpVisual_SaveAsNewFileShortButton" xml:space="preserve">
+    <value>Salvar como novo</value>
+  </data>
+  <data name="HelpVisual_DeleteOldBackupsLabel" xml:space="preserve">
+    <value>Excluir os backups antigos deste cofre</value>
+  </data>
+  <data name="HelpVisual_SampleItemName" xml:space="preserve">
+    <value>Netflix</value>
+  </data>
+  <data name="HelpVisual_SampleItemUrl" xml:space="preserve">
+    <value>netflix.com</value>
+  </data>
+  <data name="HelpVisual_SampleItemInitial" xml:space="preserve">
+    <value>N</value>
+  </data>
+  <data name="HelpVisual_SampleVaultName" xml:space="preserve">
+    <value>Cofre pessoal</value>
+  </data>
+  <data name="HelpVisual_SampleBackupFileName" xml:space="preserve">
+    <value>BKP - Cofre pessoal.GDSBX - 2026-09-02 14-30-12.bak</value>
+  </data>
+  <data name="HelpVisual_SampleBackupDate" xml:space="preserve">
+    <value>02/09/2026 14:30</value>
+  </data>
+  <data name="HelpVisual_SampleBackupSize" xml:space="preserve">
+    <value>12 KB</value>
+  </data>
+  <data name="HelpVisual_SampleBackupKind" xml:space="preserve">
+    <value>Automático</value>
+  </data>
 </root>

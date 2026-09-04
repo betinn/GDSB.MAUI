@@ -71,5 +71,203 @@ namespace GDSB.MAUI.ViewModels.Resources
         public static string Unlock_RecoverBackupLink => ResourceManager.GetString("Unlock_RecoverBackupLink", resourceCulture);
 
         public static string Unlock_LanguagePickerDescription => ResourceManager.GetString("Unlock_LanguagePickerDescription", resourceCulture);
+
+        public static string Common_Back => ResourceManager.GetString("Common_Back", resourceCulture);
+
+        public static string Common_Cancel => ResourceManager.GetString("Common_Cancel", resourceCulture);
+
+        public static string Common_Copy => ResourceManager.GetString("Common_Copy", resourceCulture);
+
+        public static string Common_Delete => ResourceManager.GetString("Common_Delete", resourceCulture);
+
+        public static string Common_RequiredFieldsLegend => ResourceManager.GetString("Common_RequiredFieldsLegend", resourceCulture);
+
+        public static string Vault_NameFieldLabel => ResourceManager.GetString("Vault_NameFieldLabel", resourceCulture);
+
+        public static string Vault_MasterPasswordFieldLabel => ResourceManager.GetString("Vault_MasterPasswordFieldLabel", resourceCulture);
+
+        public static string Vault_MinPasswordPlaceholder => ResourceManager.GetString("Vault_MinPasswordPlaceholder", resourceCulture);
+
+        public static string Vault_CopyUserButton => ResourceManager.GetString("Vault_CopyUserButton", resourceCulture);
+
+        public static string Vault_CopyPasswordButton => ResourceManager.GetString("Vault_CopyPasswordButton", resourceCulture);
+
+        public static string Vault_SearchPlaceholder => ResourceManager.GetString("Vault_SearchPlaceholder", resourceCulture);
+
+        public static string Vault_FilterAllChip => ResourceManager.GetString("Vault_FilterAllChip", resourceCulture);
+
+        public static string Vault_FilterFavoritesChip => ResourceManager.GetString("Vault_FilterFavoritesChip", resourceCulture);
+
+        public static string Vault_EmptyEditorState => ResourceManager.GetString("Vault_EmptyEditorState", resourceCulture);
+
+        public static string SaveAsNewFile_Title => ResourceManager.GetString("SaveAsNewFile_Title", resourceCulture);
+
+        public static string SaveAsNewFile_Body => ResourceManager.GetString("SaveAsNewFile_Body", resourceCulture);
+
+        public static string SaveAsNewFile_DeclineButton => ResourceManager.GetString("SaveAsNewFile_DeclineButton", resourceCulture);
+
+        public static string SaveAsNewFile_AcceptButton => ResourceManager.GetString("SaveAsNewFile_AcceptButton", resourceCulture);
+
+        public static string VaultSettings_Title => ResourceManager.GetString("VaultSettings_Title", resourceCulture);
+
+        public static string VaultSettings_SaveNameButton => ResourceManager.GetString("VaultSettings_SaveNameButton", resourceCulture);
+
+        public static string VaultSettings_SaveProtectionsButton => ResourceManager.GetString("VaultSettings_SaveProtectionsButton", resourceCulture);
+
+        public static string VaultSettings_SaveBackupsButton => ResourceManager.GetString("VaultSettings_SaveBackupsButton", resourceCulture);
+
+        public static string VaultSettings_ChangePasswordTitle => ResourceManager.GetString("VaultSettings_ChangePasswordTitle", resourceCulture);
+
+        public static string VaultSettings_CurrentPasswordLabel => ResourceManager.GetString("VaultSettings_CurrentPasswordLabel", resourceCulture);
+
+        public static string VaultSettings_NewPasswordLabel => ResourceManager.GetString("VaultSettings_NewPasswordLabel", resourceCulture);
+
+        public static string VaultSettings_ConfirmNewPasswordLabel => ResourceManager.GetString("VaultSettings_ConfirmNewPasswordLabel", resourceCulture);
+
+        public static string VaultSettings_DeleteOldBackupsLabel => ResourceManager.GetString("VaultSettings_DeleteOldBackupsLabel", resourceCulture);
+
+        public static string VaultSettings_ChangePasswordButton => ResourceManager.GetString("VaultSettings_ChangePasswordButton", resourceCulture);
+
+        public static string Protections_SectionLabel => ResourceManager.GetString("Protections_SectionLabel", resourceCulture);
+
+        public static string Protections_ClipboardClearLabel => ResourceManager.GetString("Protections_ClipboardClearLabel", resourceCulture);
+
+        public static string Protections_ClipboardChip20s => ResourceManager.GetString("Protections_ClipboardChip20s", resourceCulture);
+
+        public static string Protections_ClipboardChip45s => ResourceManager.GetString("Protections_ClipboardChip45s", resourceCulture);
+
+        public static string Protections_ClipboardChip90s => ResourceManager.GetString("Protections_ClipboardChip90s", resourceCulture);
+
+        public static string Protections_AutoLockLabel => ResourceManager.GetString("Protections_AutoLockLabel", resourceCulture);
+
+        public static string Protections_AutoLockWarning => ResourceManager.GetString("Protections_AutoLockWarning", resourceCulture);
+
+        public static string Protections_AutoLockChip1min => ResourceManager.GetString("Protections_AutoLockChip1min", resourceCulture);
+
+        public static string Protections_AutoLockChip2min => ResourceManager.GetString("Protections_AutoLockChip2min", resourceCulture);
+
+        public static string Protections_AutoLockChip5min => ResourceManager.GetString("Protections_AutoLockChip5min", resourceCulture);
+
+        public static string Protections_AutoLockChip15min => ResourceManager.GetString("Protections_AutoLockChip15min", resourceCulture);
+
+        public static string Backups_SectionLabel => ResourceManager.GetString("Backups_SectionLabel", resourceCulture);
+
+        public static string Backups_RetentionQuestion => ResourceManager.GetString("Backups_RetentionQuestion", resourceCulture);
+
+        public static string Backups_ModeByCountChip => ResourceManager.GetString("Backups_ModeByCountChip", resourceCulture);
+
+        public static string Backups_ModeByDaysChip => ResourceManager.GetString("Backups_ModeByDaysChip", resourceCulture);
+
+        public static string Backups_DaysChip3 => ResourceManager.GetString("Backups_DaysChip3", resourceCulture);
+
+        public static string Backups_DaysChip5 => ResourceManager.GetString("Backups_DaysChip5", resourceCulture);
+
+        public static string Backups_DaysChip15 => ResourceManager.GetString("Backups_DaysChip15", resourceCulture);
+
+        public static string Backups_DaysChip30 => ResourceManager.GetString("Backups_DaysChip30", resourceCulture);
+
+        public static string Backups_RetentionByCountNote => ResourceManager.GetString("Backups_RetentionByCountNote", resourceCulture);
+
+        public static string Backups_RetentionByDaysNote => ResourceManager.GetString("Backups_RetentionByDaysNote", resourceCulture);
+
+        public static string CreateVault_Title => ResourceManager.GetString("CreateVault_Title", resourceCulture);
+
+        public static string CreateVault_Subtitle => ResourceManager.GetString("CreateVault_Subtitle", resourceCulture);
+
+        public static string CreateVault_ConfirmPasswordFieldLabel => ResourceManager.GetString("CreateVault_ConfirmPasswordFieldLabel", resourceCulture);
+
+        public static string CreateVault_ConfirmPasswordPlaceholder => ResourceManager.GetString("CreateVault_ConfirmPasswordPlaceholder", resourceCulture);
+
+        public static string CreateVault_ClipboardClearHelperText => ResourceManager.GetString("CreateVault_ClipboardClearHelperText", resourceCulture);
+
+        public static string CreateVault_AutoLockHelperText => ResourceManager.GetString("CreateVault_AutoLockHelperText", resourceCulture);
+
+        public static string BackupRecovery_Title => ResourceManager.GetString("BackupRecovery_Title", resourceCulture);
+
+        public static string BackupRecovery_HelperText => ResourceManager.GetString("BackupRecovery_HelperText", resourceCulture);
+
+        public static string BackupRecovery_EmptyTitle => ResourceManager.GetString("BackupRecovery_EmptyTitle", resourceCulture);
+
+        public static string BackupRecovery_EmptyBody => ResourceManager.GetString("BackupRecovery_EmptyBody", resourceCulture);
+
+        public static string BackupRecovery_DeleteAllLink => ResourceManager.GetString("BackupRecovery_DeleteAllLink", resourceCulture);
+
+        public static string BackupRecovery_RestoreButton => ResourceManager.GetString("BackupRecovery_RestoreButton", resourceCulture);
+
+        public static string BackupRecovery_RestoreModalTitle => ResourceManager.GetString("BackupRecovery_RestoreModalTitle", resourceCulture);
+
+        public static string BackupRecovery_RestoreModalHint => ResourceManager.GetString("BackupRecovery_RestoreModalHint", resourceCulture);
+
+        public static string BackupRecovery_RestorePasswordPlaceholder => ResourceManager.GetString("BackupRecovery_RestorePasswordPlaceholder", resourceCulture);
+
+        public static string BackupRecovery_DeleteModalTitle => ResourceManager.GetString("BackupRecovery_DeleteModalTitle", resourceCulture);
+
+        public static string BackupRecovery_DeleteModalWarning => ResourceManager.GetString("BackupRecovery_DeleteModalWarning", resourceCulture);
+
+        public static string BackupRecovery_DeleteAllModalTitle => ResourceManager.GetString("BackupRecovery_DeleteAllModalTitle", resourceCulture);
+
+        public static string BackupRecovery_DeleteAllModalWarning => ResourceManager.GetString("BackupRecovery_DeleteAllModalWarning", resourceCulture);
+
+        public static string BackupRecovery_DeleteAllConfirmButton => ResourceManager.GetString("BackupRecovery_DeleteAllConfirmButton", resourceCulture);
+
+        public static string ItemEditor_UserLabel => ResourceManager.GetString("ItemEditor_UserLabel", resourceCulture);
+
+        public static string ItemEditor_PasswordLabel => ResourceManager.GetString("ItemEditor_PasswordLabel", resourceCulture);
+
+        public static string ItemEditor_ObsLabel => ResourceManager.GetString("ItemEditor_ObsLabel", resourceCulture);
+
+        public static string ItemEditor_EditButton => ResourceManager.GetString("ItemEditor_EditButton", resourceCulture);
+
+        public static string ItemEditor_NameFieldLabel => ResourceManager.GetString("ItemEditor_NameFieldLabel", resourceCulture);
+
+        public static string ItemEditor_NamePlaceholder => ResourceManager.GetString("ItemEditor_NamePlaceholder", resourceCulture);
+
+        public static string ItemEditor_UrlFieldLabel => ResourceManager.GetString("ItemEditor_UrlFieldLabel", resourceCulture);
+
+        public static string ItemEditor_UrlPlaceholder => ResourceManager.GetString("ItemEditor_UrlPlaceholder", resourceCulture);
+
+        public static string ItemEditor_FavoriteCheckboxLabel => ResourceManager.GetString("ItemEditor_FavoriteCheckboxLabel", resourceCulture);
+
+        public static string ItemEditor_SaveButton => ResourceManager.GetString("ItemEditor_SaveButton", resourceCulture);
+
+        public static string Onboarding_Slide1SampleFileName => ResourceManager.GetString("Onboarding_Slide1SampleFileName", resourceCulture);
+
+        public static string Onboarding_Slide1Caption => ResourceManager.GetString("Onboarding_Slide1Caption", resourceCulture);
+
+        public static string Onboarding_Slide2Caption => ResourceManager.GetString("Onboarding_Slide2Caption", resourceCulture);
+
+        public static string Onboarding_Slide3Caption => ResourceManager.GetString("Onboarding_Slide3Caption", resourceCulture);
+
+        public static string Onboarding_SkipButton => ResourceManager.GetString("Onboarding_SkipButton", resourceCulture);
+
+        public static string BiometricOptIn_Title => ResourceManager.GetString("BiometricOptIn_Title", resourceCulture);
+
+        public static string BiometricOptIn_Body => ResourceManager.GetString("BiometricOptIn_Body", resourceCulture);
+
+        public static string BiometricOptIn_AcceptButton => ResourceManager.GetString("BiometricOptIn_AcceptButton", resourceCulture);
+
+        public static string BiometricOptIn_DeclineButton => ResourceManager.GetString("BiometricOptIn_DeclineButton", resourceCulture);
+
+        public static string HelpSheet_DismissButton => ResourceManager.GetString("HelpSheet_DismissButton", resourceCulture);
+
+        public static string HelpVisual_SaveAsNewFileShortButton => ResourceManager.GetString("HelpVisual_SaveAsNewFileShortButton", resourceCulture);
+
+        public static string HelpVisual_DeleteOldBackupsLabel => ResourceManager.GetString("HelpVisual_DeleteOldBackupsLabel", resourceCulture);
+
+        public static string HelpVisual_SampleItemName => ResourceManager.GetString("HelpVisual_SampleItemName", resourceCulture);
+
+        public static string HelpVisual_SampleItemUrl => ResourceManager.GetString("HelpVisual_SampleItemUrl", resourceCulture);
+
+        public static string HelpVisual_SampleItemInitial => ResourceManager.GetString("HelpVisual_SampleItemInitial", resourceCulture);
+
+        public static string HelpVisual_SampleVaultName => ResourceManager.GetString("HelpVisual_SampleVaultName", resourceCulture);
+
+        public static string HelpVisual_SampleBackupFileName => ResourceManager.GetString("HelpVisual_SampleBackupFileName", resourceCulture);
+
+        public static string HelpVisual_SampleBackupDate => ResourceManager.GetString("HelpVisual_SampleBackupDate", resourceCulture);
+
+        public static string HelpVisual_SampleBackupSize => ResourceManager.GetString("HelpVisual_SampleBackupSize", resourceCulture);
+
+        public static string HelpVisual_SampleBackupKind => ResourceManager.GetString("HelpVisual_SampleBackupKind", resourceCulture);
     }
 }

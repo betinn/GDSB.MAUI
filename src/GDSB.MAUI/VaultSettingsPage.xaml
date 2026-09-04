@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:GDSB.MAUI.Controls"
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
              x:Class="GDSB.MAUI.VaultSettingsPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
@@ -17,8 +18,14 @@
         <ScrollView>
             <Grid RowDefinitions="Auto,*" Padding="32">
 
-                <Label Grid.Row="0" Text="&#8592; Voltar" TextColor="{StaticResource TextSecondaryDark}"
+                <Label Grid.Row="0" TextColor="{StaticResource TextSecondaryDark}"
                        FontSize="14" Margin="0,8,0,0" behaviors:HoverCursor.IsHand="True">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="&#8592; " />
+                            <Span Text="{loc:Tr Common_Back}" />
+                        </FormattedString>
+                    </Label.FormattedText>
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoBackCommand}" />
                     </Label.GestureRecognizers>
@@ -26,7 +33,7 @@
 
                 <VerticalStackLayout Grid.Row="1" Spacing="20" Margin="0,20,0,0">
 
-                    <Label Text="Editar cofre" FontSize="22" FontFamily="OpenSansSemibold"
+                    <Label Text="{loc:Tr VaultSettings_Title}" FontSize="22" FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimaryDark}" />
 
                     <!-- Oferta condicional: aparece só depois de salvar nome ou senha, que mexem no
@@ -37,14 +44,14 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="18" StrokeShape="RoundRectangle 16"
                             IsVisible="{Binding ShowSaveAsNewFileOffer}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="Salvar também num arquivo novo?" FontFamily="OpenSansSemibold" FontSize="15"
+                            <Label Text="{loc:Tr SaveAsNewFile_Title}" FontFamily="OpenSansSemibold" FontSize="15"
                                    TextColor="{StaticResource TextPrimaryDark}" />
-                            <Label Text="O arquivo atual já foi gravado com a mudança. Você também pode salvar uma cópia num arquivo novo, mantendo o original intacto. Ao salvar, a sessão é encerrada e você escolhe qual dos dois abrir na tela de desbloqueio."
+                            <Label Text="{loc:Tr SaveAsNewFile_Body}"
                                    TextColor="{StaticResource TextSecondaryDark}" FontSize="13" />
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                <Button Grid.Column="0" Text="Não, obrigado" Style="{StaticResource SecondaryActionButtonStyle}"
+                                <Button Grid.Column="0" Text="{loc:Tr SaveAsNewFile_DeclineButton}" Style="{StaticResource SecondaryActionButtonStyle}"
                                         Command="{Binding DeclineSaveAsNewFileCommand}" />
-                                <Button Grid.Column="1" Text="Salvar como novo arquivo" Style="{StaticResource PrimaryActionButtonStyle}"
+                                <Button Grid.Column="1" Text="{loc:Tr SaveAsNewFile_AcceptButton}" Style="{StaticResource PrimaryActionButtonStyle}"
                                         HeightRequest="46" Command="{Binding AcceptSaveAsNewFileCommand}" />
                             </Grid>
                         </VerticalStackLayout>
@@ -56,7 +63,7 @@
                     <!-- Bloco 1: nome -->
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="14">
-                            <views:FieldLabelView Text="NOME DO COFRE" HelpTopicId="vault.name" />
+                            <views:FieldLabelView Text="{loc:Tr Vault_NameFieldLabel}" HelpTopicId="vault.name" />
                             <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                     StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                 <Entry Text="{Binding VaultName}" TextColor="{StaticResource TextPrimaryDark}"
@@ -65,7 +72,7 @@
                             </Border>
                             <Label Text="{Binding NameErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
                                    IsVisible="{Binding HasNameErrorMessage}" />
-                            <Button Text="Salvar nome" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
+                            <Button Text="{loc:Tr VaultSettings_SaveNameButton}" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
                                     Command="{Binding SaveNameCommand}" IsEnabled="{Binding CanInteract}" />
                         </VerticalStackLayout>
                     </Border>
@@ -74,23 +81,23 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="18">
 
-                            <views:FieldLabelView Text="PROTEÇÕES" HelpTopicId="vault.protections" />
+                            <views:FieldLabelView Text="{loc:Tr Protections_SectionLabel}" HelpTopicId="vault.protections" />
 
                             <VerticalStackLayout Spacing="6">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0" Text="Limpar a área de transferência"
+                                    <Label Grid.Column="0" Text="{loc:Tr Protections_ClipboardClearLabel}"
                                            TextColor="{StaticResource TextPrimaryDark}" FontSize="14" VerticalOptions="Center" />
                                     <Switch Grid.Column="1" IsToggled="{Binding ClipboardClearEnabled}"
                                             OnColor="{StaticResource Primary}" />
                                 </Grid>
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding ClipboardClearEnabled}">
-                                    <controls:SelectableChip Text="20s" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Protections_ClipboardChip20s}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="20"
                                             IsSelected="{Binding ClipboardClearSeconds, Converter={StaticResource EqualsConverter}, ConverterParameter=20}" />
-                                    <controls:SelectableChip Text="45s" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Protections_ClipboardChip45s}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="45"
                                             IsSelected="{Binding ClipboardClearSeconds, Converter={StaticResource EqualsConverter}, ConverterParameter=45}" />
-                                    <controls:SelectableChip Text="90s" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Protections_ClipboardChip90s}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectClipboardClearSecondsCommand}" CommandParameter="90"
                                             IsSelected="{Binding ClipboardClearSeconds, Converter={StaticResource EqualsConverter}, ConverterParameter=90}" />
                                 </HorizontalStackLayout>
@@ -100,31 +107,31 @@
 
                             <VerticalStackLayout Spacing="6">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0" Text="Bloqueio automático"
+                                    <Label Grid.Column="0" Text="{loc:Tr Protections_AutoLockLabel}"
                                            TextColor="{StaticResource TextPrimaryDark}" FontSize="14" VerticalOptions="Center" />
                                     <Switch Grid.Column="1" IsToggled="{Binding AutoLockEnabled}"
                                             OnColor="{StaticResource Primary}" />
                                 </Grid>
-                                <Label Text="Desligar deixa o cofre aberto indefinidamente em segundo plano."
+                                <Label Text="{loc:Tr Protections_AutoLockWarning}"
                                        TextColor="{StaticResource Danger}" FontSize="12"
                                        IsVisible="{Binding AutoLockEnabled, Converter={StaticResource InvertedBoolConverter}}" />
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding AutoLockEnabled}">
-                                    <controls:SelectableChip Text="1 min" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Protections_AutoLockChip1min}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="1"
                                             IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=1}" />
-                                    <controls:SelectableChip Text="2 min" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Protections_AutoLockChip2min}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="2"
                                             IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=2}" />
-                                    <controls:SelectableChip Text="5 min" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Protections_AutoLockChip5min}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="5"
                                             IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=5}" />
-                                    <controls:SelectableChip Text="15 min" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Protections_AutoLockChip15min}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectAutoLockMinutesCommand}" CommandParameter="15"
                                             IsSelected="{Binding AutoLockMinutes, Converter={StaticResource EqualsConverter}, ConverterParameter=15}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
-                            <Button Text="Salvar proteções" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
+                            <Button Text="{loc:Tr VaultSettings_SaveProtectionsButton}" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
                                     Command="{Binding SaveProtectionsCommand}" IsEnabled="{Binding CanInteract}" />
 
                         </VerticalStackLayout>
@@ -134,16 +141,16 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="18">
 
-                            <views:FieldLabelView Text="BACKUPS" HelpTopicId="vault.backups" />
+                            <views:FieldLabelView Text="{loc:Tr Backups_SectionLabel}" HelpTopicId="vault.backups" />
 
                             <VerticalStackLayout Spacing="6">
-                                <Label Text="Manter quantas versões"
+                                <Label Text="{loc:Tr Backups_RetentionQuestion}"
                                        TextColor="{StaticResource TextPrimaryDark}" FontSize="14" />
                                 <HorizontalStackLayout Spacing="8">
-                                    <controls:SelectableChip Text="Por quantidade" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Backups_ModeByCountChip}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectBackupRetentionModeCountCommand}"
                                             IsSelected="{Binding IsBackupRetentionByCount}" />
-                                    <controls:SelectableChip Text="Por tempo" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Backups_ModeByDaysChip}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectBackupRetentionModeDaysCommand}"
                                             IsSelected="{Binding IsBackupRetentionByDays}" />
                                 </HorizontalStackLayout>
@@ -164,29 +171,29 @@
                                 </HorizontalStackLayout>
 
                                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsBackupRetentionByDays}">
-                                    <controls:SelectableChip Text="3 dias" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Backups_DaysChip3}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="3"
                                             IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=3}" />
-                                    <controls:SelectableChip Text="5 dias" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Backups_DaysChip5}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="5"
                                             IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=5}" />
-                                    <controls:SelectableChip Text="15 dias" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Backups_DaysChip15}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="15"
                                             IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=15}" />
-                                    <controls:SelectableChip Text="30 dias" Style="{StaticResource FilterChipStyle}"
+                                    <controls:SelectableChip Text="{loc:Tr Backups_DaysChip30}" Style="{StaticResource FilterChipStyle}"
                                             Command="{Binding SelectBackupRetentionDaysCommand}" CommandParameter="30"
                                             IsSelected="{Binding BackupRetentionDays, Converter={StaticResource EqualsConverter}, ConverterParameter=30}" />
                                 </HorizontalStackLayout>
 
-                                <Label Text="Ao passar do limite de versões, a mais antiga é apagada. A versão mais recente nunca é apagada."
+                                <Label Text="{loc:Tr Backups_RetentionByCountNote}"
                                        TextColor="{StaticResource TextSecondaryDark}" FontSize="12"
                                        IsVisible="{Binding IsBackupRetentionByCount}" />
-                                <Label Text="Backups mais antigos que o limite escolhido são apagados. A versão mais recente nunca é apagada."
+                                <Label Text="{loc:Tr Backups_RetentionByDaysNote}"
                                        TextColor="{StaticResource TextSecondaryDark}" FontSize="12"
                                        IsVisible="{Binding IsBackupRetentionByDays}" />
                             </VerticalStackLayout>
 
-                            <Button Text="Salvar backups" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
+                            <Button Text="{loc:Tr VaultSettings_SaveBackupsButton}" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
                                     Command="{Binding SaveProtectionsCommand}" IsEnabled="{Binding CanInteract}" />
 
                         </VerticalStackLayout>
@@ -196,11 +203,11 @@
                     <Border Style="{StaticResource CardBorderStyle}" Padding="22" StrokeShape="RoundRectangle 20">
                         <VerticalStackLayout Spacing="14">
 
-                            <views:FieldLabelView Text="TROCAR SENHA MESTRA"
+                            <views:FieldLabelView Text="{loc:Tr VaultSettings_ChangePasswordTitle}"
                                                   HelpTopicId="vault.changeMasterUnlockCode" />
 
                             <VerticalStackLayout Spacing="8">
-                                <Label Text="SENHA ATUAL" Style="{StaticResource FieldLabelStyle}" />
+                                <Label Text="{loc:Tr VaultSettings_CurrentPasswordLabel}" Style="{StaticResource FieldLabelStyle}" />
                                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                     <Entry Text="{Binding CurrentPassword}" IsPassword="True"
@@ -210,18 +217,18 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Spacing="8">
-                                <Label Text="SENHA NOVA" Style="{StaticResource FieldLabelStyle}" />
+                                <Label Text="{loc:Tr VaultSettings_NewPasswordLabel}" Style="{StaticResource FieldLabelStyle}" />
                                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                     <Entry Text="{Binding NewPassword}" IsPassword="True"
-                                           Placeholder="Mínimo de 8 caracteres"
+                                           Placeholder="{loc:Tr Vault_MinPasswordPlaceholder}"
                                            TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
                                            BackgroundColor="Transparent" VerticalOptions="Center" />
                                 </Border>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Spacing="8">
-                                <Label Text="CONFIRMAR SENHA NOVA" Style="{StaticResource FieldLabelStyle}" />
+                                <Label Text="{loc:Tr VaultSettings_ConfirmNewPasswordLabel}" Style="{StaticResource FieldLabelStyle}" />
                                 <Border BackgroundColor="{StaticResource SurfaceDark}" Stroke="{StaticResource BorderDarkBrush}"
                                         StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="48">
                                     <Entry Text="{Binding ConfirmNewPassword}" IsPassword="True"
@@ -233,14 +240,14 @@
 
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                 <CheckBox Grid.Column="0" IsChecked="{Binding DeleteOldBackups}" Color="{StaticResource Primary}" />
-                                <Label Grid.Column="1" Text="Excluir os backups antigos deste cofre (continuam cifrados com a senha antiga)"
+                                <Label Grid.Column="1" Text="{loc:Tr VaultSettings_DeleteOldBackupsLabel}"
                                        TextColor="{StaticResource TextSecondaryDark}" FontSize="13" VerticalOptions="Center" />
                             </Grid>
 
                             <Label Text="{Binding PasswordErrorMessage}" TextColor="{StaticResource Danger}" FontSize="13"
                                    IsVisible="{Binding HasPasswordErrorMessage}" />
 
-                            <Button Text="Trocar senha" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
+                            <Button Text="{loc:Tr VaultSettings_ChangePasswordButton}" Style="{StaticResource PrimaryActionButtonStyle}" HeightRequest="46"
                                     Command="{Binding ChangePasswordCommand}" IsEnabled="{Binding CanInteract}" />
 
                         </VerticalStackLayout>

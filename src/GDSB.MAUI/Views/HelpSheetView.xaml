@@ -10,6 +10,7 @@
 -->
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
              x:Class="GDSB.MAUI.Views.HelpSheetView">
 
     <Grid x:Name="Overlay" IsVisible="False" BackgroundColor="#CC141414" Padding="20,44">
@@ -25,7 +26,7 @@
                     <VerticalStackLayout x:Name="BlocksHost" Spacing="14" />
                 </ScrollView>
 
-                <Button Grid.Row="2" Text="Entendi" Style="{StaticResource PrimaryActionButtonStyle}"
+                <Button Grid.Row="2" Text="{loc:Tr HelpSheet_DismissButton}" Style="{StaticResource PrimaryActionButtonStyle}"
                         Clicked="OnDismissClicked" />
 
             </Grid>
