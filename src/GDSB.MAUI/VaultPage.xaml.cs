@@ -1,4 +1,5 @@
-﻿using GDSB.MAUI.ViewModels;
+﻿using GDSB.MAUI.Services;
+using GDSB.MAUI.ViewModels;
 using GDSB.MAUI.Views;
 
 namespace GDSB.MAUI;
@@ -6,12 +7,14 @@ namespace GDSB.MAUI;
 public partial class VaultPage : ContentPage
 {
     private readonly VaultViewModel _viewModel;
+    private readonly ILocalizationService _localization;
     private CancellationTokenSource? _toastCts;
 
-    public VaultPage(VaultViewModel viewModel)
+    public VaultPage(VaultViewModel viewModel, ILocalizationService localization)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _localization = localization;
         BindingContext = _viewModel;
         _viewModel.ToastRequested += OnToastRequested;
         _viewModel.SecretCreated += OnSecretCreated;
@@ -75,12 +78,12 @@ public partial class VaultPage : ContentPage
     // gerado - mesmo caso de HasErrorMessage/CanInteract em VaultSettingsViewModel.
 #pragma warning disable S2325
     private async void OnSecretCreated(object? sender, EventArgs e)
-        => await SealOverlay.PlayAsync(LockSealMode.Create, "Segredo guardado", 760);
+        => await SealOverlay.PlayAsync(LockSealMode.Create, _localization.Get("Seal_SecretCreated"), 760);
 
     private async void OnSecretUpdated(object? sender, EventArgs e)
-        => await SealOverlay.PlayAsync(LockSealMode.Update, "Alterações salvas", 620);
+        => await SealOverlay.PlayAsync(LockSealMode.Update, _localization.Get("Seal_SettingsSaved"), 620);
 
     private async void OnSecretDeleted(object? sender, EventArgs e)
-        => await SealOverlay.PlayAsync(LockSealMode.Delete, "Segredo excluído", 740);
+        => await SealOverlay.PlayAsync(LockSealMode.Delete, _localization.Get("Seal_SecretDeleted"), 740);
 #pragma warning restore S2325
 }

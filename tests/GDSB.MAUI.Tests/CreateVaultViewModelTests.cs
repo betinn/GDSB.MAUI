@@ -16,17 +16,19 @@ namespace GDSB.MAUI.Tests
             public FakePreferencesService PreferencesService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
             public FakeVaultSessionService VaultSessionService { get; } = new();
+            public FakeLocalizationService LocalizationService { get; } = new();
             public CreateVaultViewModel ViewModel { get; }
 
             public Sut()
             {
-                var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
+                var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService, LocalizationService);
                 ViewModel = new CreateVaultViewModel(
                     ProfileFileService,
                     FilePickerService,
                     NavigationService,
                     BiometricUnlockService,
                     VaultSessionService,
+                    LocalizationService,
                     biometricOptIn);
             }
         }
@@ -41,7 +43,7 @@ namespace GDSB.MAUI.Tests
 
             await sut.ViewModel.CreateVaultCommand.ExecuteAsync(null);
 
-            Assert.Equal("A senha mestra precisa ter pelo menos 8 caracteres.", sut.ViewModel.ErrorMessage);
+            Assert.Equal("CreateVault_MinPasswordLengthMessage", sut.ViewModel.ErrorMessage);
             Assert.Empty(sut.ProfileFileService.SaveCalls);
         }
 
@@ -55,7 +57,15 @@ namespace GDSB.MAUI.Tests
 
             await sut.ViewModel.CreateVaultCommand.ExecuteAsync(null);
 
-            Assert.Equal("As senhas não coincidem.", sut.ViewModel.ErrorMessage);
+            Assert.Equal("Vault_PasswordsDoNotMatchMessage", sut.ViewModel.ErrorMessage);
+        }
+
+        [Fact]
+        public void NewViewModel_DefaultsVaultNameFromCatalog()
+        {
+            var sut = new Sut();
+
+            Assert.Equal("CreateVault_DefaultVaultName", sut.ViewModel.VaultName);
         }
 
         [Fact]

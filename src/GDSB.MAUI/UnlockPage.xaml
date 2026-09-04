@@ -39,16 +39,23 @@
                             BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderStrongDarkBrush}"
                             StrokeThickness="1" StrokeShape="RoundRectangle 17" Padding="12,0"
                             SemanticProperties.Description="{loc:Tr Unlock_LanguagePickerDescription}">
-                        <Picker ItemsSource="{Binding Language.Options}"
-                                ItemDisplayBinding="{Binding DisplayName}"
-                                SelectedItem="{Binding Language.Selected}"
-                                TextColor="{StaticResource TextSecondaryDark}"
-                                BackgroundColor="Transparent"
-                                FontSize="13"
-                                MinimumHeightRequest="34"
-                                MinimumWidthRequest="0"
-                                HorizontalTextAlignment="Center"
-                                VerticalOptions="Center" />
+                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                            <!-- Glifo do globo: puramente decorativo (o Picker ao lado já carrega a
+                                 descrição semântica da pílula inteira), por isso não entra no
+                                 catálogo - mesmo tratamento dos outros glifos do app (?, *, ←). -->
+                            <Label Text="&#127760;" FontSize="12" TextColor="{StaticResource TextSecondaryDark}"
+                                   VerticalOptions="Center" InputTransparent="True" />
+                            <Picker ItemsSource="{Binding Language.Options}"
+                                    ItemDisplayBinding="{Binding DisplayName}"
+                                    SelectedItem="{Binding Language.Selected}"
+                                    TextColor="{StaticResource TextSecondaryDark}"
+                                    BackgroundColor="Transparent"
+                                    FontSize="13"
+                                    MinimumHeightRequest="34"
+                                    MinimumWidthRequest="0"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                     </Border>
 
                     <!-- Porta de entrada do tutorial, não junto dos links de rodapé: quem não

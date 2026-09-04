@@ -1,3 +1,5 @@
+using GDSB.MAUI.Localization;
+
 namespace GDSB.MAUI.Views;
 
 public partial class FieldLabelView : ContentView
@@ -68,8 +70,10 @@ public partial class FieldLabelView : ContentView
 
     /// <summary>
     /// O "?" sozinho não diz nada para um leitor de tela - a descrição precisa citar o campo de
-    /// que ele fala.
+    /// que ele fala. Reavaliado a cada troca de Text (ver OnTextChanged) - como Text já chega
+    /// traduzido via binding "{loc:Tr}", isso também mantém esta descrição em dia numa troca de
+    /// idioma, sem assinar LanguageChanged à parte.
     /// </summary>
     private void RefreshHelpSemantics() =>
-        SemanticProperties.SetDescription(HelpAction, $"Ajuda sobre {Text}");
+        SemanticProperties.SetDescription(HelpAction, LocalizationServiceLocator.Resolve().Format("A11y_HelpAbout", Text));
 }

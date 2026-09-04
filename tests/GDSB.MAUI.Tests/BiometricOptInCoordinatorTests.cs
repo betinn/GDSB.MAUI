@@ -11,11 +11,12 @@ namespace GDSB.MAUI.Tests
             public FakeBiometricUnlockService BiometricUnlockService { get; } = new();
             public FakeAlertService AlertService { get; } = new();
             public FakePreferencesService PreferencesService { get; } = new();
+            public FakeLocalizationService LocalizationService { get; } = new();
             public BiometricOptInCoordinator Coordinator { get; }
 
             public Sut()
             {
-                Coordinator = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
+                Coordinator = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService, LocalizationService);
             }
         }
 

@@ -21,14 +21,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:GDSB.MAUI.Controls"
-    xmlns:views="clr-namespace:GDSB.MAUI.Views">
+    xmlns:views="clr-namespace:GDSB.MAUI.Views"
+    xmlns:loc="clr-namespace:GDSB.MAUI.Localization">
 
     <!-- ============ Cofre: criação e edição ============ -->
 
     <DataTemplate x:Key="HelpVisual.MasterUnlockCodeField">
         <VerticalStackLayout InputTransparent="True" Spacing="8">
             <HorizontalStackLayout Spacing="4">
-                <Label Text="SENHA MESTRA" Style="{StaticResource FieldLabelStyle}" VerticalOptions="Center" />
+                <Label Text="{loc:Tr Vault_MasterPasswordFieldLabel}" Style="{StaticResource FieldLabelStyle}" VerticalOptions="Center" />
                 <Label Text="*" Style="{StaticResource RequiredMarkStyle}" VerticalOptions="Center" />
             </HorizontalStackLayout>
             <Grid Padding="0,0,0,16">
@@ -47,12 +48,12 @@
             <Border Style="{StaticResource CardBorderStyle}" Padding="16" StrokeShape="RoundRectangle 16"
                     VerticalOptions="Start">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Salvar também num arquivo novo?" FontFamily="OpenSansSemibold" FontSize="14"
+                    <Label Text="{loc:Tr SaveAsNewFile_Title}" FontFamily="OpenSansSemibold" FontSize="14"
                            TextColor="{StaticResource TextPrimaryDark}" />
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Button Grid.Column="0" Text="Não, obrigado" Style="{StaticResource SecondaryActionButtonStyle}"
+                        <Button Grid.Column="0" Text="{loc:Tr SaveAsNewFile_DeclineButton}" Style="{StaticResource SecondaryActionButtonStyle}"
                                 FontSize="12" HeightRequest="40" />
-                        <Button Grid.Column="1" Text="Salvar como novo" Style="{StaticResource PrimaryActionButtonStyle}"
+                        <Button Grid.Column="1" Text="{loc:Tr HelpVisual_SaveAsNewFileShortButton}" Style="{StaticResource PrimaryActionButtonStyle}"
                                 FontSize="12" HeightRequest="40" />
                     </Grid>
                 </VerticalStackLayout>
@@ -64,9 +65,9 @@
     <DataTemplate x:Key="HelpVisual.ProtectionTimeChips">
         <Grid InputTransparent="True" Padding="0,0,0,20" HorizontalOptions="Start">
             <HorizontalStackLayout Spacing="8" VerticalOptions="Start">
-                <controls:SelectableChip Text="20s" Style="{StaticResource FilterChipStyle}" />
-                <controls:SelectableChip Text="45s" Style="{StaticResource FilterChipStyle}" IsSelected="True" />
-                <controls:SelectableChip Text="90s" Style="{StaticResource FilterChipStyle}" />
+                <controls:SelectableChip Text="{loc:Tr Protections_ClipboardChip20s}" Style="{StaticResource FilterChipStyle}" />
+                <controls:SelectableChip Text="{loc:Tr Protections_ClipboardChip45s}" Style="{StaticResource FilterChipStyle}" IsSelected="True" />
+                <controls:SelectableChip Text="{loc:Tr Protections_ClipboardChip90s}" Style="{StaticResource FilterChipStyle}" />
             </HorizontalStackLayout>
             <views:TapHintView HorizontalOptions="Start" VerticalOptions="Start" Margin="83,9,0,0" />
         </Grid>
@@ -75,8 +76,8 @@
     <DataTemplate x:Key="HelpVisual.BackupModeChips">
         <Grid InputTransparent="True" Padding="0,0,0,20" HorizontalOptions="Start">
             <HorizontalStackLayout Spacing="8" VerticalOptions="Start">
-                <controls:SelectableChip Text="Por quantidade" Style="{StaticResource FilterChipStyle}" IsSelected="True" />
-                <controls:SelectableChip Text="Por tempo" Style="{StaticResource FilterChipStyle}" />
+                <controls:SelectableChip Text="{loc:Tr Backups_ModeByCountChip}" Style="{StaticResource FilterChipStyle}" IsSelected="True" />
+                <controls:SelectableChip Text="{loc:Tr Backups_ModeByDaysChip}" Style="{StaticResource FilterChipStyle}" />
             </HorizontalStackLayout>
             <views:TapHintView HorizontalOptions="Start" VerticalOptions="Start" Margin="153,9,0,0" />
         </Grid>
@@ -86,7 +87,7 @@
         <Grid InputTransparent="True" Padding="0,0,0,16">
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalOptions="Start">
                 <CheckBox Grid.Column="0" IsChecked="True" Color="{StaticResource Primary}" VerticalOptions="Center" />
-                <Label Grid.Column="1" Text="Excluir os backups antigos deste cofre"
+                <Label Grid.Column="1" Text="{loc:Tr HelpVisual_DeleteOldBackupsLabel}"
                        TextColor="{StaticResource TextSecondaryDark}" FontSize="13" VerticalOptions="Center" />
             </Grid>
             <views:TapHintView HorizontalOptions="Start" VerticalOptions="Start" Margin="6,14,0,0" />
@@ -98,9 +99,9 @@
     <DataTemplate x:Key="HelpVisual.SecretUrlLink">
         <Grid InputTransparent="True" Padding="0,0,0,18">
             <VerticalStackLayout Spacing="2" VerticalOptions="Start">
-                <Label Text="Netflix" FontFamily="OpenSansSemibold" FontSize="15"
+                <Label Text="{loc:Tr HelpVisual_SampleItemName}" FontFamily="OpenSansSemibold" FontSize="15"
                        TextColor="{StaticResource TextPrimaryDark}" />
-                <Label Text="netflix.com" FontSize="13" TextColor="{StaticResource PrimaryDark}" />
+                <Label Text="{loc:Tr HelpVisual_SampleItemUrl}" FontSize="13" TextColor="{StaticResource PrimaryDark}" />
             </VerticalStackLayout>
             <views:TapHintView HorizontalOptions="Start" VerticalOptions="Start" Margin="16,20,0,0" />
         </Grid>
@@ -111,13 +112,13 @@
             <Border Style="{StaticResource CardBorderStyle}" VerticalOptions="Start">
                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
                     <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
-                        <Label Text="SENHA" Style="{StaticResource FieldLabelStyle}" />
+                        <Label Text="{loc:Tr ItemEditor_PasswordLabel}" Style="{StaticResource FieldLabelStyle}" />
                         <Label Text="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
                                TextColor="{StaticResource TextPrimaryDark}" FontSize="15" />
                     </VerticalStackLayout>
                     <Button Grid.Column="1" Text="&#128065;" BackgroundColor="{StaticResource SurfaceDark}"
                             WidthRequest="36" HeightRequest="36" Padding="0" FontSize="14" VerticalOptions="Center" />
-                    <Button Grid.Column="2" Text="Copiar" BackgroundColor="{StaticResource SurfaceDark}"
+                    <Button Grid.Column="2" Text="{loc:Tr Common_Copy}" BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimaryDark}" FontSize="12" HeightRequest="36"
                             VerticalOptions="Center" />
                 </Grid>
@@ -132,13 +133,13 @@
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <Border Grid.Column="0" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 11"
                             BackgroundColor="{StaticResource Tertiary}" StrokeThickness="0">
-                        <Label Text="N" TextColor="{StaticResource White}" FontFamily="OpenSansSemibold"
+                        <Label Text="{loc:Tr HelpVisual_SampleItemInitial}" TextColor="{StaticResource White}" FontFamily="OpenSansSemibold"
                                FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
-                        <Label Text="Netflix" FontFamily="OpenSansSemibold" FontSize="14.5"
+                        <Label Text="{loc:Tr HelpVisual_SampleItemName}" FontFamily="OpenSansSemibold" FontSize="14.5"
                                TextColor="{StaticResource TextPrimaryDark}" />
-                        <Label Text="netflix.com" FontSize="12" TextColor="{StaticResource TextSecondaryDark}" />
+                        <Label Text="{loc:Tr HelpVisual_SampleItemUrl}" FontSize="12" TextColor="{StaticResource TextSecondaryDark}" />
                     </VerticalStackLayout>
                     <Label Grid.Column="2" Text="&#9733;" FontSize="20" TextColor="{StaticResource FavoriteGold}"
                            VerticalOptions="Center" />
@@ -154,18 +155,18 @@
     <DataTemplate x:Key="HelpVisual.BackupCard">
         <Border InputTransparent="True" Style="{StaticResource CardBorderStyle}">
             <VerticalStackLayout Spacing="6">
-                <Label Text="Cofre pessoal" FontFamily="OpenSansSemibold" FontSize="14"
+                <Label Text="{loc:Tr HelpVisual_SampleVaultName}" FontFamily="OpenSansSemibold" FontSize="14"
                        TextColor="{StaticResource TextPrimaryDark}" />
-                <Label Text="BKP - Cofre pessoal.GDSBX - 2026-09-02 14-30-12.bak" FontSize="12"
+                <Label Text="{loc:Tr HelpVisual_SampleBackupFileName}" FontSize="12"
                        TextColor="{StaticResource TextSecondaryDark}" LineBreakMode="HeadTruncation" MaxLines="1" />
                 <Label FontSize="12" TextColor="{StaticResource TextMutedDark}">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="02/09/2026 14:30" />
+                            <Span Text="{loc:Tr HelpVisual_SampleBackupDate}" />
                             <Span Text="  &#183;  " />
-                            <Span Text="12 KB" />
+                            <Span Text="{loc:Tr HelpVisual_SampleBackupSize}" />
                             <Span Text="  &#183;  " />
-                            <Span Text="Automático" />
+                            <Span Text="{loc:Tr HelpVisual_SampleBackupKind}" />
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
@@ -175,7 +176,7 @@
 
     <DataTemplate x:Key="HelpVisual.RestoreButton">
         <Grid InputTransparent="True" Padding="0,0,0,18" HorizontalOptions="Start">
-            <Button Text="Restaurar" Style="{StaticResource SecondaryActionButtonStyle}"
+            <Button Text="{loc:Tr BackupRecovery_RestoreButton}" Style="{StaticResource SecondaryActionButtonStyle}"
                     WidthRequest="150" HeightRequest="42" VerticalOptions="Start" />
             <views:TapHintView HorizontalOptions="Start" VerticalOptions="Start" Margin="58,14,0,0" />
         </Grid>
@@ -183,7 +184,7 @@
 
     <DataTemplate x:Key="HelpVisual.DeleteBackupButton">
         <Grid InputTransparent="True" Padding="0,0,0,18" HorizontalOptions="Start">
-            <Button Text="Excluir" HeightRequest="42" WidthRequest="150" VerticalOptions="Start"
+            <Button Text="{loc:Tr Common_Delete}" HeightRequest="42" WidthRequest="150" VerticalOptions="Start"
                     BackgroundColor="Transparent" TextColor="{StaticResource Danger}"
                     BorderColor="{StaticResource Danger}" BorderWidth="1" CornerRadius="12"
                     FontFamily="OpenSansSemibold" FontSize="14" />
@@ -193,7 +194,7 @@
 
     <DataTemplate x:Key="HelpVisual.DeleteAllBackupsLink">
         <Grid InputTransparent="True" Padding="0,0,0,18" HorizontalOptions="Start">
-            <Label Text="Excluir todos os backups" TextColor="{StaticResource Danger}" FontSize="13"
+            <Label Text="{loc:Tr BackupRecovery_DeleteAllLink}" TextColor="{StaticResource Danger}" FontSize="13"
                    VerticalOptions="Start" />
             <views:TapHintView HorizontalOptions="Start" VerticalOptions="Start" Margin="58,8,0,0" />
         </Grid>

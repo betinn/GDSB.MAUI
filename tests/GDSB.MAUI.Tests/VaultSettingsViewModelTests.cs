@@ -28,11 +28,12 @@ namespace GDSB.MAUI.Tests
             public FakeVaultBackupStore BackupStore { get; } = new();
             public FakeAlertService AlertService { get; } = new();
             public FakePreferencesService PreferencesService { get; } = new();
+            public FakeLocalizationService LocalizationService { get; } = new();
             public VaultSettingsViewModel ViewModel { get; }
 
             public Sut()
             {
-                var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService);
+                var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService, LocalizationService);
                 ViewModel = new VaultSettingsViewModel(
                     new VaultAccess(ProfileFileService, VaultSessionService),
                     FilePickerService,
@@ -40,6 +41,7 @@ namespace GDSB.MAUI.Tests
                     BiometricUnlockService,
                     BackupStore,
                     AlertService,
+                    LocalizationService,
                     biometricOptIn);
 
                 // Por padrão, reabrir com a senha atual (usado na validação da troca de senha) dá certo.
@@ -186,7 +188,7 @@ namespace GDSB.MAUI.Tests
 
             await sut.ViewModel.ChangePasswordCommand.ExecuteAsync(null);
 
-            Assert.Equal("Senha atual incorreta.", sut.ViewModel.PasswordErrorMessage);
+            Assert.Equal("VaultSettings_WrongCurrentPasswordMessage", sut.ViewModel.PasswordErrorMessage);
             Assert.Empty(sut.ProfileFileService.SaveCalls);
         }
 

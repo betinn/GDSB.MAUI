@@ -17,6 +17,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
+             xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
              x:Class="GDSB.MAUI.Views.OnboardingView">
 
     <Grid IsVisible="{Binding IsVisible}" BackgroundColor="#CC141414" Padding="24,40">
@@ -37,12 +38,12 @@
                             <VerticalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
                                 <GraphicsView x:Name="VaultFileMark" WidthRequest="52" HeightRequest="52"
                                               HorizontalOptions="Center" />
-                                <Label Text="meu-cofre.GDSBX" FontSize="10"
+                                <Label Text="{loc:Tr Onboarding_Slide1SampleFileName}" FontSize="10"
                                        TextColor="{StaticResource TextSecondaryDark}"
                                        HorizontalOptions="Center" />
                             </VerticalStackLayout>
                         </Border>
-                        <Label Text="Um arquivo seu, guardado onde você quiser"
+                        <Label Text="{loc:Tr Onboarding_Slide1Caption}"
                                FontSize="11.5" TextColor="{StaticResource TextMutedDark}"
                                HorizontalOptions="Center" HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
@@ -52,13 +53,13 @@
                                          IsVisible="{Binding CurrentIndex, Converter={StaticResource EqualsConverter}, ConverterParameter=1}">
                         <Border Style="{StaticResource HelpVisualFrameStyle}" HorizontalOptions="Center">
                             <Grid InputTransparent="True" Padding="0,0,0,20">
-                                <Label Text="Criar um cofre novo" TextColor="{StaticResource PrimaryDark}"
+                                <Label Text="{loc:Tr Unlock_CreateVaultLink}" TextColor="{StaticResource PrimaryDark}"
                                        FontSize="14" VerticalOptions="Start" HorizontalOptions="Center" />
                                 <views:TapHintView HorizontalOptions="Center" VerticalOptions="Start"
                                                    Margin="0,10,0,0" />
                             </Grid>
                         </Border>
-                        <Label Text="É este link, logo abaixo do cartão de senha"
+                        <Label Text="{loc:Tr Onboarding_Slide2Caption}"
                                FontSize="11.5" TextColor="{StaticResource TextMutedDark}"
                                HorizontalOptions="Center" HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
@@ -74,7 +75,7 @@
                                                            Spacing="9" InputTransparent="True">
                                         <GraphicsView x:Name="BiometricSampleIcon" WidthRequest="18" HeightRequest="18"
                                                       VerticalOptions="Center" />
-                                        <Label Text="Desbloquear com biometria" TextColor="{StaticResource White}"
+                                        <Label Text="{loc:Tr Unlock_UnlockWithBiometricButton}" TextColor="{StaticResource White}"
                                                FontFamily="OpenSansSemibold" FontSize="14" VerticalOptions="Center" />
                                     </HorizontalStackLayout>
                                 </Grid>
@@ -82,7 +83,7 @@
                                                    Margin="0,18,0,0" />
                             </Grid>
                         </Border>
-                        <Label Text="Aparece no lugar do campo de senha depois que você liga a digital"
+                        <Label Text="{loc:Tr Onboarding_Slide3Caption}"
                                FontSize="11.5" TextColor="{StaticResource TextMutedDark}"
                                HorizontalOptions="Center" HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
@@ -106,7 +107,7 @@
                 <VerticalStackLayout Grid.Row="3" Spacing="10">
                     <Button Text="{Binding AdvanceButtonText}" Style="{StaticResource PrimaryActionButtonStyle}"
                             Command="{Binding AdvanceCommand}" />
-                    <Button Text="Pular" Style="{StaticResource SecondaryActionButtonStyle}"
+                    <Button Text="{loc:Tr Onboarding_SkipButton}" Style="{StaticResource SecondaryActionButtonStyle}"
                             Command="{Binding SkipCommand}" IsVisible="{Binding ShowSkip}" />
                 </VerticalStackLayout>
 

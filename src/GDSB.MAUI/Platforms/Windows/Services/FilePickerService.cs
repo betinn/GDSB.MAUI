@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GDSB.MAUI.Interfaces;
+using GDSB.MAUI.Services;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 
@@ -12,6 +13,12 @@ namespace GDSB.MAUI.Platforms.Windows.Services
 {
     public class FilePickerService : IFilePickerService
     {
+        private readonly ILocalizationService _localization;
+
+        public FilePickerService(ILocalizationService localization)
+        {
+            _localization = localization;
+        }
 
         public async Task<PickedFile?> PickFileNameAsync()
         {
@@ -30,7 +37,7 @@ namespace GDSB.MAUI.Platforms.Windows.Services
             var picker = new FileSavePicker();
             picker.SuggestedFileName = Path.GetFileNameWithoutExtension(suggestedName);
             picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            picker.FileTypeChoices.Add("Arquivo GDSB", new List<string> { ".GDSBX" });
+            picker.FileTypeChoices.Add(_localization.Get("Platform_WindowsFileTypeLabel"), new List<string> { ".GDSBX" });
 
             var hwnd = ((MauiWinUIWindow)App.Current.Windows[0].Handler.PlatformView).WindowHandle;
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);

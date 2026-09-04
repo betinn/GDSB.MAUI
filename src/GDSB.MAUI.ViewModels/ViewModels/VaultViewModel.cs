@@ -3,12 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Entities;
 using GDSB.Domain.Interfaces;
 using GDSB.MAUI.Constants;
+using GDSB.MAUI.Localization;
 using GDSB.MAUI.Services;
 using System.Collections.ObjectModel;
 
 namespace GDSB.MAUI.ViewModels
 {
-    public partial class VaultViewModel : ObservableObject, IQueryAttributable
+    public partial class VaultViewModel : LocalizedObject, IQueryAttributable
     {
         private readonly IClipboardService _clipboardService;
         private readonly IAlertService _alertService;
@@ -27,7 +28,9 @@ namespace GDSB.MAUI.ViewModels
             IProfileFileService profileFileService,
             INavigationService navigationService,
             IAppLauncherService appLauncherService,
-            IVaultSessionService vaultSessionService)
+            IVaultSessionService vaultSessionService,
+            ILocalizationService localizationService)
+            : base(localizationService)
         {
             _clipboardService = clipboardService;
             _alertService = alertService;
@@ -130,7 +133,7 @@ namespace GDSB.MAUI.ViewModels
 
         public string ConfirmDeleteMessage => SelectedItem is null
             ? string.Empty
-            : $"Excluir \"{SelectedItem.BoxName}\" do cofre? Essa ação não pode ser desfeita.";
+            : Localization.Format("Vault_ConfirmDeleteMessage", SelectedItem.BoxName);
 
         public bool IsCompactLayout => !IsWideLayout;
 
@@ -157,7 +160,7 @@ namespace GDSB.MAUI.ViewModels
 
         public bool ShowEmptyState => !ShowItemEditor;
 
-        public string EditorHeaderTitle => SelectedItem is null ? "Novo item" : SelectedItem.BoxName;
+        public string EditorHeaderTitle => SelectedItem is null ? Localization.Get("Vault_NewItemTitle") : SelectedItem.BoxName;
 
         public string EditorHeaderInitial => SelectedItem?.Initial ?? "+";
 #pragma warning restore S2325
@@ -302,7 +305,7 @@ namespace GDSB.MAUI.ViewModels
             }
             catch (Exception)
             {
-                await _alertService.DisplayAlertAsync(null, "Não foi possível salvar o cofre. Tente novamente.", "Ok");
+                await _alertService.DisplayAlertAsync(null, Localization.Get("Vault_GenericSaveErrorMessage"), Localization.Get("Common_Ok"));
                 return false;
             }
             finally
@@ -383,13 +386,13 @@ namespace GDSB.MAUI.ViewModels
         {
             if (string.IsNullOrWhiteSpace(EditBoxName))
             {
-                ValidationError = "Informe um nome para o item.";
+                ValidationError = Localization.Get("Vault_NameValidationMessage");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(EditPassword))
             {
-                ValidationError = "Informe a senha do item.";
+                ValidationError = Localization.Get("Vault_PasswordValidationMessage");
                 return;
             }
 
@@ -493,7 +496,7 @@ namespace GDSB.MAUI.ViewModels
                 return;
 
             await _clipboardService.SetTextAsync(item.User);
-            ToastRequested?.Invoke(this, "Usuário copiado");
+            ToastRequested?.Invoke(this, Localization.Get("Vault_UserCopiedToast"));
         }
 
         [RelayCommand]
@@ -503,7 +506,7 @@ namespace GDSB.MAUI.ViewModels
                 return;
 
             await _clipboardService.SetTextAsync(item.Pass);
-            ToastRequested?.Invoke(this, "Senha copiada");
+            ToastRequested?.Invoke(this, Localization.Get("Vault_PasswordCopiedToast"));
         }
 
         [RelayCommand]
@@ -519,7 +522,7 @@ namespace GDSB.MAUI.ViewModels
             }
             catch (Exception ex)
             {
-                await _alertService.DisplayAlertAsync(null, $"Erro ao tentar abrir {item.Url}: {ex.Message}", "Ok");
+                await _alertService.DisplayAlertAsync(null, Localization.Format("Vault_OpenUrlErrorMessage", item.Url, ex.Message), Localization.Get("Common_Ok"));
             }
         }
     }

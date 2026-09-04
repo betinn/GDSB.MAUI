@@ -5,6 +5,7 @@ using AndroidX.Biometric;
 using AndroidX.Core.Content;
 using AndroidX.Fragment.App;
 using GDSB.Domain.Interfaces;
+using GDSB.MAUI.Services;
 using Java.Security;
 using Javax.Crypto;
 using Javax.Crypto.Spec;
@@ -27,6 +28,13 @@ namespace GDSB.MAUI.Platforms.Android.Services
         private const string PrefsName = "gdsb_biometric";
         private const string IvPrefKey = "iv";
         private const string CiphertextPrefKey = "ciphertext";
+
+        private readonly ILocalizationService _localization;
+
+        public BiometricUnlockService(ILocalizationService localization)
+        {
+            _localization = localization;
+        }
 
         public Task<bool> IsAvailableAsync()
         {
@@ -52,7 +60,8 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 var cipher = Cipher.GetInstance(Transformation);
                 cipher.Init(CipherMode.EncryptMode, key);
 
-                var authenticatedCipher = await AuthenticateAsync(activity, cipher, "Confirme sua biometria para ativar o desbloqueio rápido");
+                var authenticatedCipher = await AuthenticateAsync(
+                    activity, cipher, _localization.Get("Platform_BiometricActivateSubtitle"), _localization.Get("Platform_BiometricNegativeButton"));
                 if (authenticatedCipher is null)
                     return false;
 
@@ -95,7 +104,8 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 var iv = Convert.FromBase64String(ivBase64);
                 cipher.Init(CipherMode.DecryptMode, key, new GCMParameterSpec(GcmTagLengthBits, iv));
 
-                var authenticatedCipher = await AuthenticateAsync(activity, cipher, "Use sua biometria para abrir o cofre");
+                var authenticatedCipher = await AuthenticateAsync(
+                    activity, cipher, _localization.Get("Platform_BiometricUnlockSubtitle"), _localization.Get("Platform_BiometricNegativeButton"));
                 if (authenticatedCipher is null)
                     return null;
 
@@ -162,7 +172,9 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
         // Devolve o Cipher já autorizado (mesma instância passada em CryptoObject) depois de uma
         // biometria bem-sucedida, ou null se o usuário cancelar/errar ou o prompt der erro.
-        private static async Task<Cipher?> AuthenticateAsync(FragmentActivity activity, Cipher cipher, string subtitle)
+        // negativeButtonText entra como parâmetro (em vez de ler _localization aqui) só para poder
+        // continuar static, como o resto dos métodos auxiliares desta classe.
+        private static async Task<Cipher?> AuthenticateAsync(FragmentActivity activity, Cipher cipher, string subtitle, string negativeButtonText)
         {
             // BiometricPrompt.Authenticate chamado antes da janela ter foco (ex.: disparado sozinho
             // assim que a UnlockPage aparece, seja na abertura do app ou voltando de background)
@@ -181,7 +193,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 var promptInfo = new BiometricPrompt.PromptInfo.Builder()
                     .SetTitle("GDSB")
                     .SetSubtitle(subtitle)
-                    .SetNegativeButtonText("Usar senha")
+                    .SetNegativeButtonText(negativeButtonText)
                     .SetAllowedAuthenticators((int)BiometricManager.Authenticators.BiometricStrong)
                     .Build();
 

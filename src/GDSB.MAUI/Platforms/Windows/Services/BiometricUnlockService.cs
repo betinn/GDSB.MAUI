@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using GDSB.Domain.Interfaces;
+using GDSB.MAUI.Services;
 using Microsoft.Maui.Storage;
 using Windows.Security.Credentials.UI;
 
@@ -13,8 +14,17 @@ namespace GDSB.MAUI.Platforms.Windows.Services
     public class BiometricUnlockService : IBiometricUnlockService
     {
         private const string FileName = "biometric-unlock.bin";
-        private const string ActivateMessage = "Confirme sua identidade para ativar o desbloqueio rápido do GDSB.";
-        private const string UnlockMessage = "Use o Windows Hello para abrir o cofre.";
+
+        private readonly ILocalizationService _localization;
+
+        public BiometricUnlockService(ILocalizationService localization)
+        {
+            _localization = localization;
+        }
+
+        private string ActivateMessage => _localization.Get("Platform_WindowsBiometricActivateMessage");
+
+        private string UnlockMessage => _localization.Get("Platform_WindowsBiometricUnlockMessage");
 
         public async Task<bool> IsAvailableAsync()
         {

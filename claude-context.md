@@ -132,10 +132,10 @@ está lendo a tela, não propriedade do arquivo.
 |---|------|------------|--------|-----|
 | 0 | Contexto e plano (este arquivo + artifact) | — | ✅ Concluída | — |
 | 1 | Infra de idioma + seleção na home | — | ✅ Concluída | [#23](https://github.com/betinn/GDSB.MAUI/pull/23) |
-| 2 | Migração do XAML restante | 1 | ⬜ A fazer | — |
-| 3 | Migração dos ViewModels | 1 | ⬜ A fazer | — |
-| 4 | Ajuda (`HelpTopics`) e tutorial | 1 | ⬜ A fazer | — |
-| 5 | Fechamento (revisão do inglês, README, contexto, build) | 2, 3, 4 | ⬜ A fazer | — |
+| 2 | Migração do XAML restante | 1 | ✅ Concluída | [#24](https://github.com/betinn/GDSB.MAUI/pull/24) |
+| 3 | Migração dos ViewModels | 1 | ✅ Concluída | [#24](https://github.com/betinn/GDSB.MAUI/pull/24) |
+| 4 | Ajuda (`HelpTopics`) e tutorial | 1 | ✅ Concluída | [#24](https://github.com/betinn/GDSB.MAUI/pull/24) |
+| 5 | Fechamento (revisão do inglês, README, contexto, build) | 2, 3, 4 | ✅ Concluída | [#24](https://github.com/betinn/GDSB.MAUI/pull/24) |
 
 Dependências:
 

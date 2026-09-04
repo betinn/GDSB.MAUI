@@ -1,5 +1,3 @@
-using GDSB.MAUI.Services;
-
 namespace GDSB.MAUI.Localization
 {
     // Ponte entre "{loc:Tr Chave}" no XAML e o catálogo. Devolve um BindingBase (não uma string
@@ -19,23 +17,9 @@ namespace GDSB.MAUI.Localization
 
         public BindingBase ProvideValue(IServiceProvider serviceProvider)
         {
-            var localizationService = Source ?? ResolveLocalizationServiceFromPlatformApplication();
+            var localizationService = Source ?? (object)LocalizationServiceLocator.Resolve();
 
             return new Binding($"[{Key}]", BindingMode.OneWay, source: localizationService);
-        }
-
-        // "?? throw" em vez de "!": prova a não-nulidade pro compilador sem um null-forgiving
-        // operator (que o SonarCloud aponta como redundante aqui, apesar do compilador continuar
-        // exigindo a checagem - IPlatformApplication.Current é anulável de verdade) e falha com uma
-        // mensagem clara em vez de NullReferenceException, no caso extremo de o markup extension
-        // avaliar antes do host da plataforma estar pronto. Em método próprio pra continuar só
-        // sendo chamado quando Source não foi setado, preservando o curto-circuito do "??" de cima.
-        private static object ResolveLocalizationServiceFromPlatformApplication()
-        {
-            var platformApplication = IPlatformApplication.Current
-                ?? throw new InvalidOperationException("IPlatformApplication.Current não está definido.");
-
-            return platformApplication.Services.GetRequiredService<ILocalizationService>();
         }
 
         object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider) => ProvideValue(serviceProvider);

@@ -42,6 +42,11 @@ preservado como backup — nunca ao lado do cofre, ver "Backups" abaixo.
 - **Desbloqueio:** escolher o arquivo do cofre vem antes da senha mestra — o campo de senha só
   habilita depois de um arquivo selecionado. Não se aplica ao modo com biometria ligada, onde o
   bloco manual inteiro dá lugar a um único botão mirando o último cofre aberto.
+- **Idioma configurável.** Um dropdown na tela inicial troca entre português do Brasil (padrão) e
+  inglês na hora, sem reiniciar o app — a escolha é gravada em `Preferences` e vale para toda a
+  interface, incluindo os painéis de ajuda e o tutorial de primeiro acesso. Datas e números seguem
+  o idioma; nomes de arquivo (cofre e backup) continuam sempre no mesmo formato, para um backup
+  gravado num idioma continuar sendo reconhecido depois de trocar para outro.
 - **Backups.** Antes de cada gravação, a versão anterior do cofre é salva automaticamente num
   diretório próprio do app (`vault-backups`, dentro de `FileSystem.AppDataDirectory`) — nunca mais
   ao lado do arquivo original, nem no Windows, o que evita que o backup apareça sincronizado junto

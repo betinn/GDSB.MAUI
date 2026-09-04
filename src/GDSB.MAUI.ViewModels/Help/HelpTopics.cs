@@ -1,3 +1,6 @@
+using System.Globalization;
+using GDSB.MAUI.ViewModels.Resources;
+
 namespace GDSB.MAUI.Help
 {
     // Catálogo único do texto de ajuda do app, inteiro. Fica aqui, e não no XAML, por três motivos:
@@ -13,6 +16,14 @@ namespace GDSB.MAUI.Help
     // S2068 do Sonar flagra a declaração de qualquer campo com esses nomes e valor literal como
     // "credencial no código", mesmo quando o valor é só um identificador. Mesmo motivo do
     // VaultUnlockCode dos testes - ver claude-context.md.
+    //
+    // A prosa (Title, Text/Heading, Caption) vem do catálogo (AppStrings), lida na cultura vigente -
+    // por isso All não é mais materializado uma vez num inicializador estático: rodada 4 (multilíngue)
+    // precisa que o mesmo tópico saia diferente depois de uma troca de idioma. Como ler o
+    // ResourceManager de novo pra cada um dos 48 textos toda vez que um "?" abre seria trabalho à
+    // toa, o resultado fica em cache por cultura (só duas culturas existem - ver AppLanguage - então
+    // o cache nunca cresce fora de controle e não precisa de invalidação: a próxima leitura na
+    // cultura vigente já bate no cache dela).
     public static class HelpTopics
     {
         public static class Ids
@@ -28,192 +39,133 @@ namespace GDSB.MAUI.Help
             public const string BackupRecovery = "backup.recovery";
         }
 
-        public static IReadOnlyList<HelpTopic> All { get; } =
+        private static readonly Dictionary<string, IReadOnlyList<HelpTopic>> TopicsByCulture = new();
+        private static readonly Dictionary<string, Dictionary<string, HelpTopic>> ByIdByCulture = new();
+
+        public static IReadOnlyList<HelpTopic> All => GetTopicsForCurrentCulture();
+
+        public static bool TryGet(string id, out HelpTopic topic) =>
+            GetByIdForCurrentCulture().TryGetValue(id, out topic!);
+
+        private static IReadOnlyList<HelpTopic> GetTopicsForCurrentCulture()
+        {
+            var cultureKey = CultureInfo.CurrentUICulture.Name;
+            if (TopicsByCulture.TryGetValue(cultureKey, out var cached))
+                return cached;
+
+            var topics = BuildTopics();
+            TopicsByCulture[cultureKey] = topics;
+            ByIdByCulture[cultureKey] = topics.ToDictionary(topic => topic.Id, StringComparer.Ordinal);
+            return topics;
+        }
+
+        private static Dictionary<string, HelpTopic> GetByIdForCurrentCulture()
+        {
+            GetTopicsForCurrentCulture();
+            return ByIdByCulture[CultureInfo.CurrentUICulture.Name];
+        }
+
+        private static string Tr(string key) =>
+            AppStrings.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? key;
+
+        private static IReadOnlyList<HelpTopic> BuildTopics() =>
         [
             new HelpTopic(
                 Ids.MasterUnlockCode,
-                "A senha mestra",
+                Tr("Help_MasterUnlockCode_Title"),
                 [
-                    HelpBlock.OfText(
-                        "É a senha que abre este cofre. Ela não fica guardada em lugar nenhum: nem no app, " +
-                        "nem no seu celular, nem na internet. Por isso não existe \"esqueci minha senha\" " +
-                        "aqui - se você perder essa senha, ninguém consegue abrir o arquivo de novo, nem " +
-                        "você, nem quem fez o app."),
-                    HelpBlock.OfText(
-                        "Escolha algo que você lembre com folga e que ninguém adivinhe. O mínimo são 8 " +
-                        "caracteres, mas quanto mais longa, melhor."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.MasterUnlockCodeField,
-                        "É este campo. Toque nele e digite - as letras aparecem como pontinhos para " +
-                        "ninguém ler por cima do seu ombro."),
+                    HelpBlock.OfText(Tr("Help_MasterUnlockCode_Text1")),
+                    HelpBlock.OfText(Tr("Help_MasterUnlockCode_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.MasterUnlockCodeField, Tr("Help_MasterUnlockCode_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.VaultName,
-                "O nome do cofre",
+                Tr("Help_VaultName_Title"),
                 [
-                    HelpBlock.OfText(
-                        "É o apelido que aparece dentro do app para você reconhecer este cofre. Trocar o " +
-                        "nome aqui não renomeia o arquivo que está salvo no seu celular ou na nuvem: o " +
-                        "arquivo continua com o nome de antes."),
-                    HelpBlock.OfText(
-                        "Por isso, depois de salvar um nome novo, o app oferece guardar também uma cópia " +
-                        "num arquivo novo. É opcional - se você recusar, está tudo certo, a mudança já foi " +
-                        "gravada no arquivo de sempre."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.SaveAsNewFileCard,
-                        "É este convite que aparece depois de salvar. Tocar em \"Salvar como novo arquivo\" " +
-                        "cria uma cópia e mantém o original intacto."),
+                    HelpBlock.OfText(Tr("Help_VaultName_Text1")),
+                    HelpBlock.OfText(Tr("Help_VaultName_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.SaveAsNewFileCard, Tr("Help_VaultName_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.VaultProtections,
-                "Proteções do cofre",
+                Tr("Help_VaultProtections_Title"),
                 [
-                    HelpBlock.OfHeading("Limpar a área de transferência"),
-                    HelpBlock.OfText(
-                        "Quando você copia uma senha, ela fica na memória de \"copiar e colar\" do celular e " +
-                        "qualquer outro aplicativo pode ler de lá. Com esta proteção ligada, o app apaga " +
-                        "esse valor sozinho depois do tempo que você escolher."),
-                    HelpBlock.OfHeading("Bloqueio automático"),
-                    HelpBlock.OfText(
-                        "Se você sair do app e demorar para voltar, ele fecha o cofre e pede a senha mestra " +
-                        "de novo. Serve para o caso de você deixar o celular na mesa e alguém pegar."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.ProtectionTimeChips,
-                        "Toque em um dos tempos para escolher. O que estiver colorido é o que está valendo."),
+                    HelpBlock.OfHeading(Tr("Help_VaultProtections_Heading1")),
+                    HelpBlock.OfText(Tr("Help_VaultProtections_Text1")),
+                    HelpBlock.OfHeading(Tr("Help_VaultProtections_Heading2")),
+                    HelpBlock.OfText(Tr("Help_VaultProtections_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.ProtectionTimeChips, Tr("Help_VaultProtections_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.VaultBackups,
-                "Backups automáticos",
+                Tr("Help_VaultBackups_Title"),
                 [
-                    HelpBlock.OfText(
-                        "Toda vez que você salva alguma coisa, o app guarda antes uma cópia de como o cofre " +
-                        "estava. Assim, se você apagar um item sem querer, dá para voltar atrás."),
-                    HelpBlock.OfText(
-                        "Aqui você decide quantas dessas cópias ficam guardadas. \"Por quantidade\" guarda um " +
-                        "número fixo de versões. \"Por tempo\" guarda as dos últimos dias que você escolher. " +
-                        "A cópia mais recente nunca é apagada, aconteça o que acontecer."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.BackupModeChips,
-                        "Toque em \"Por quantidade\" ou \"Por tempo\" para escolher a regra. Logo abaixo " +
-                        "aparecem os valores disponíveis."),
+                    HelpBlock.OfText(Tr("Help_VaultBackups_Text1")),
+                    HelpBlock.OfText(Tr("Help_VaultBackups_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.BackupModeChips, Tr("Help_VaultBackups_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.ChangeMasterUnlockCode,
-                "Trocar a senha mestra",
+                Tr("Help_ChangeMasterUnlockCode_Title"),
                 [
-                    HelpBlock.OfText(
-                        "Para trocar, o app pede a senha atual primeiro - é assim que ele confere que é " +
-                        "você mesmo. Depois da troca, é a senha nova que abre este cofre."),
-                    HelpBlock.OfText(
-                        "Atenção com os backups: as cópias guardadas antes da troca continuam presas à " +
-                        "senha antiga. Se um dia você precisar restaurar uma delas, é a senha antiga que " +
-                        "vai funcionar, não a nova. Por isso vale anotar a antiga em algum lugar seguro, " +
-                        "ou marcar a caixa que apaga essas cópias de uma vez."),
-                    HelpBlock.OfText(
-                        "Se você usa a digital para abrir o cofre, não precisa fazer nada: o app reconfigura " +
-                        "a biometria sozinho com a senha nova."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.DeleteOldBackupsCheck,
-                        "Marque esta caixa se você não quer guardar cópias que só abrem com a senha antiga."),
+                    HelpBlock.OfText(Tr("Help_ChangeMasterUnlockCode_Text1")),
+                    HelpBlock.OfText(Tr("Help_ChangeMasterUnlockCode_Text2")),
+                    HelpBlock.OfText(Tr("Help_ChangeMasterUnlockCode_Text3")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.DeleteOldBackupsCheck, Tr("Help_ChangeMasterUnlockCode_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.SecretUrl,
-                "O endereço do site",
+                Tr("Help_SecretUrl_Title"),
                 [
-                    HelpBlock.OfText(
-                        "É opcional, mas ajuda bastante: quando você preenche, o endereço vira um atalho no " +
-                        "cartão do item. Um toque e o site abre no navegador, sem você precisar digitar."),
-                    HelpBlock.OfText(
-                        "Pode escrever do jeito simples, como \"netflix.com\" - não precisa colocar o " +
-                        "\"https://\" na frente."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.SecretUrlLink,
-                        "Fica logo abaixo do nome do item, em rosa. Tocar nele abre o site."),
+                    HelpBlock.OfText(Tr("Help_SecretUrl_Text1")),
+                    HelpBlock.OfText(Tr("Help_SecretUrl_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.SecretUrlLink, Tr("Help_SecretUrl_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.SecretStoredValue,
-                "A senha guardada",
+                Tr("Help_SecretStoredValue_Title"),
                 [
-                    HelpBlock.OfText(
-                        "É a senha daquele site ou aplicativo - a que você usaria para entrar. Ela fica " +
-                        "escondida atrás de pontinhos e só aparece quando você pede."),
-                    HelpBlock.OfText(
-                        "Na hora de usar, você tem duas opções: o olhinho mostra a senha na tela, e " +
-                        "\"Copiar\" manda ela direto para o \"colar\" do celular, sem precisar mostrar para " +
-                        "ninguém. Se a proteção de área de transferência estiver ligada, o app apaga o " +
-                        "valor copiado sozinho depois de alguns segundos."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.SecretValueActions,
-                        "São estes dois botões, no cartão da senha: o olhinho mostra, o \"Copiar\" copia."),
+                    HelpBlock.OfText(Tr("Help_SecretStoredValue_Text1")),
+                    HelpBlock.OfText(Tr("Help_SecretStoredValue_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.SecretValueActions, Tr("Help_SecretStoredValue_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.SecretFavorite,
-                "Marcar como favorito",
+                Tr("Help_SecretFavorite_Title"),
                 [
-                    HelpBlock.OfText(
-                        "Favoritos sobem para o topo da lista e ganham uma estrelinha dourada. Serve para " +
-                        "os itens que você abre toda hora não se perderem no meio dos outros."),
-                    HelpBlock.OfText(
-                        "Não muda nada na segurança nem no conteúdo do item - é só uma forma de encontrar " +
-                        "mais rápido."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.FavoriteStar,
-                        "É esta estrelinha, que passa a aparecer no cartão do item na lista."),
+                    HelpBlock.OfText(Tr("Help_SecretFavorite_Text1")),
+                    HelpBlock.OfText(Tr("Help_SecretFavorite_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.FavoriteStar, Tr("Help_SecretFavorite_VisualCaption")),
                 ]),
 
             new HelpTopic(
                 Ids.BackupRecovery,
-                "Recuperar um backup",
+                Tr("Help_BackupRecovery_Title"),
                 [
-                    HelpBlock.OfHeading("Como estas cópias aparecem aqui"),
-                    HelpBlock.OfText(
-                        "Toda vez que você salva algo no cofre, o app guarda antes uma cópia de como ele " +
-                        "estava. Essas cópias ficam numa pasta privada do aplicativo, nunca junto do seu " +
-                        "arquivo, para não bagunçar a sua pasta. Quantas ficam guardadas é o que você " +
-                        "escolheu em Editar cofre, na parte de Backups."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.BackupCard,
-                        "Cada cópia vira um cartão como este, com a data e a hora em que foi guardada."),
+                    HelpBlock.OfHeading(Tr("Help_BackupRecovery_Heading1")),
+                    HelpBlock.OfText(Tr("Help_BackupRecovery_Text1")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.BackupCard, Tr("Help_BackupRecovery_VisualCaption1")),
 
-                    HelpBlock.OfHeading("Restaurar"),
-                    HelpBlock.OfText(
-                        "Restaurar não mexe no seu cofre atual: o app cria um arquivo novo com o conteúdo " +
-                        "daquela cópia, e você escolhe depois qual dos dois quer abrir. O app vai pedir a " +
-                        "senha mestra da época daquela cópia - se ela for de antes de você trocar a senha, " +
-                        "é a senha antiga que funciona."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.RestoreButton,
-                        "É este botão, no rodapé de cada cartão."),
+                    HelpBlock.OfHeading(Tr("Help_BackupRecovery_Heading2")),
+                    HelpBlock.OfText(Tr("Help_BackupRecovery_Text2")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.RestoreButton, Tr("Help_BackupRecovery_VisualCaption2")),
 
-                    HelpBlock.OfHeading("Excluir"),
-                    HelpBlock.OfText(
-                        "Apaga só aquela cópia da lista. Não dá para desfazer, e o seu cofre atual continua " +
-                        "intacto."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.DeleteBackupButton,
-                        "Fica ao lado de \"Restaurar\", em vermelho."),
+                    HelpBlock.OfHeading(Tr("Help_BackupRecovery_Heading3")),
+                    HelpBlock.OfText(Tr("Help_BackupRecovery_Text3")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.DeleteBackupButton, Tr("Help_BackupRecovery_VisualCaption3")),
 
-                    HelpBlock.OfHeading("Excluir todos"),
-                    HelpBlock.OfText(
-                        "Apaga de uma vez todas as cópias que estão nesta tela. Também não dá para " +
-                        "desfazer. Seu cofre atual não é afetado - só as cópias antigas somem."),
-                    HelpBlock.OfVisual(
-                        HelpVisuals.Ids.DeleteAllBackupsLink,
-                        "É este link vermelho, no fim da lista."),
+                    HelpBlock.OfHeading(Tr("Help_BackupRecovery_Heading4")),
+                    HelpBlock.OfText(Tr("Help_BackupRecovery_Text4")),
+                    HelpBlock.OfVisual(HelpVisuals.Ids.DeleteAllBackupsLink, Tr("Help_BackupRecovery_VisualCaption4")),
                 ]),
         ];
-
-        private static readonly Dictionary<string, HelpTopic> ById =
-            All.ToDictionary(topic => topic.Id, StringComparer.Ordinal);
-
-        public static bool TryGet(string id, out HelpTopic topic) => ById.TryGetValue(id, out topic!);
     }
 
     // Chaves das amostras visuais. Cada uma corresponde a um DataTemplate declarado em

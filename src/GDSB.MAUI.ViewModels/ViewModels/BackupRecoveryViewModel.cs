@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Entities;
 using GDSB.Domain.Interfaces;
 using GDSB.MAUI.Interfaces;
+using GDSB.MAUI.Localization;
 using GDSB.MAUI.Services;
 
 namespace GDSB.MAUI.ViewModels
@@ -11,15 +12,19 @@ namespace GDSB.MAUI.ViewModels
     // Tela de recuperação: lista os backups do IVaultBackupStore (sempre fora da pasta do cofre,
     // ver FileSystemVaultBackupStore), restaura um deles pra um arquivo novo escolhido pelo usuário
     // (nunca sobrescreve o cofre original) ou exclui backups, um por vez ou todos de uma vez.
-    public partial class BackupRecoveryViewModel : ObservableObject
+    public partial class BackupRecoveryViewModel : LocalizedObject
     {
-        // Nome de propósito sem "password": a regra S2068 do Sonar ("Hard-coded credentials") flaga
-        // qualquer identificador nesses moldes atribuído a um valor literal, mesmo sendo só uma
-        // mensagem de UI (mesmo caso já registrado em VaultSettingsViewModel).
-        private const string GenericRestoreErrorMessage = "Senha incorreta ou arquivo corrompido.";
-        private const string EmptyCodeMessage = "Digite a senha mestra deste backup.";
-        private const string FilePickerErrorMessage = "Não foi possível escolher onde salvar o cofre.";
-        private const string GenericSaveErrorMessage = "Não foi possível salvar o cofre nesse local.";
+        // Deixam de ser const porque passam a vir do catálogo (ILocalizationService), que resolve
+        // na cultura vigente a cada leitura. Nome de propósito sem "password": a regra S2068 do
+        // Sonar ("Hard-coded credentials") flaga qualquer identificador nesses moldes atribuído a
+        // um valor literal, mesmo sendo só uma mensagem de UI.
+        private string GenericRestoreErrorMessage => Localization.Get("Unlock_GenericErrorMessage");
+
+        private string EmptyCodeMessage => Localization.Get("BackupRecovery_EmptyPasswordMessage");
+
+        private string FilePickerErrorMessage => Localization.Get("Vault_ChoosePathErrorMessage");
+
+        private string GenericSaveErrorMessage => Localization.Get("Vault_SaveToLocationErrorMessage");
 
         private readonly IVaultBackupStore _backupStore;
         private readonly IProfileFileService _profileFileService;
@@ -32,13 +37,36 @@ namespace GDSB.MAUI.ViewModels
             IProfileFileService profileFileService,
             IFilePickerService filePickerService,
             INavigationService navigationService,
-            IVaultSessionService vaultSessionService)
+            IVaultSessionService vaultSessionService,
+            ILocalizationService localizationService)
+            : base(localizationService)
         {
             _backupStore = backupStore;
             _profileFileService = profileFileService;
             _filePickerService = filePickerService;
             _navigationService = navigationService;
             _vaultSessionService = vaultSessionService;
+
+            // LocalizedObject só reemite OnPropertyChanged("") na troca de idioma - suficiente para
+            // propriedades calculadas, mas não para os itens já materializados em Backups: cada
+            // BackupItemViewModel não é ObservableObject (ver comentário na classe), então a
+            // CollectionView não percebe que CreatedAtDisplay/SizeDisplay/KindLabel mudaram sem a
+            // coleção ser reconstruída. Assina LanguageChanged direto, além do que a base já faz.
+            Localization.LanguageChanged += OnLanguageChangedRefresh;
+        }
+
+        private void OnLanguageChangedRefresh(object? sender, EventArgs e)
+        {
+            if (Backups.Count > 0)
+                Refresh();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                Localization.LanguageChanged -= OnLanguageChangedRefresh;
+
+            base.Dispose(disposing);
         }
 
         /// <summary>
@@ -99,7 +127,7 @@ namespace GDSB.MAUI.ViewModels
         {
             Backups.Clear();
             foreach (var info in _backupStore.List().OrderByDescending(i => i.CreatedAtUtc))
-                Backups.Add(new BackupItemViewModel(info));
+                Backups.Add(new BackupItemViewModel(info, Localization));
 
             OnPropertyChanged(nameof(HasBackups));
         }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using GDSB.MAUI.Help;
 using Xunit;
@@ -8,10 +9,21 @@ namespace GDSB.MAUI.Tests
     // são o que segura as regras da rodada: cada id referenciado pelo XAML existe, cada amostra
     // aponta para uma chave declarada e, principalmente, NENHUM tópico é só texto. A regra "cada
     // painel mostra o controle de que fala" fica garantida por teste em vez de por disciplina.
+    //
+    // Fase 4 (multilíngue): HelpTopics.All passou a ler o catálogo na cultura vigente (em vez de
+    // materializar uma vez), então os testes de conteúdo (não só de id/estrutura) rodam nos dois
+    // idiomas - CultureScope troca CultureInfo.CurrentUICulture só pela duração de cada teste, sem
+    // vazar para os outros.
     public class HelpTopicsTests
     {
         private static readonly IReadOnlyList<string> DeclaredTopicIds = StringConstantsOf(typeof(HelpTopics.Ids));
         private static readonly IReadOnlyList<string> DeclaredVisualIds = StringConstantsOf(typeof(HelpVisuals.Ids));
+
+        public static IEnumerable<object[]> BothCultures()
+        {
+            yield return new object[] { "pt-BR" };
+            yield return new object[] { "en-US" };
+        }
 
         [Fact]
         public void Ids_EveryDeclaredTopicId_ExistsInCatalog()
@@ -42,24 +54,30 @@ namespace GDSB.MAUI.Tests
             Assert.Empty(duplicates);
         }
 
-        [Fact]
-        public void All_EveryTopic_HasTitleAndBlocks()
+        [Theory]
+        [MemberData(nameof(BothCultures))]
+        public void All_EveryTopic_HasTitleAndBlocks(string cultureName)
         {
+            using var _ = new CultureScope(cultureName);
+
             Assert.All(HelpTopics.All, topic =>
             {
-                Assert.False(string.IsNullOrWhiteSpace(topic.Title), $"Tópico '{topic.Id}' sem título.");
+                Assert.False(string.IsNullOrWhiteSpace(topic.Title), $"Tópico '{topic.Id}' sem título ({cultureName}).");
                 Assert.NotEmpty(topic.Blocks);
             });
         }
 
         // A regra central da rodada: painel só de texto é considerado incompleto.
-        [Fact]
-        public void All_EveryTopic_HasAtLeastOneVisualBlock()
+        [Theory]
+        [MemberData(nameof(BothCultures))]
+        public void All_EveryTopic_HasAtLeastOneVisualBlock(string cultureName)
         {
+            using var _ = new CultureScope(cultureName);
+
             Assert.All(HelpTopics.All, topic =>
                 Assert.True(
                     topic.Blocks.Any(block => block.Kind == HelpBlockKind.Visual),
-                    $"Tópico '{topic.Id}' não mostra nenhum controle - só descreve."));
+                    $"Tópico '{topic.Id}' não mostra nenhum controle - só descreve ({cultureName})."));
         }
 
         [Fact]
@@ -73,13 +91,16 @@ namespace GDSB.MAUI.Tests
                     $"Tópico '{pair.TopicId}' usa a amostra '{pair.Block.Value}', que não está em HelpVisuals.Ids."));
         }
 
-        [Fact]
-        public void All_EveryVisualBlock_HasCaption()
+        [Theory]
+        [MemberData(nameof(BothCultures))]
+        public void All_EveryVisualBlock_HasCaption(string cultureName)
         {
+            using var _ = new CultureScope(cultureName);
+
             Assert.All(VisualBlocks(), pair =>
                 Assert.False(
                     string.IsNullOrWhiteSpace(pair.Block.Caption),
-                    $"Amostra '{pair.Block.Value}' do tópico '{pair.TopicId}' está sem legenda."));
+                    $"Amostra '{pair.Block.Value}' do tópico '{pair.TopicId}' está sem legenda ({cultureName})."));
         }
 
         // Chave declarada que nenhum tópico usa é DataTemplate morto em HelpVisuals.xaml - some
@@ -100,14 +121,17 @@ namespace GDSB.MAUI.Tests
                 HelpVisuals.All.OrderBy(id => id, StringComparer.Ordinal));
         }
 
-        [Fact]
-        public void All_NoBlock_HasEmptyValue()
+        [Theory]
+        [MemberData(nameof(BothCultures))]
+        public void All_NoBlock_HasEmptyValue(string cultureName)
         {
+            using var _ = new CultureScope(cultureName);
+
             Assert.All(HelpTopics.All, topic =>
                 Assert.All(topic.Blocks, block =>
                     Assert.False(
                         string.IsNullOrWhiteSpace(block.Value),
-                        $"Tópico '{topic.Id}' tem um bloco {block.Kind} vazio.")));
+                        $"Tópico '{topic.Id}' tem um bloco {block.Kind} vazio ({cultureName}).")));
         }
 
         [Fact]
@@ -125,14 +149,41 @@ namespace GDSB.MAUI.Tests
 
         // O "?" único da tela de backup cobre quatro assuntos (como os backups aparecem, restaurar,
         // excluir e excluir todos) - sem Heading, o painel viraria um paredão de texto.
-        [Fact]
-        public void BackupRecovery_IsSplitByHeadings()
+        [Theory]
+        [MemberData(nameof(BothCultures))]
+        public void BackupRecovery_IsSplitByHeadings(string cultureName)
         {
+            using var _ = new CultureScope(cultureName);
+
             Assert.True(HelpTopics.TryGet(HelpTopics.Ids.BackupRecovery, out var topic));
 
             var headings = topic.Blocks.Count(block => block.Kind == HelpBlockKind.Heading);
 
             Assert.Equal(4, headings);
+        }
+
+        // Fase 4: o mesmo tópico sai com texto diferente depois de uma troca de idioma - é a versão
+        // "roda o VM nos dois idiomas" desta suíte, provando que HelpTopics.All não ficou preso na
+        // primeira leitura (o bug que a rodada existe para evitar).
+        [Fact]
+        public void BackupRecovery_Title_DiffersBetweenPtAndEn()
+        {
+            string ptTitle, enTitle;
+
+            using (new CultureScope("pt-BR"))
+            {
+                Assert.True(HelpTopics.TryGet(HelpTopics.Ids.BackupRecovery, out var topic));
+                ptTitle = topic.Title;
+            }
+
+            using (new CultureScope("en-US"))
+            {
+                Assert.True(HelpTopics.TryGet(HelpTopics.Ids.BackupRecovery, out var topic));
+                enTitle = topic.Title;
+            }
+
+            Assert.Equal("Recuperar um backup", ptTitle);
+            Assert.Equal("Recover a backup", enTitle);
         }
 
         private static IEnumerable<(string TopicId, HelpBlock Block)> VisualBlocks() =>
@@ -146,5 +197,31 @@ namespace GDSB.MAUI.Tests
                 .Where(field => field.IsLiteral && field.FieldType == typeof(string))
                 .Select(field => (string)field.GetRawConstantValue()!)
                 .ToList();
+
+        // Troca CultureInfo.CurrentCulture/CurrentUICulture só na thread deste teste, e devolve o
+        // valor original ao sair do using - HelpTopics.All lê CurrentUICulture a cada acesso
+        // (ver o comentário em HelpTopics.cs), então isto basta para exercitar os dois idiomas sem
+        // precisar de ILocalizationService nem vazar estado entre testes.
+        private sealed class CultureScope : IDisposable
+        {
+            private readonly CultureInfo _originalCulture;
+            private readonly CultureInfo _originalUiCulture;
+
+            public CultureScope(string cultureName)
+            {
+                _originalCulture = CultureInfo.CurrentCulture;
+                _originalUiCulture = CultureInfo.CurrentUICulture;
+
+                var culture = new CultureInfo(cultureName);
+                CultureInfo.CurrentCulture = culture;
+                CultureInfo.CurrentUICulture = culture;
+            }
+
+            public void Dispose()
+            {
+                CultureInfo.CurrentCulture = _originalCulture;
+                CultureInfo.CurrentUICulture = _originalUiCulture;
+            }
+        }
     }
 }
