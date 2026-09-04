@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using GDSB.MAUI.Localization;
 using GDSB.MAUI.Services;
 
 namespace GDSB.MAUI.ViewModels
@@ -14,37 +15,27 @@ namespace GDSB.MAUI.ViewModels
     /// meus dados ficam, como eu começo, e como eu volto depois. Nada de vocabulário técnico -
     /// "arquivo" e "senha", não "cofre criptografado" nem "derivação de chave".
     /// </summary>
-    public partial class OnboardingViewModel : ObservableObject
+    public partial class OnboardingViewModel : LocalizedObject
     {
         public const string SeenPreferenceKey = "gdsb.onboardingSeen";
 
         private readonly IPreferencesService _preferencesService;
 
-        public OnboardingViewModel(IPreferencesService preferencesService)
+        public OnboardingViewModel(IPreferencesService preferencesService, ILocalizationService localizationService)
+            : base(localizationService)
         {
             _preferencesService = preferencesService;
         }
 
-        public IReadOnlyList<OnboardingSlide> Slides { get; } =
+        // Calculada sobre o catálogo (em vez de um inicializador de campo) porque este ViewModel
+        // vive uma vez por app (ver UnlockOverlays) - reler a cada acesso é o que faz uma troca de
+        // idioma valer aqui também, sem recriar nada. Só três slides: diferente de HelpTopics.All,
+        // não vale a pena cachear por cultura.
+        public IReadOnlyList<OnboardingSlide> Slides =>
         [
-            new OnboardingSlide(
-                "Seu cofre é um arquivo",
-                "O GDSB não guarda nada na nuvem nem dentro do celular: tudo mora num arquivo .GDSBX " +
-                "que é seu. O app é só a camada que abre e lê esse arquivo - sem ele disponível, não há " +
-                "o que abrir. Guarde-o onde você consiga alcançar de novo: uma pasta do Google Drive ou " +
-                "do OneDrive, por exemplo."),
-
-            new OnboardingSlide(
-                "Criar um cofre",
-                "Você escolhe onde salvar o arquivo e define a senha mestra. Essa senha é a única " +
-                "chave: ela não fica guardada em lugar nenhum e não existe \"esqueci minha senha\". " +
-                "Perdeu a senha, perdeu o conteúdo do arquivo."),
-
-            new OnboardingSlide(
-                "Abrir depois",
-                "Sempre igual: escolher o arquivo, digitar a senha. Ligando a biometria, o app lembra " +
-                "do último cofre e a digital vira o atalho - mas a senha mestra continua valendo, e o " +
-                "arquivo ainda precisa estar acessível."),
+            new OnboardingSlide(Localization.Get("Onboarding_Slide1Title"), Localization.Get("Onboarding_Slide1Body")),
+            new OnboardingSlide(Localization.Get("Onboarding_Slide2Title"), Localization.Get("Onboarding_Slide2Body")),
+            new OnboardingSlide(Localization.Get("Onboarding_Slide3Title"), Localization.Get("Onboarding_Slide3Body")),
         ];
 
         [ObservableProperty]
@@ -71,7 +62,7 @@ namespace GDSB.MAUI.ViewModels
         // sem parecer que o usuário está abandonando algo pela metade.
         public bool ShowSkip => !IsLastSlide;
 
-        public string AdvanceButtonText => IsLastSlide ? "Começar" : "Próximo";
+        public string AdvanceButtonText => IsLastSlide ? Localization.Get("Onboarding_AdvanceButtonFinish") : Localization.Get("Onboarding_AdvanceButtonNext");
 #pragma warning restore S2325
 
         public bool HasBeenSeen => _preferencesService.GetBool(SeenPreferenceKey, false);

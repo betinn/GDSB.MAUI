@@ -35,7 +35,7 @@ namespace GDSB.MAUI.Tests
             public Sut()
             {
                 var biometricOptIn = new BiometricOptInCoordinator(BiometricUnlockService, AlertService, PreferencesService, LocalizationService);
-                Onboarding = new OnboardingViewModel(PreferencesService);
+                Onboarding = new OnboardingViewModel(PreferencesService, LocalizationService);
                 Language = new LanguageSelectorViewModel(LocalizationService);
                 ViewModel = new UnlockViewModel(
                     new VaultAccess(ProfileFileService, VaultSessionService),
@@ -337,7 +337,7 @@ namespace GDSB.MAUI.Tests
             var biometricUnlockService = new FakeBiometricUnlockService();
             var alertService = new FakeAlertService();
             var biometricOptIn = new BiometricOptInCoordinator(biometricUnlockService, alertService, preferencesService, localizationService);
-            var onboarding = new OnboardingViewModel(preferencesService);
+            var onboarding = new OnboardingViewModel(preferencesService, localizationService);
             var language = new LanguageSelectorViewModel(localizationService);
             var viewModel = new UnlockViewModel(
                 new VaultAccess(new FakeProfileFileService(), new FakeVaultSessionService()),

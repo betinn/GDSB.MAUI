@@ -600,4 +600,172 @@
   <data name="Platform_WindowsFileTypeLabel" xml:space="preserve">
     <value>Arquivo GDSB</value>
   </data>
+  <data name="Help_MasterUnlockCode_Title" xml:space="preserve">
+    <value>A senha mestra</value>
+  </data>
+  <data name="Help_MasterUnlockCode_Text1" xml:space="preserve">
+    <value>É a senha que abre este cofre. Ela não fica guardada em lugar nenhum: nem no app, nem no seu celular, nem na internet. Por isso não existe "esqueci minha senha" aqui - se você perder essa senha, ninguém consegue abrir o arquivo de novo, nem você, nem quem fez o app.</value>
+  </data>
+  <data name="Help_MasterUnlockCode_Text2" xml:space="preserve">
+    <value>Escolha algo que você lembre com folga e que ninguém adivinhe. O mínimo são 8 caracteres, mas quanto mais longa, melhor.</value>
+  </data>
+  <data name="Help_MasterUnlockCode_VisualCaption" xml:space="preserve">
+    <value>É este campo. Toque nele e digite - as letras aparecem como pontinhos para ninguém ler por cima do seu ombro.</value>
+  </data>
+  <data name="Help_VaultName_Title" xml:space="preserve">
+    <value>O nome do cofre</value>
+  </data>
+  <data name="Help_VaultName_Text1" xml:space="preserve">
+    <value>É o apelido que aparece dentro do app para você reconhecer este cofre. Trocar o nome aqui não renomeia o arquivo que está salvo no seu celular ou na nuvem: o arquivo continua com o nome de antes.</value>
+  </data>
+  <data name="Help_VaultName_Text2" xml:space="preserve">
+    <value>Por isso, depois de salvar um nome novo, o app oferece guardar também uma cópia num arquivo novo. É opcional - se você recusar, está tudo certo, a mudança já foi gravada no arquivo de sempre.</value>
+  </data>
+  <data name="Help_VaultName_VisualCaption" xml:space="preserve">
+    <value>É este convite que aparece depois de salvar. Tocar em "Salvar como novo arquivo" cria uma cópia e mantém o original intacto.</value>
+  </data>
+  <data name="Help_VaultProtections_Title" xml:space="preserve">
+    <value>Proteções do cofre</value>
+  </data>
+  <data name="Help_VaultProtections_Heading1" xml:space="preserve">
+    <value>Limpar a área de transferência</value>
+  </data>
+  <data name="Help_VaultProtections_Text1" xml:space="preserve">
+    <value>Quando você copia uma senha, ela fica na memória de "copiar e colar" do celular e qualquer outro aplicativo pode ler de lá. Com esta proteção ligada, o app apaga esse valor sozinho depois do tempo que você escolher.</value>
+  </data>
+  <data name="Help_VaultProtections_Heading2" xml:space="preserve">
+    <value>Bloqueio automático</value>
+  </data>
+  <data name="Help_VaultProtections_Text2" xml:space="preserve">
+    <value>Se você sair do app e demorar para voltar, ele fecha o cofre e pede a senha mestra de novo. Serve para o caso de você deixar o celular na mesa e alguém pegar.</value>
+  </data>
+  <data name="Help_VaultProtections_VisualCaption" xml:space="preserve">
+    <value>Toque em um dos tempos para escolher. O que estiver colorido é o que está valendo.</value>
+  </data>
+  <data name="Help_VaultBackups_Title" xml:space="preserve">
+    <value>Backups automáticos</value>
+  </data>
+  <data name="Help_VaultBackups_Text1" xml:space="preserve">
+    <value>Toda vez que você salva alguma coisa, o app guarda antes uma cópia de como o cofre estava. Assim, se você apagar um item sem querer, dá para voltar atrás.</value>
+  </data>
+  <data name="Help_VaultBackups_Text2" xml:space="preserve">
+    <value>Aqui você decide quantas dessas cópias ficam guardadas. "Por quantidade" guarda um número fixo de versões. "Por tempo" guarda as dos últimos dias que você escolher. A cópia mais recente nunca é apagada, aconteça o que acontecer.</value>
+  </data>
+  <data name="Help_VaultBackups_VisualCaption" xml:space="preserve">
+    <value>Toque em "Por quantidade" ou "Por tempo" para escolher a regra. Logo abaixo aparecem os valores disponíveis.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Title" xml:space="preserve">
+    <value>Trocar a senha mestra</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Text1" xml:space="preserve">
+    <value>Para trocar, o app pede a senha atual primeiro - é assim que ele confere que é você mesmo. Depois da troca, é a senha nova que abre este cofre.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Text2" xml:space="preserve">
+    <value>Atenção com os backups: as cópias guardadas antes da troca continuam presas à senha antiga. Se um dia você precisar restaurar uma delas, é a senha antiga que vai funcionar, não a nova. Por isso vale anotar a antiga em algum lugar seguro, ou marcar a caixa que apaga essas cópias de uma vez.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Text3" xml:space="preserve">
+    <value>Se você usa a digital para abrir o cofre, não precisa fazer nada: o app reconfigura a biometria sozinho com a senha nova.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_VisualCaption" xml:space="preserve">
+    <value>Marque esta caixa se você não quer guardar cópias que só abrem com a senha antiga.</value>
+  </data>
+  <data name="Help_SecretUrl_Title" xml:space="preserve">
+    <value>O endereço do site</value>
+  </data>
+  <data name="Help_SecretUrl_Text1" xml:space="preserve">
+    <value>É opcional, mas ajuda bastante: quando você preenche, o endereço vira um atalho no cartão do item. Um toque e o site abre no navegador, sem você precisar digitar.</value>
+  </data>
+  <data name="Help_SecretUrl_Text2" xml:space="preserve">
+    <value>Pode escrever do jeito simples, como "netflix.com" - não precisa colocar o "https://" na frente.</value>
+  </data>
+  <data name="Help_SecretUrl_VisualCaption" xml:space="preserve">
+    <value>Fica logo abaixo do nome do item, em rosa. Tocar nele abre o site.</value>
+  </data>
+  <data name="Help_SecretStoredValue_Title" xml:space="preserve">
+    <value>A senha guardada</value>
+  </data>
+  <data name="Help_SecretStoredValue_Text1" xml:space="preserve">
+    <value>É a senha daquele site ou aplicativo - a que você usaria para entrar. Ela fica escondida atrás de pontinhos e só aparece quando você pede.</value>
+  </data>
+  <data name="Help_SecretStoredValue_Text2" xml:space="preserve">
+    <value>Na hora de usar, você tem duas opções: o olhinho mostra a senha na tela, e "Copiar" manda ela direto para o "colar" do celular, sem precisar mostrar para ninguém. Se a proteção de área de transferência estiver ligada, o app apaga o valor copiado sozinho depois de alguns segundos.</value>
+  </data>
+  <data name="Help_SecretStoredValue_VisualCaption" xml:space="preserve">
+    <value>São estes dois botões, no cartão da senha: o olhinho mostra, o "Copiar" copia.</value>
+  </data>
+  <data name="Help_SecretFavorite_Title" xml:space="preserve">
+    <value>Marcar como favorito</value>
+  </data>
+  <data name="Help_SecretFavorite_Text1" xml:space="preserve">
+    <value>Favoritos sobem para o topo da lista e ganham uma estrelinha dourada. Serve para os itens que você abre toda hora não se perderem no meio dos outros.</value>
+  </data>
+  <data name="Help_SecretFavorite_Text2" xml:space="preserve">
+    <value>Não muda nada na segurança nem no conteúdo do item - é só uma forma de encontrar mais rápido.</value>
+  </data>
+  <data name="Help_SecretFavorite_VisualCaption" xml:space="preserve">
+    <value>É esta estrelinha, que passa a aparecer no cartão do item na lista.</value>
+  </data>
+  <data name="Help_BackupRecovery_Title" xml:space="preserve">
+    <value>Recuperar um backup</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading1" xml:space="preserve">
+    <value>Como estas cópias aparecem aqui</value>
+  </data>
+  <data name="Help_BackupRecovery_Text1" xml:space="preserve">
+    <value>Toda vez que você salva algo no cofre, o app guarda antes uma cópia de como ele estava. Essas cópias ficam numa pasta privada do aplicativo, nunca junto do seu arquivo, para não bagunçar a sua pasta. Quantas ficam guardadas é o que você escolheu em Editar cofre, na parte de Backups.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption1" xml:space="preserve">
+    <value>Cada cópia vira um cartão como este, com a data e a hora em que foi guardada.</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading2" xml:space="preserve">
+    <value>Restaurar</value>
+  </data>
+  <data name="Help_BackupRecovery_Text2" xml:space="preserve">
+    <value>Restaurar não mexe no seu cofre atual: o app cria um arquivo novo com o conteúdo daquela cópia, e você escolhe depois qual dos dois quer abrir. O app vai pedir a senha mestra da época daquela cópia - se ela for de antes de você trocar a senha, é a senha antiga que funciona.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption2" xml:space="preserve">
+    <value>É este botão, no rodapé de cada cartão.</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading3" xml:space="preserve">
+    <value>Excluir</value>
+  </data>
+  <data name="Help_BackupRecovery_Text3" xml:space="preserve">
+    <value>Apaga só aquela cópia da lista. Não dá para desfazer, e o seu cofre atual continua intacto.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption3" xml:space="preserve">
+    <value>Fica ao lado de "Restaurar", em vermelho.</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading4" xml:space="preserve">
+    <value>Excluir todos</value>
+  </data>
+  <data name="Help_BackupRecovery_Text4" xml:space="preserve">
+    <value>Apaga de uma vez todas as cópias que estão nesta tela. Também não dá para desfazer. Seu cofre atual não é afetado - só as cópias antigas somem.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption4" xml:space="preserve">
+    <value>É este link vermelho, no fim da lista.</value>
+  </data>
+  <data name="Onboarding_Slide1Title" xml:space="preserve">
+    <value>Seu cofre é um arquivo</value>
+  </data>
+  <data name="Onboarding_Slide1Body" xml:space="preserve">
+    <value>O GDSB não guarda nada na nuvem nem dentro do celular: tudo mora num arquivo .GDSBX que é seu. O app é só a camada que abre e lê esse arquivo - sem ele disponível, não há o que abrir. Guarde-o onde você consiga alcançar de novo: uma pasta do Google Drive ou do OneDrive, por exemplo.</value>
+  </data>
+  <data name="Onboarding_Slide2Title" xml:space="preserve">
+    <value>Criar um cofre</value>
+  </data>
+  <data name="Onboarding_Slide2Body" xml:space="preserve">
+    <value>Você escolhe onde salvar o arquivo e define a senha mestra. Essa senha é a única chave: ela não fica guardada em lugar nenhum e não existe "esqueci minha senha". Perdeu a senha, perdeu o conteúdo do arquivo.</value>
+  </data>
+  <data name="Onboarding_Slide3Title" xml:space="preserve">
+    <value>Abrir depois</value>
+  </data>
+  <data name="Onboarding_Slide3Body" xml:space="preserve">
+    <value>Sempre igual: escolher o arquivo, digitar a senha. Ligando a biometria, o app lembra do último cofre e a digital vira o atalho - mas a senha mestra continua valendo, e o arquivo ainda precisa estar acessível.</value>
+  </data>
+  <data name="Onboarding_AdvanceButtonNext" xml:space="preserve">
+    <value>Próximo</value>
+  </data>
+  <data name="Onboarding_AdvanceButtonFinish" xml:space="preserve">
+    <value>Começar</value>
+  </data>
 </root>

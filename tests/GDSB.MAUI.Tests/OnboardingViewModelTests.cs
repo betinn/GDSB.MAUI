@@ -9,7 +9,7 @@ namespace GDSB.MAUI.Tests
         private static (OnboardingViewModel ViewModel, FakePreferencesService Preferences) Build()
         {
             var preferences = new FakePreferencesService();
-            return (new OnboardingViewModel(preferences), preferences);
+            return (new OnboardingViewModel(preferences, new FakeLocalizationService()), preferences);
         }
 
         [Fact]
@@ -113,13 +113,13 @@ namespace GDSB.MAUI.Tests
             var (viewModel, _) = Build();
 
             Assert.True(viewModel.ShowSkip);
-            Assert.Equal("Próximo", viewModel.AdvanceButtonText);
+            Assert.Equal("Onboarding_AdvanceButtonNext", viewModel.AdvanceButtonText);
 
             viewModel.AdvanceCommand.Execute(null);
             viewModel.AdvanceCommand.Execute(null);
 
             Assert.False(viewModel.ShowSkip);
-            Assert.Equal("Começar", viewModel.AdvanceButtonText);
+            Assert.Equal("Onboarding_AdvanceButtonFinish", viewModel.AdvanceButtonText);
         }
 
         // O link "Como funciona?" é caminho de revisão: quem pediu pra rever quer rever, mesmo já

@@ -365,5 +365,117 @@ namespace GDSB.MAUI.ViewModels.Resources
         public static string Platform_WindowsBiometricUnlockMessage => ResourceManager.GetString("Platform_WindowsBiometricUnlockMessage", resourceCulture);
 
         public static string Platform_WindowsFileTypeLabel => ResourceManager.GetString("Platform_WindowsFileTypeLabel", resourceCulture);
+
+        public static string Help_MasterUnlockCode_Title => ResourceManager.GetString("Help_MasterUnlockCode_Title", resourceCulture);
+
+        public static string Help_MasterUnlockCode_Text1 => ResourceManager.GetString("Help_MasterUnlockCode_Text1", resourceCulture);
+
+        public static string Help_MasterUnlockCode_Text2 => ResourceManager.GetString("Help_MasterUnlockCode_Text2", resourceCulture);
+
+        public static string Help_MasterUnlockCode_VisualCaption => ResourceManager.GetString("Help_MasterUnlockCode_VisualCaption", resourceCulture);
+
+        public static string Help_VaultName_Title => ResourceManager.GetString("Help_VaultName_Title", resourceCulture);
+
+        public static string Help_VaultName_Text1 => ResourceManager.GetString("Help_VaultName_Text1", resourceCulture);
+
+        public static string Help_VaultName_Text2 => ResourceManager.GetString("Help_VaultName_Text2", resourceCulture);
+
+        public static string Help_VaultName_VisualCaption => ResourceManager.GetString("Help_VaultName_VisualCaption", resourceCulture);
+
+        public static string Help_VaultProtections_Title => ResourceManager.GetString("Help_VaultProtections_Title", resourceCulture);
+
+        public static string Help_VaultProtections_Heading1 => ResourceManager.GetString("Help_VaultProtections_Heading1", resourceCulture);
+
+        public static string Help_VaultProtections_Text1 => ResourceManager.GetString("Help_VaultProtections_Text1", resourceCulture);
+
+        public static string Help_VaultProtections_Heading2 => ResourceManager.GetString("Help_VaultProtections_Heading2", resourceCulture);
+
+        public static string Help_VaultProtections_Text2 => ResourceManager.GetString("Help_VaultProtections_Text2", resourceCulture);
+
+        public static string Help_VaultProtections_VisualCaption => ResourceManager.GetString("Help_VaultProtections_VisualCaption", resourceCulture);
+
+        public static string Help_VaultBackups_Title => ResourceManager.GetString("Help_VaultBackups_Title", resourceCulture);
+
+        public static string Help_VaultBackups_Text1 => ResourceManager.GetString("Help_VaultBackups_Text1", resourceCulture);
+
+        public static string Help_VaultBackups_Text2 => ResourceManager.GetString("Help_VaultBackups_Text2", resourceCulture);
+
+        public static string Help_VaultBackups_VisualCaption => ResourceManager.GetString("Help_VaultBackups_VisualCaption", resourceCulture);
+
+        public static string Help_ChangeMasterUnlockCode_Title => ResourceManager.GetString("Help_ChangeMasterUnlockCode_Title", resourceCulture);
+
+        public static string Help_ChangeMasterUnlockCode_Text1 => ResourceManager.GetString("Help_ChangeMasterUnlockCode_Text1", resourceCulture);
+
+        public static string Help_ChangeMasterUnlockCode_Text2 => ResourceManager.GetString("Help_ChangeMasterUnlockCode_Text2", resourceCulture);
+
+        public static string Help_ChangeMasterUnlockCode_Text3 => ResourceManager.GetString("Help_ChangeMasterUnlockCode_Text3", resourceCulture);
+
+        public static string Help_ChangeMasterUnlockCode_VisualCaption => ResourceManager.GetString("Help_ChangeMasterUnlockCode_VisualCaption", resourceCulture);
+
+        public static string Help_SecretUrl_Title => ResourceManager.GetString("Help_SecretUrl_Title", resourceCulture);
+
+        public static string Help_SecretUrl_Text1 => ResourceManager.GetString("Help_SecretUrl_Text1", resourceCulture);
+
+        public static string Help_SecretUrl_Text2 => ResourceManager.GetString("Help_SecretUrl_Text2", resourceCulture);
+
+        public static string Help_SecretUrl_VisualCaption => ResourceManager.GetString("Help_SecretUrl_VisualCaption", resourceCulture);
+
+        public static string Help_SecretStoredValue_Title => ResourceManager.GetString("Help_SecretStoredValue_Title", resourceCulture);
+
+        public static string Help_SecretStoredValue_Text1 => ResourceManager.GetString("Help_SecretStoredValue_Text1", resourceCulture);
+
+        public static string Help_SecretStoredValue_Text2 => ResourceManager.GetString("Help_SecretStoredValue_Text2", resourceCulture);
+
+        public static string Help_SecretStoredValue_VisualCaption => ResourceManager.GetString("Help_SecretStoredValue_VisualCaption", resourceCulture);
+
+        public static string Help_SecretFavorite_Title => ResourceManager.GetString("Help_SecretFavorite_Title", resourceCulture);
+
+        public static string Help_SecretFavorite_Text1 => ResourceManager.GetString("Help_SecretFavorite_Text1", resourceCulture);
+
+        public static string Help_SecretFavorite_Text2 => ResourceManager.GetString("Help_SecretFavorite_Text2", resourceCulture);
+
+        public static string Help_SecretFavorite_VisualCaption => ResourceManager.GetString("Help_SecretFavorite_VisualCaption", resourceCulture);
+
+        public static string Help_BackupRecovery_Title => ResourceManager.GetString("Help_BackupRecovery_Title", resourceCulture);
+
+        public static string Help_BackupRecovery_Heading1 => ResourceManager.GetString("Help_BackupRecovery_Heading1", resourceCulture);
+
+        public static string Help_BackupRecovery_Text1 => ResourceManager.GetString("Help_BackupRecovery_Text1", resourceCulture);
+
+        public static string Help_BackupRecovery_VisualCaption1 => ResourceManager.GetString("Help_BackupRecovery_VisualCaption1", resourceCulture);
+
+        public static string Help_BackupRecovery_Heading2 => ResourceManager.GetString("Help_BackupRecovery_Heading2", resourceCulture);
+
+        public static string Help_BackupRecovery_Text2 => ResourceManager.GetString("Help_BackupRecovery_Text2", resourceCulture);
+
+        public static string Help_BackupRecovery_VisualCaption2 => ResourceManager.GetString("Help_BackupRecovery_VisualCaption2", resourceCulture);
+
+        public static string Help_BackupRecovery_Heading3 => ResourceManager.GetString("Help_BackupRecovery_Heading3", resourceCulture);
+
+        public static string Help_BackupRecovery_Text3 => ResourceManager.GetString("Help_BackupRecovery_Text3", resourceCulture);
+
+        public static string Help_BackupRecovery_VisualCaption3 => ResourceManager.GetString("Help_BackupRecovery_VisualCaption3", resourceCulture);
+
+        public static string Help_BackupRecovery_Heading4 => ResourceManager.GetString("Help_BackupRecovery_Heading4", resourceCulture);
+
+        public static string Help_BackupRecovery_Text4 => ResourceManager.GetString("Help_BackupRecovery_Text4", resourceCulture);
+
+        public static string Help_BackupRecovery_VisualCaption4 => ResourceManager.GetString("Help_BackupRecovery_VisualCaption4", resourceCulture);
+
+        public static string Onboarding_Slide1Title => ResourceManager.GetString("Onboarding_Slide1Title", resourceCulture);
+
+        public static string Onboarding_Slide1Body => ResourceManager.GetString("Onboarding_Slide1Body", resourceCulture);
+
+        public static string Onboarding_Slide2Title => ResourceManager.GetString("Onboarding_Slide2Title", resourceCulture);
+
+        public static string Onboarding_Slide2Body => ResourceManager.GetString("Onboarding_Slide2Body", resourceCulture);
+
+        public static string Onboarding_Slide3Title => ResourceManager.GetString("Onboarding_Slide3Title", resourceCulture);
+
+        public static string Onboarding_Slide3Body => ResourceManager.GetString("Onboarding_Slide3Body", resourceCulture);
+
+        public static string Onboarding_AdvanceButtonNext => ResourceManager.GetString("Onboarding_AdvanceButtonNext", resourceCulture);
+
+        public static string Onboarding_AdvanceButtonFinish => ResourceManager.GetString("Onboarding_AdvanceButtonFinish", resourceCulture);
     }
 }

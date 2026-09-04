@@ -541,4 +541,172 @@
   <data name="Platform_WindowsFileTypeLabel" xml:space="preserve">
     <value>GDSB File</value>
   </data>
+  <data name="Help_MasterUnlockCode_Title" xml:space="preserve">
+    <value>The master password</value>
+  </data>
+  <data name="Help_MasterUnlockCode_Text1" xml:space="preserve">
+    <value>It's the password that opens this vault. It isn't stored anywhere: not in the app, not on your phone, not on the internet. That's why there's no "forgot my password" here - if you lose this password, nobody can open the file again, not you, not whoever made the app.</value>
+  </data>
+  <data name="Help_MasterUnlockCode_Text2" xml:space="preserve">
+    <value>Pick something you'll remember easily and nobody else would guess. The minimum is 8 characters, but the longer, the better.</value>
+  </data>
+  <data name="Help_MasterUnlockCode_VisualCaption" xml:space="preserve">
+    <value>This is the field. Tap it and type - the letters show up as dots so nobody can read over your shoulder.</value>
+  </data>
+  <data name="Help_VaultName_Title" xml:space="preserve">
+    <value>The vault's name</value>
+  </data>
+  <data name="Help_VaultName_Text1" xml:space="preserve">
+    <value>It's the nickname that shows up inside the app so you can recognize this vault. Changing the name here doesn't rename the file saved on your phone or in the cloud: the file keeps its old name.</value>
+  </data>
+  <data name="Help_VaultName_Text2" xml:space="preserve">
+    <value>That's why, after saving a new name, the app offers to also keep a copy in a new file. It's optional - if you decline, that's fine, the change was already saved to the usual file.</value>
+  </data>
+  <data name="Help_VaultName_VisualCaption" xml:space="preserve">
+    <value>This is the invitation that shows up after saving. Tapping "Save as a new file" creates a copy and keeps the original intact.</value>
+  </data>
+  <data name="Help_VaultProtections_Title" xml:space="preserve">
+    <value>Vault protections</value>
+  </data>
+  <data name="Help_VaultProtections_Heading1" xml:space="preserve">
+    <value>Clear the clipboard</value>
+  </data>
+  <data name="Help_VaultProtections_Text1" xml:space="preserve">
+    <value>When you copy a password, it sits in your phone's "copy and paste" memory, and any other app can read it from there. With this protection on, the app clears that value on its own after the time you choose.</value>
+  </data>
+  <data name="Help_VaultProtections_Heading2" xml:space="preserve">
+    <value>Automatic lock</value>
+  </data>
+  <data name="Help_VaultProtections_Text2" xml:space="preserve">
+    <value>If you leave the app and take a while to come back, it closes the vault and asks for the master password again. It's for when you leave your phone on the table and someone picks it up.</value>
+  </data>
+  <data name="Help_VaultProtections_VisualCaption" xml:space="preserve">
+    <value>Tap one of the times to choose. Whichever is highlighted is the one in effect.</value>
+  </data>
+  <data name="Help_VaultBackups_Title" xml:space="preserve">
+    <value>Automatic backups</value>
+  </data>
+  <data name="Help_VaultBackups_Text1" xml:space="preserve">
+    <value>Every time you save something, the app keeps a copy of how the vault was before. So if you delete an item by mistake, you can go back.</value>
+  </data>
+  <data name="Help_VaultBackups_Text2" xml:space="preserve">
+    <value>Here you decide how many of these copies are kept. "By count" keeps a fixed number of versions. "By time" keeps the ones from however many recent days you choose. The most recent copy is never deleted, no matter what.</value>
+  </data>
+  <data name="Help_VaultBackups_VisualCaption" xml:space="preserve">
+    <value>Tap "By count" or "By time" to choose the rule. The available values show up right below.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Title" xml:space="preserve">
+    <value>Change the master password</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Text1" xml:space="preserve">
+    <value>To change it, the app asks for the current password first - that's how it confirms it's really you. After the change, it's the new password that opens this vault.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Text2" xml:space="preserve">
+    <value>Watch out for backups: copies saved before the change stay tied to the old password. If you ever need to restore one of them, it's the old password that works, not the new one. So it's worth writing the old one down somewhere safe, or checking the box that deletes those copies right away.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_Text3" xml:space="preserve">
+    <value>If you use your fingerprint to open the vault, you don't need to do anything: the app reconfigures biometrics on its own with the new password.</value>
+  </data>
+  <data name="Help_ChangeMasterUnlockCode_VisualCaption" xml:space="preserve">
+    <value>Check this box if you don't want to keep copies that only open with the old password.</value>
+  </data>
+  <data name="Help_SecretUrl_Title" xml:space="preserve">
+    <value>The site's address</value>
+  </data>
+  <data name="Help_SecretUrl_Text1" xml:space="preserve">
+    <value>It's optional, but it helps a lot: once you fill it in, the address becomes a shortcut on the item's card. One tap and the site opens in the browser, no typing needed.</value>
+  </data>
+  <data name="Help_SecretUrl_Text2" xml:space="preserve">
+    <value>You can write it plainly, like "netflix.com" - no need to add "https://" in front.</value>
+  </data>
+  <data name="Help_SecretUrl_VisualCaption" xml:space="preserve">
+    <value>It sits right below the item's name, in pink. Tapping it opens the site.</value>
+  </data>
+  <data name="Help_SecretStoredValue_Title" xml:space="preserve">
+    <value>The stored password</value>
+  </data>
+  <data name="Help_SecretStoredValue_Text1" xml:space="preserve">
+    <value>It's the password for that site or app - the one you'd use to log in. It stays hidden behind dots and only shows up when you ask.</value>
+  </data>
+  <data name="Help_SecretStoredValue_Text2" xml:space="preserve">
+    <value>When you need it, you have two options: the eye icon shows the password on screen, and "Copy" sends it straight to your phone's clipboard, without showing it to anyone. If the clipboard protection is on, the app clears the copied value on its own after a few seconds.</value>
+  </data>
+  <data name="Help_SecretStoredValue_VisualCaption" xml:space="preserve">
+    <value>These are the two buttons, on the password's card: the eye shows it, "Copy" copies it.</value>
+  </data>
+  <data name="Help_SecretFavorite_Title" xml:space="preserve">
+    <value>Mark as favorite</value>
+  </data>
+  <data name="Help_SecretFavorite_Text1" xml:space="preserve">
+    <value>Favorites move to the top of the list and get a golden star. It's for the items you open all the time, so they don't get lost among the others.</value>
+  </data>
+  <data name="Help_SecretFavorite_Text2" xml:space="preserve">
+    <value>It doesn't change anything about the item's security or content - it's just a way to find it faster.</value>
+  </data>
+  <data name="Help_SecretFavorite_VisualCaption" xml:space="preserve">
+    <value>This is the little star, which shows up on the item's card in the list.</value>
+  </data>
+  <data name="Help_BackupRecovery_Title" xml:space="preserve">
+    <value>Recover a backup</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading1" xml:space="preserve">
+    <value>How these copies show up here</value>
+  </data>
+  <data name="Help_BackupRecovery_Text1" xml:space="preserve">
+    <value>Every time you save something to the vault, the app keeps a copy of how it was before. These copies live in a private folder of the app, never alongside your file, so they don't clutter your folder. How many are kept is what you chose in Edit vault, under Backups.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption1" xml:space="preserve">
+    <value>Each copy becomes a card like this one, with the date and time it was saved.</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading2" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="Help_BackupRecovery_Text2" xml:space="preserve">
+    <value>Restoring doesn't touch your current vault: the app creates a new file with that copy's contents, and you choose afterward which of the two to open. The app will ask for that copy's master password at the time - if it's from before you changed the password, the old password is the one that works.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption2" xml:space="preserve">
+    <value>This is the button, at the bottom of each card.</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading3" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Help_BackupRecovery_Text3" xml:space="preserve">
+    <value>Deletes just that one copy from the list. It can't be undone, and your current vault stays intact.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption3" xml:space="preserve">
+    <value>It sits next to "Restore", in red.</value>
+  </data>
+  <data name="Help_BackupRecovery_Heading4" xml:space="preserve">
+    <value>Delete all</value>
+  </data>
+  <data name="Help_BackupRecovery_Text4" xml:space="preserve">
+    <value>Deletes all the copies on this screen at once. It also can't be undone. Your current vault isn't affected - only the old copies disappear.</value>
+  </data>
+  <data name="Help_BackupRecovery_VisualCaption4" xml:space="preserve">
+    <value>This is the red link, at the end of the list.</value>
+  </data>
+  <data name="Onboarding_Slide1Title" xml:space="preserve">
+    <value>Your vault is a file</value>
+  </data>
+  <data name="Onboarding_Slide1Body" xml:space="preserve">
+    <value>GDSB doesn't store anything in the cloud or inside your phone: everything lives in a .GDSBX file that's yours. The app is just the layer that opens and reads that file - without it available, there's nothing to open. Keep it somewhere you can reach again, like a Google Drive or OneDrive folder.</value>
+  </data>
+  <data name="Onboarding_Slide2Title" xml:space="preserve">
+    <value>Create a vault</value>
+  </data>
+  <data name="Onboarding_Slide2Body" xml:space="preserve">
+    <value>You choose where to save the file and set the master password. That password is the only key: it isn't stored anywhere, and there's no "forgot my password". Lose the password, lose the file's contents.</value>
+  </data>
+  <data name="Onboarding_Slide3Title" xml:space="preserve">
+    <value>Open it later</value>
+  </data>
+  <data name="Onboarding_Slide3Body" xml:space="preserve">
+    <value>Always the same: choose the file, type the password. Turn on biometrics and the app remembers your last vault, with your fingerprint as the shortcut - but the master password keeps working, and the file still needs to be accessible.</value>
+  </data>
+  <data name="Onboarding_AdvanceButtonNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Onboarding_AdvanceButtonFinish" xml:space="preserve">
+    <value>Start</value>
+  </data>
 </root>
