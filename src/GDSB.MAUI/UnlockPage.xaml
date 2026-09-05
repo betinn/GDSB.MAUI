@@ -263,5 +263,16 @@
              fica por cima - ele é que explica o que a outra está perguntando. -->
         <views:OnboardingView BindingContext="{Binding Onboarding}" />
 
+        <!-- Rodapé de versão: fora do ScrollView de propósito. Dentro do RootScroll ele entraria na
+             conta do MinimumHeightRequest ajustado no OnSizeAllocated e empurraria a centralização
+             do bloco de desbloqueio; aqui ele fica ancorado no rodapé e nunca rola. InputTransparent
+             para não roubar toque de nada. -->
+        <Label x:Name="VersionLabel"
+               HorizontalOptions="Center" VerticalOptions="End"
+               Margin="0,0,0,10"
+               FontSize="11"
+               TextColor="{StaticResource TextMutedDark}"
+               InputTransparent="True" />
+
     </Grid>
 </ContentPage>
