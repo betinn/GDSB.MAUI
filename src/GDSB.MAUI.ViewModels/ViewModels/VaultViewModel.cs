@@ -163,6 +163,8 @@ namespace GDSB.MAUI.ViewModels
         public string EditorHeaderTitle => SelectedItem is null ? Localization.Get("Vault_NewItemTitle") : SelectedItem.BoxName;
 
         public string EditorHeaderInitial => SelectedItem?.Initial ?? "+";
+
+        public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
 #pragma warning restore S2325
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -186,7 +188,14 @@ namespace GDSB.MAUI.ViewModels
         public void OnSizeChanged(double width) => IsWideLayout = width >= ResponsiveBreakpoints.TabletMinWidth;
 #pragma warning restore S2325
 
-        partial void OnSearchTextChanged(string value) => RefreshItems();
+        partial void OnSearchTextChanged(string value)
+        {
+            OnPropertyChanged(nameof(HasSearchText));
+            RefreshItems();
+        }
+
+        [RelayCommand]
+        private void ClearSearch() => SearchText = string.Empty;
 
         partial void OnFilterFavoritesOnlyChanged(bool value)
         {

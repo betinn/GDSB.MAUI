@@ -151,9 +151,18 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                             StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
-                        <Entry Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
-                               TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                               BackgroundColor="Transparent" VerticalOptions="Center" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Entry Grid.Column="0" Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
+                                   TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                   BackgroundColor="Transparent" VerticalOptions="Center" />
+                            <!-- Só aparece com texto digitado: sem isto era preciso apagar letra por letra
+                                 pelo teclado pra limpar a busca. -->
+                            <Button Grid.Column="1" Text="&#10005;" IsVisible="{Binding HasSearchText}"
+                                    Command="{Binding ClearSearchCommand}"
+                                    BackgroundColor="Transparent" TextColor="{StaticResource TextSecondaryDark}"
+                                    WidthRequest="30" HeightRequest="30" Padding="0" FontSize="12"
+                                    VerticalOptions="Center" />
+                        </Grid>
                     </Border>
                     <Button Grid.Column="1" Text="&#43;" FontSize="20" WidthRequest="44" HeightRequest="44" Padding="0"
                             Style="{StaticResource PrimaryActionButtonStyle}"
@@ -175,15 +184,33 @@
         <!-- Overlay do editor em bottom-sheet (só no layout compacto - no layout largo o editor já
              aparece no painel lateral; sem o IsCompactLayout aqui, isso vazava por cima do painel
              lateral esticado até o fim da janela quando IsEditorOpen ficava true no modo tablet). -->
-        <Grid IsVisible="{Binding IsCompactEditorOpen}" BackgroundColor="#99000000">
+        <Grid x:Name="EditorSheetOverlay" IsVisible="{Binding IsCompactEditorOpen}" BackgroundColor="#99000000">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding CloseEditorCommand}" />
             </Grid.GestureRecognizers>
-            <Border VerticalOptions="End" BackgroundColor="{StaticResource SurfaceCardDark}"
-                    StrokeShape="RoundRectangle 22,22,0,0" StrokeThickness="0" Padding="20" MaximumHeightRequest="620">
-                <ScrollView>
-                    <views:ItemEditorView />
-                </ScrollView>
+            <Border x:Name="EditorSheet" VerticalOptions="End" BackgroundColor="{StaticResource SurfaceCardDark}"
+                    StrokeShape="RoundRectangle 22,22,0,0" StrokeThickness="0" Padding="20,6,20,20" MaximumHeightRequest="620">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Faixa de arraste: é aqui, e só aqui, que o PanGestureRecognizer mora. Pôr o
+                         pan no Border inteiro não funcionaria - o ScrollView do formulário consome o
+                         toque vertical antes no Android, e o gesto ficaria morto justamente sobre os
+                         campos. A alça é só a dica visual (InputTransparent): quem recebe o toque é
+                         a faixa inteira, não o traço dela. -->
+                    <Grid Grid.Row="0" HeightRequest="28" BackgroundColor="Transparent">
+                        <Grid.GestureRecognizers>
+                            <PanGestureRecognizer PanUpdated="OnEditorSheetPanUpdated" />
+                        </Grid.GestureRecognizers>
+                        <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2"
+                                 Color="{StaticResource BorderStrongDark}"
+                                 HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                    </Grid>
+
+                    <ScrollView Grid.Row="1">
+                        <views:ItemEditorView />
+                    </ScrollView>
+
+                </Grid>
             </Border>
         </Grid>
 
@@ -203,9 +230,16 @@
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                         <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                                 StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="42">
-                            <Entry Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
-                                   TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                                   BackgroundColor="Transparent" VerticalOptions="Center" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Entry Grid.Column="0" Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
+                                       TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                       BackgroundColor="Transparent" VerticalOptions="Center" />
+                                <Button Grid.Column="1" Text="&#10005;" IsVisible="{Binding HasSearchText}"
+                                        Command="{Binding ClearSearchCommand}"
+                                        BackgroundColor="Transparent" TextColor="{StaticResource TextSecondaryDark}"
+                                        WidthRequest="28" HeightRequest="28" Padding="0" FontSize="11"
+                                        VerticalOptions="Center" />
+                            </Grid>
                         </Border>
                         <Button Grid.Column="1" Text="&#43;" FontSize="18" WidthRequest="42" HeightRequest="42" Padding="0"
                                 Style="{StaticResource PrimaryActionButtonStyle}"
