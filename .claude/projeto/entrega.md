@@ -42,6 +42,22 @@ Actions e o check do SonarCloud terminarem, leia o comentário do `sonarqubeclou
 corrija o que for corrigível, **mesmo que a Quality Gate passe**. O alvo é o código mais limpo
 possível, não só o check verde: "0 New issues" importa tanto quanto "Quality Gate passed".
 
+**Quality Gate verde não encerra o ciclo.** Se o comentário-resumo disser "N New issues" com N > 0,
+é obrigatório buscar o detalhe **linha a linha** antes de considerar a fase fechada — o resumo traz
+só a contagem, nunca arquivo nem linha.
+
+Onde o detalhe está, neste repositório: o Sonar publica cada apontamento como **check run
+annotation** da check run "SonarCloud Code Analysis" (é o que aparece ancorado na linha, na aba
+*Files changed*). Isso **não** é review comment, e o MCP do GitHub não expõe esse endpoint. Use:
+
+```bash
+bash .claude/scripts/sonar-annotations.sh <número do PR>
+```
+
+O script resolve o head do PR, acha a check run do Sonar e imprime `caminho:linha [nível] mensagem`.
+Quem roda é o agente `entrega-pr`, que repassa a saída verbatim; quem decide o que fazer com cada
+item é a sessão principal.
+
 Ao corrigir, siga o catálogo de falsos positivos que está no agente `sonar`
 (`.claude/agents/sonar.md`) em vez de reinventar a correção — pragma comentado, nunca mudança de
 comportamento.

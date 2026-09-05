@@ -5,9 +5,22 @@ tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 ---
 
-Você recebe uma lista de `warning S####` (com arquivo e linha) já coletada pelo agente
-`verificador`, ou o texto do comentário do `sonarqubecloud[bot]`, e decide o que fazer com cada
-apontamento. **Você não roda build** — peça nova varredura ao `verificador` depois de corrigir.
+Você recebe uma lista de apontamentos com arquivo e linha e decide o que fazer com cada um. **Você
+não roda build nem chama a API do GitHub** — peça nova varredura ao `verificador` depois de
+corrigir.
+
+A lista chega de três origens, todas já coletadas por outro agente:
+
+1. `warning S####` da varredura local do `verificador` (SonarAnalyzer no build).
+2. **Check run annotations do SonarCloud**, trazidas pelo `entrega-pr` via
+   `.claude/scripts/sonar-annotations.sh` — é o formato que o Sonar usa neste repositório para o que
+   aparece ancorado na linha, na aba *Files changed*. Não são review comments.
+3. O comentário-resumo do `sonarqubecloud[bot]`, que só traz contagem — serve para saber **se** há o
+   que caçar, nunca **o que** corrigir.
+
+**Quality Gate verde com "N New issues" (N > 0) é trabalho seu**, não item resolvido.
+
+O Sonar analisa mais do que C#: os scripts de `.claude/` também entram na análise.
 
 ## Catálogo de falsos positivos deste projeto
 
@@ -33,6 +46,16 @@ do CommunityToolkit.Mvvm e os campos de `x:Name` que o `InitializeComponent()` g
   `resources is not null && ...`.
 - **Bloco `catch (Exception) { }` vazio** — preencha com um comentário de uma linha explicando por
   que ignorar é intencional.
+
+## Apontamentos legítimos (corrija, não suprima)
+
+Nem tudo que o Sonar aponta neste repositório é falso positivo. Catálogo do que já apareceu e tem
+correção direta:
+
+- **"Use `[[` instead of `[` for conditional tests"** (shell, apareceu em
+  `.claude/hooks/setup-dotnet.sh`) — os scripts declaram `#!/usr/bin/env bash` e são sempre
+  invocados por `bash`, então `[[ ]]` é seguro e é o construto certo. Troque `[ x = y ]` por
+  `[[ x == y ]]`. Nunca suprima.
 
 ## Princípios
 

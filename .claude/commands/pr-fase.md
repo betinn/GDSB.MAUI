@@ -17,7 +17,14 @@ Feche a fase **$1**.
    - corpo do PR, explicando **o que mudou e por quê** (PR nunca é mudo), com o "Pronto quando" da
      fase como checklist.
 5. Dispare o `entrega-pr` passando os quatro textos prontos.
-6. Quando ele voltar com o status dos checks e o comentário do `sonarqubecloud[bot]`: leia,
-   **decida** o que é corrigível e delegue a correção ao `sonar` (com nova varredura pelo
-   `verificador`). Corrija mesmo com a Quality Gate verde — o alvo é "0 New issues".
-7. Registre o link do PR em `plano-rodada.md`. **Nunca faça merge.**
+6. Quando ele voltar com o status dos checks e o comentário do `sonarqubecloud[bot]`: olhe a
+   **contagem de New issues**. Verde com "0 New issues" fecha o ciclo; **qualquer N > 0 exige a
+   lista linha a linha** (`bash .claude/scripts/sonar-annotations.sh <PR>`, que o `entrega-pr` já
+   traz), mesmo com a Quality Gate passando.
+7. Com a lista na mão, **decida a rota de cada apontamento**:
+   - 1–2 linhas, mecânico e óbvio → corrija você mesma, inline;
+   - triagem de falso positivo, pragma, apontamento em lote → agente `sonar`;
+   - apontamento em código de domínio → o agente dono do arquivo (`dev-viewmodels`, `dev-xaml`,
+     `cripto-backup`, `i18n`), com o `sonar` só validando a forma da correção.
+   Depois de corrigir, faça novo push pelo `entrega-pr` e repita o passo 6 até "0 New issues".
+8. Registre o link do PR em `plano-rodada.md`. **Nunca faça merge.**

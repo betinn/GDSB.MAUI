@@ -53,8 +53,23 @@ Leia o status dos checks do PR (workflows do GitHub Actions e o check do SonarCl
 - estado de cada check: `pendente` / `verde` / `vermelho` (só o nome e o estado);
 - o comentário do `sonarqubecloud[bot]`, **copiado verbatim**, sem resumo e sem opinião.
 
+**Quality Gate verde não encerra o seu trabalho.** Olhe a contagem no comentário-resumo: se disser
+"N New issues" com **N > 0**, o detalhe linha a linha é obrigatório. O resumo nunca traz arquivo nem
+linha; o detalhe vem de dois lugares e você tenta os dois:
+
+1. `bash .claude/scripts/sonar-annotations.sh <número do PR>` — é onde o Sonar publica neste
+   repositório (check run annotations, o que aparece ancorado na linha na aba *Files changed*). O
+   MCP do GitHub não expõe esse endpoint; por isso existe o script.
+2. `mcp__github__pull_request_read` com `method: get_review_comments` — outro bot pode usar esse
+   formato.
+
+**Repasse a saída verbatim**, uma linha por apontamento (`caminho:linha [nível] mensagem`). Não
+tria, não classifica em falso positivo, não corrige, não abre exceção porque "a Quality Gate
+passou". Se N > 0 e você não conseguir a lista, diga isso explicitamente — nunca reporte "tudo
+certo" com apontamento em aberto.
+
 Check vermelho **não é seu para consertar**: reporte o nome do check e pare. Quem decide o que fazer
-é a sessão principal.
+com cada apontamento é a sessão principal.
 
 ## Proibido
 

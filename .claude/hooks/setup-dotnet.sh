@@ -6,7 +6,7 @@ set -u
 
 find_dotnet_root() {
   for candidato in "$HOME/.dotnet" "/usr/share/dotnet" "/usr/lib/dotnet"; do
-    [ -x "$candidato/dotnet" ] && { echo "$candidato"; return 0; }
+    [[ -x "$candidato/dotnet" ]] && { echo "$candidato"; return 0; }
   done
   return 1
 }
@@ -26,7 +26,7 @@ fi
 
 # Neste container o apt é o caminho que funciona: builds.dotnet.microsoft.com é bloqueado
 # pelo proxy de egress, então o script oficial dotnet-install.sh costuma falhar.
-if command -v apt-get >/dev/null 2>&1 && [ "$(id -u)" = "0" ]; then
+if command -v apt-get >/dev/null 2>&1 && [[ "$(id -u)" == "0" ]]; then
   echo "[gdsb] Instalando dotnet-sdk-10.0 via apt..."
   if apt-get update -qq >/dev/null 2>&1 && apt-get install -y -qq dotnet-sdk-10.0 >/dev/null 2>&1; then
     echo "[gdsb] dotnet $(dotnet --version 2>/dev/null) instalado."
