@@ -51,10 +51,15 @@
 	     esse arquivo no próprio .aab, não há upload manual no Play Console.
 	     O SDK roda o R8 sem ofuscação (-dontobfuscate em proguard_xamarin.cfg), então nomes de
 	     classes e métodos continuam legíveis nos stack traces.
+	     AndroidProguardMappingFile aponta pra dentro de $(IntermediateOutputPath) (obj\...) porque
+	     essa pasta já existe garantidamente quando o R8 roda - nada de MakeDir antecipado torcendo
+	     pra rodar antes da hora certa. O Target no fim deste arquivo copia esse mapping para
+	     artifacts/mapping/ depois do publish, só por conveniência (achar o arquivo certo mais fácil
+	     na hora de subir no Play Console).
 	     Rollback: apagar este PropertyGroup (e o ItemGroup do proguard.cfg logo abaixo). -->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<AndroidLinkTool>r8</AndroidLinkTool>
-		<AndroidProguardMappingFile>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..', 'artifacts', 'mapping', 'mapping-$(ApplicationDisplayVersion)-$(ApplicationVersion).txt'))</AndroidProguardMappingFile>
+		<AndroidProguardMappingFile>$(IntermediateOutputPath)mapping.txt</AndroidProguardMappingFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
@@ -154,9 +159,17 @@
 	  </MauiXaml>
 	</ItemGroup>
 
-	<!-- O R8 escreve o mapping via -printmapping e não cria a pasta de destino sozinho. -->
-	<Target Name="GdsbEnsureMappingDirectory" BeforeTargets="Build" Condition="'$(AndroidProguardMappingFile)' != ''">
-		<MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(AndroidProguardMappingFile)'))" />
+	<!-- Copia o mapping.txt (gerado pelo R8 no local padrão do SDK, $(AndroidProguardMappingFile))
+	     para uma pasta fixa e versionável por nome depois do publish Release, para facilitar achar
+	     o arquivo certo na hora de subir no Play Console junto do .aab daquela versão.
+	     Condicionado a Exists(...) porque nem todo publish é Release+Android com R8 ligado. -->
+	<Target Name="GdsbCopyR8Mapping" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' And Exists('$(AndroidProguardMappingFile)')">
+		<PropertyGroup>
+			<GdsbMappingDestDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..', 'artifacts', 'mapping'))</GdsbMappingDestDir>
+		</PropertyGroup>
+		<MakeDir Directories="$(GdsbMappingDestDir)" />
+		<Copy SourceFiles="$(AndroidProguardMappingFile)"
+		      DestinationFiles="$(GdsbMappingDestDir)\mapping-$(ApplicationDisplayVersion)-$(ApplicationVersion).txt" />
 	</Target>
 
 </Project>
