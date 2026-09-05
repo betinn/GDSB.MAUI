@@ -46,6 +46,22 @@
 		<AssemblyName>GDSB</AssemblyName>
 	</PropertyGroup>
 
+	<!-- R8: shrinking do bytecode Java nos builds Release do Android. Reduz o tamanho do app e
+	     gera o mapping.txt que o Google Play pede como "arquivo de desofuscação" - o SDK embute
+	     esse arquivo no próprio .aab, não há upload manual no Play Console.
+	     O SDK roda o R8 sem ofuscação (-dontobfuscate em proguard_xamarin.cfg), então nomes de
+	     classes e métodos continuam legíveis nos stack traces.
+	     AndroidProguardMappingFile aponta pra dentro de $(IntermediateOutputPath) (obj\...) porque
+	     essa pasta já existe garantidamente quando o R8 roda - nada de MakeDir antecipado torcendo
+	     pra rodar antes da hora certa. O Target no fim deste arquivo copia esse mapping para
+	     artifacts/mapping/ depois do publish, só por conveniência (achar o arquivo certo mais fácil
+	     na hora de subir no Play Console).
+	     Rollback: apagar este PropertyGroup (e o ItemGroup do proguard.cfg logo abaixo). -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<AndroidLinkTool>r8</AndroidLinkTool>
+		<AndroidProguardMappingFile>$(IntermediateOutputPath)mapping.txt</AndroidProguardMappingFile>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<!-- BaseSize explícito: sem ele o resizetizer deduz a caixa de cada SVG, e fundo e
@@ -83,6 +99,10 @@
 		<PackageReference Include="Xamarin.AndroidX.Biometric" Version="1.1.0.33" />
 	</ItemGroup>
 
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<ProguardConfiguration Include="Platforms/Android/proguard.cfg" />
+	</ItemGroup>
+
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
 		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
 	</ItemGroup>
@@ -98,5 +118,18 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
+
+	<!-- Copia o mapping.txt (gerado pelo R8 no local padrão do SDK, $(AndroidProguardMappingFile))
+	     para uma pasta fixa e versionável por nome depois do publish Release, para facilitar achar
+	     o arquivo certo na hora de subir no Play Console junto do .aab daquela versão.
+	     Condicionado a Exists(...) porque nem todo publish é Release+Android com R8 ligado. -->
+	<Target Name="GdsbCopyR8Mapping" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' And Exists('$(AndroidProguardMappingFile)')">
+		<PropertyGroup>
+			<GdsbMappingDestDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..', 'artifacts', 'mapping'))</GdsbMappingDestDir>
+		</PropertyGroup>
+		<MakeDir Directories="$(GdsbMappingDestDir)" />
+		<Copy SourceFiles="$(AndroidProguardMappingFile)"
+		      DestinationFiles="$(GdsbMappingDestDir)\mapping-$(ApplicationDisplayVersion)-$(ApplicationVersion).txt" />
+	</Target>
 
 </Project>
