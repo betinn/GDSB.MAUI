@@ -1,10 +1,17 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Views;
 
 namespace GDSB.MAUI
 {
-    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+    // WindowSoftInputMode fica aqui, no atributo, e não no AndroidManifest.xml: o manifesto escrito
+    // à mão declara <activity android:name=".MainActivity">, mas o nome que o .NET Android gera para
+    // esta classe é mangled (crc64...), então atributos colocados naquele nó não caem
+    // necessariamente na Activity que o app realmente sobe. Pelo atributo o valor vai direto para a
+    // entrada gerada. AdjustResize evita que o Android empurre a janela inteira (pan) quando o
+    // teclado abre - o ajuste de fato é feito pelo SafeAreaEdges das páginas.
+    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, WindowSoftInputMode = SoftInput.AdjustResize, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     public class MainActivity : MauiAppCompatActivity
     {
         // Ponte pro Storage Access Framework (ver Platforms/Android/Services/FilePickerService):

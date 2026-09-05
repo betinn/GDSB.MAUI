@@ -7,6 +7,7 @@
              xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
              x:Class="GDSB.MAUI.VaultPage"
              x:Name="ThisPage"
+             SafeAreaEdges="SoftInput"
              BackgroundColor="{StaticResource SurfaceDark}">
 
     <!--
@@ -14,6 +15,18 @@
       layouts. Com o Title do Shell também ligado ao VaultName, o layout largo mostrava o
       nome duas vezes no canto superior esquerdo. A barra do Shell fica só com a seta de
       voltar.
+    -->
+
+    <!--
+      SafeAreaEdges="SoftInput": no .NET 10 a ContentPage passou a nascer com SafeAreaEdges="None"
+      (edge-to-edge), então o conteúdo continua desenhado atrás do teclado mesmo com a janela em
+      AdjustResize - era isso que deixava senha, observações, favorito e Cancelar/Salvar embaixo do
+      teclado, sem rolagem, no bottom-sheet do editor. Com SoftInput a página respeita só o inset do
+      teclado: o Grid raiz encolhe, o bottom-sheet reancora logo acima do teclado e o ScrollView de
+      dentro passa a rolar até o fim do formulário. Ao esconder o teclado o inset volta a zero e o
+      layout se reajusta sozinho, sem sobrar vão. Não é "All" de propósito: os insets de barra de
+      status/navegação já são tratados pelo Shell, e pedi-los de novo aqui abriria faixa vazia no
+      topo e embaixo da tela.
     -->
 
     <!--
