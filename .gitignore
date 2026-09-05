@@ -400,3 +400,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# mapping.txt do R8, gerado a cada publish Release do Android (vai embutido no .aab)
+artifacts/mapping/

@@ -31,8 +31,8 @@
 		<ApplicationId>gdsb.app</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0.6</ApplicationDisplayVersion>
-		<ApplicationVersion>6</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.7</ApplicationDisplayVersion>
+		<ApplicationVersion>7</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
@@ -44,6 +44,20 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<AssemblyName>GDSB</AssemblyName>
+	</PropertyGroup>
+
+	<!-- R8: shrinking do bytecode Java nos builds Release do Android. Reduz o tamanho do app e
+	     gera o mapping.txt que o Google Play pede como "arquivo de desofuscação" - o SDK embute
+	     esse arquivo no próprio .aab, não há upload manual no Play Console.
+	     O SDK roda o R8 sem ofuscação (-dontobfuscate em proguard_xamarin.cfg), então nomes de
+	     classes e métodos continuam legíveis nos stack traces.
+	     AndroidProguardMappingFile não é sobrescrito aqui: na prática (confirmado via CI) o SDK
+	     ignora um valor customizado e sempre deixa o mapping.txt dentro de $(OutputPath) (bin\...),
+	     tanto na raiz quanto em publish\. O Target no fim deste arquivo copia esse mapping para
+	     artifacts/mapping/ depois do build/publish, só por conveniência.
+	     Rollback: apagar este PropertyGroup (e o ItemGroup do proguard.cfg logo abaixo). -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<AndroidLinkTool>r8</AndroidLinkTool>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -83,6 +97,10 @@
 		<PackageReference Include="Xamarin.AndroidX.Biometric" Version="1.1.0.33" />
 	</ItemGroup>
 
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<ProguardConfiguration Include="Platforms/Android/proguard.cfg" />
+	</ItemGroup>
+
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
 		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
 	</ItemGroup>
@@ -98,5 +116,34 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
+
+	<!-- Copia todo mapping.txt gerado pelo R8 (glob, não um caminho fixo: publicar pra Play Store de
+	     verdade normalmente empacota várias ABIs, cada uma podendo cair numa subpasta diferente
+	     dentro de $(OutputPath)) para uma pasta fixa e versionável por nome, pra facilitar achar o
+	     arquivo certo na hora de subir no Play Console junto do .aab daquela versão.
+	     Busca em $(OutputPath) (bin\...) porque é onde o mapping.txt realmente aparece, confirmado
+	     via CI - inclusive dentro de publish\, no publish completo.
+	     AfterTargets="Build;Publish" porque o Archive/Publish do Visual Studio nem sempre passa pelo
+	     target "Publish" do MSBuild (às vezes empacota tudo dentro de "Build" mesmo) - rodar nos dois
+	     garante que a cópia aconteça não importa qual fluxo local gerou o .aab.
+	     Segunda cópia: quando o publish usa uma pasta de destino customizada (perfil "Pasta"/ad hoc
+	     no Visual Studio, com $(PublishDir) fora do padrão bin\...\publish\), o SDK não leva o
+	     mapping.txt pra lá junto do .aab - então deixamos uma cópia direto nessa pasta também, sem
+	     subpasta, pra ficar ao lado do .aab que o usuário efetivamente vai pegar. -->
+	<Target Name="GdsbCopyR8Mapping" AfterTargets="Build;Publish" Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<ItemGroup>
+			<GdsbR8Mapping Include="$(OutputPath)**\mapping.txt" />
+		</ItemGroup>
+		<PropertyGroup>
+			<GdsbMappingDestDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..', 'artifacts', 'mapping', '$(ApplicationDisplayVersion)-$(ApplicationVersion)'))</GdsbMappingDestDir>
+		</PropertyGroup>
+		<MakeDir Directories="$(GdsbMappingDestDir)" Condition="'@(GdsbR8Mapping)' != ''" />
+		<Copy SourceFiles="@(GdsbR8Mapping)"
+		      DestinationFiles="@(GdsbR8Mapping -> '$(GdsbMappingDestDir)\%(RecursiveDir)%(Filename)%(Extension)')"
+		      Condition="'@(GdsbR8Mapping)' != ''" />
+		<Copy SourceFiles="@(GdsbR8Mapping)"
+		      DestinationFolder="$(PublishDir)"
+		      Condition="'@(GdsbR8Mapping)' != '' And '$(PublishDir)' != '' And Exists('$(PublishDir)')" />
+	</Target>
 
 </Project>
