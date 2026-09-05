@@ -3,7 +3,7 @@
 //     Gerado a partir de AppStrings.resx pelo mesmo layout que o Custom Tool
 //     "PublicResXFileCodeGenerator" do Visual Studio produziria. Escrito à mão porque o ambiente
 //     de build deste repositório (dotnet CLI, sem Visual Studio) não roda o single-file generator -
-//     ver "Como ver os apontamentos sem o SonarCloud" no claude-context.md para o mesmo tipo de
+//     ver .claude/projeto/ambiente.md e .claude/agents/verificador.md para o mesmo tipo de
 //     limitação. Regenerar manualmente (mesma lista de <data name="..."> do .resx, uma propriedade
 //     por chave) sempre que uma chave for adicionada, removida ou renomeada em AppStrings.resx.
 // </auto-generated>

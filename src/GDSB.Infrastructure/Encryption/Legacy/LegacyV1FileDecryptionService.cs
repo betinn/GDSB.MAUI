@@ -16,8 +16,8 @@ namespace GDSB.Infrastructure.Encryption.Legacy
     // Nunca deve voltar a gravar nada neste formato.
     //
     // [Obsolete] aqui é só um aviso pro autor de código novo, não uma dívida a remover: o suporte a
-    // v1 é permanente (ver "Regra permanente" no claude-context.md) - cofres antigos precisam
-    // continuar abrindo indefinidamente.
+    // v1 é permanente (ver "Regra permanente" em .claude/projeto/arquitetura.md) - cofres antigos
+    // precisam continuar abrindo indefinidamente.
 #pragma warning disable S1133
     [Obsolete("Somente leitura de arquivos .GDSBX v1 legados, para migração. Não usar para gravar arquivos novos — use IFileCryptoServiceV2.")]
 #pragma warning restore S1133
