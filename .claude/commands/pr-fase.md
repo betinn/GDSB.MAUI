@@ -17,10 +17,12 @@ Feche a fase **$1**.
    - corpo do PR, explicando **o que mudou e por quê** (PR nunca é mudo), com o "Pronto quando" da
      fase como checklist.
 5. Dispare o `entrega-pr` passando os quatro textos prontos.
-6. Quando ele voltar com o status dos checks e o comentário do `sonarqubecloud[bot]`: olhe a
-   **contagem de New issues**. Verde com "0 New issues" fecha o ciclo; **qualquer N > 0 exige a
-   lista linha a linha** (`bash .claude/scripts/sonar-annotations.sh <PR>`, que o `entrega-pr` já
-   traz), mesmo com a Quality Gate passando.
+6. Quando ele voltar com o status dos checks e o comentário do `sonarqubecloud[bot]`, confira as
+   **três condições de fechamento**, todas independentes de a Quality Gate passar:
+   **New issues = 0**, **Security Hotspots = 0** e **Duplication on New Code = 0.0%**.
+   New issues > 0 exige a lista linha a linha (`bash .claude/scripts/sonar-annotations.sh <PR>`, que
+   o `entrega-pr` já traz). Security nunca fica em aberto. Duplicação se resolve extraindo para o
+   padrão reutilizável, nunca copiando o bloco de novo.
 7. Com a lista na mão, **decida a rota de cada apontamento**:
    - 1–2 linhas, mecânico e óbvio → corrija você mesma, inline;
    - triagem de falso positivo, pragma, apontamento em lote → agente `sonar`;

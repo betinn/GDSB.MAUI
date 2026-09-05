@@ -18,7 +18,9 @@ A lista chega de três origens, todas já coletadas por outro agente:
 3. O comentário-resumo do `sonarqubecloud[bot]`, que só traz contagem — serve para saber **se** há o
    que caçar, nunca **o que** corrigir.
 
-**Quality Gate verde com "N New issues" (N > 0) é trabalho seu**, não item resolvido.
+**Quality Gate verde não significa nada resolvido.** As três condições de fechamento do projeto são
+**New issues = 0**, **Security Hotspots = 0** e **Duplication on New Code = 0.0%** — qualquer uma
+fora do zero é trabalho seu. Segurança em especial nunca fica em aberto, nem como "aceito".
 
 O Sonar analisa mais do que C#: os scripts de `.claude/` também entram na análise.
 
@@ -56,6 +58,11 @@ correção direta:
   `.claude/hooks/setup-dotnet.sh`) — os scripts declaram `#!/usr/bin/env bash` e são sempre
   invocados por `bash`, então `[[ ]]` é seguro e é o construto certo. Troque `[ x = y ]` por
   `[[ x == y ]]`. Nunca suprima.
+- **"Assign this positional parameter to a local variable"** (shell) — dentro de função, `"$1"` vira
+  `local url="$1"` no topo e o corpo usa o nome. Deixa claro o que a função recebe.
+- **"Add an explicit return statement at the end of the function"** (shell) — feche a função com
+  `return $?` quando o código de saída do último comando importa (é o caso de um wrapper de `curl`),
+  ou `return 0` quando não importa. Nunca com um `return 0` que engula erro.
 
 ## Princípios
 

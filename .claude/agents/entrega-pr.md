@@ -53,8 +53,12 @@ Leia o status dos checks do PR (workflows do GitHub Actions e o check do SonarCl
 - estado de cada check: `pendente` / `verde` / `vermelho` (só o nome e o estado);
 - o comentário do `sonarqubecloud[bot]`, **copiado verbatim**, sem resumo e sem opinião.
 
-**Quality Gate verde não encerra o seu trabalho.** Olhe a contagem no comentário-resumo: se disser
-"N New issues" com **N > 0**, o detalhe linha a linha é obrigatório. O resumo nunca traz arquivo nem
+**Quality Gate verde não encerra o seu trabalho.** Extraia do comentário-resumo, e reporte sempre,
+os três números: **New issues**, **Security Hotspots** e **Duplication on New Code**. Qualquer um
+deles diferente de zero (`0`, `0`, `0.0%`) é pendência aberta — diga isso na primeira linha do seu
+relatório, mesmo com a Quality Gate passando.
+
+Se **New issues > 0**, o detalhe linha a linha é obrigatório. O resumo nunca traz arquivo nem
 linha; o detalhe vem de dois lugares e você tenta os dois:
 
 1. `bash .claude/scripts/sonar-annotations.sh <número do PR>` — é onde o Sonar publica neste

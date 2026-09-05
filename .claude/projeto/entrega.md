@@ -42,9 +42,19 @@ Actions e o check do SonarCloud terminarem, leia o comentário do `sonarqubeclou
 corrija o que for corrigível, **mesmo que a Quality Gate passe**. O alvo é o código mais limpo
 possível, não só o check verde: "0 New issues" importa tanto quanto "Quality Gate passed".
 
-**Quality Gate verde não encerra o ciclo.** Se o comentário-resumo disser "N New issues" com N > 0,
-é obrigatório buscar o detalhe **linha a linha** antes de considerar a fase fechada — o resumo traz
-só a contagem, nunca arquivo nem linha.
+**Quality Gate verde não encerra o ciclo.** O comentário-resumo tem que fechar em zero nas três
+linhas abaixo — todas, independentemente de a Quality Gate passar:
+
+| Linha do resumo | Alvo | Se não bater |
+|---|---|---|
+| **New issues** | `0` | buscar o detalhe linha a linha e corrigir |
+| **Security Hotspots** | `0` | tratar como bloqueio: **segurança nunca fica em aberto**, mesmo aceita pela Quality Gate |
+| **Duplication on New Code** | `0.0%` | extrair o trecho duplicado para o padrão reutilizável (`SelectableChip`, `EqualsConverter`, `VaultProtectionsFormViewModelBase`) em vez de copiar o bloco |
+
+Coverage on New Code não é condição de fechamento hoje, mas queda nela merece um comentário no PR.
+
+Quando "New issues" for maior que zero, é obrigatório buscar o detalhe **linha a linha** antes de
+considerar a fase fechada — o resumo traz só a contagem, nunca arquivo nem linha.
 
 Onde o detalhe está, neste repositório: o Sonar publica cada apontamento como **check run
 annotation** da check run "SonarCloud Code Analysis" (é o que aparece ancorado na linha, na aba

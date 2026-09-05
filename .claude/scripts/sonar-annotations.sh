@@ -26,11 +26,13 @@ if [[ -z "${GITHUB_TOKEN:-}" ]]; then
 fi
 
 gh_api() {
+  local url="$1"
   curl -sS --fail-with-body \
     -H "Authorization: Bearer $GITHUB_TOKEN" \
     -H "Accept: application/vnd.github+json" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    "$1"
+    "$url"
+  return $?
 }
 
 sha="$(gh_api "$API/pulls/$PR" | python3 -c 'import json,sys; print(json.load(sys.stdin)["head"]["sha"])')" || {
