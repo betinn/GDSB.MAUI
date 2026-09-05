@@ -51,15 +51,13 @@
 	     esse arquivo no próprio .aab, não há upload manual no Play Console.
 	     O SDK roda o R8 sem ofuscação (-dontobfuscate em proguard_xamarin.cfg), então nomes de
 	     classes e métodos continuam legíveis nos stack traces.
-	     AndroidProguardMappingFile aponta pra dentro de $(IntermediateOutputPath) (obj\...) porque
-	     essa pasta já existe garantidamente quando o R8 roda - nada de MakeDir antecipado torcendo
-	     pra rodar antes da hora certa. O Target no fim deste arquivo copia esse mapping para
-	     artifacts/mapping/ depois do publish, só por conveniência (achar o arquivo certo mais fácil
-	     na hora de subir no Play Console).
+	     AndroidProguardMappingFile não é sobrescrito aqui: na prática (confirmado via CI) o SDK
+	     ignora um valor customizado e sempre deixa o mapping.txt dentro de $(OutputPath) (bin\...),
+	     tanto na raiz quanto em publish\. O Target no fim deste arquivo copia esse mapping para
+	     artifacts/mapping/ depois do build/publish, só por conveniência.
 	     Rollback: apagar este PropertyGroup (e o ItemGroup do proguard.cfg logo abaixo). -->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<AndroidLinkTool>r8</AndroidLinkTool>
-		<AndroidProguardMappingFile>$(IntermediateOutputPath)mapping.txt</AndroidProguardMappingFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -120,16 +118,17 @@
 	</ItemGroup>
 
 	<!-- Copia todo mapping.txt gerado pelo R8 (glob, não um caminho fixo: publicar pra Play Store de
-	     verdade normalmente empacota várias ABIs, e cada uma cai numa subpasta de
-	     $(IntermediateOutputPath) diferente de $(AndroidProguardMappingFile)) para uma pasta fixa e
-	     versionável por nome, pra facilitar achar o arquivo certo na hora de subir no Play Console
-	     junto do .aab daquela versão.
+	     verdade normalmente empacota várias ABIs, cada uma podendo cair numa subpasta diferente
+	     dentro de $(OutputPath)) para uma pasta fixa e versionável por nome, pra facilitar achar o
+	     arquivo certo na hora de subir no Play Console junto do .aab daquela versão.
+	     Busca em $(OutputPath) (bin\...) porque é onde o mapping.txt realmente aparece, confirmado
+	     via CI - inclusive dentro de publish\, no publish completo.
 	     AfterTargets="Build;Publish" porque o Archive/Publish do Visual Studio nem sempre passa pelo
 	     target "Publish" do MSBuild (às vezes empacota tudo dentro de "Build" mesmo) - rodar nos dois
 	     garante que a cópia aconteça não importa qual fluxo local gerou o .aab. -->
 	<Target Name="GdsbCopyR8Mapping" AfterTargets="Build;Publish" Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<ItemGroup>
-			<GdsbR8Mapping Include="$(IntermediateOutputPath)**\mapping.txt" />
+			<GdsbR8Mapping Include="$(OutputPath)**\mapping.txt" />
 		</ItemGroup>
 		<PropertyGroup>
 			<GdsbMappingDestDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..', 'artifacts', 'mapping', '$(ApplicationDisplayVersion)-$(ApplicationVersion)'))</GdsbMappingDestDir>
