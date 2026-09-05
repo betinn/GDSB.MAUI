@@ -111,7 +111,7 @@ public partial class VaultPage : ContentPage
             ResetSheet();
     }
 
-    private void OnEditorSheetPanUpdated(object? sender, PanUpdatedEventArgs e)
+    private async void OnEditorSheetPanUpdated(object? sender, PanUpdatedEventArgs e)
     {
         switch (e.StatusType)
         {
@@ -140,11 +140,16 @@ public partial class VaultPage : ContentPage
             case GestureStatus.Canceled:
                 // TotalY chega zerado no Completed do Android - por isso o deslocamento final usa
                 // o último valor visto no Running, não e.TotalY.
-                SettleEditorSheet(Math.Max(0, _sheetPanStart + _sheetLastTotalY));
+                await SettleEditorSheetAsync(Math.Max(0, _sheetPanStart + _sheetLastTotalY));
                 break;
         }
     }
 
+    // S2325 ("make static") é falso positivo em ApplyEditorSheetOffset/ResetSheet: os dois só
+    // tocam EditorSheet e EditorSheetOverlay, campos de instância gerados por InitializeComponent
+    // a partir do x:Name no XAML - o Sonar não resolve esse tipo de campo. Mesmo caso de
+    // OnSecretCreated/OnSecretUpdated/OnSecretDeleted logo acima.
+#pragma warning disable S2325
     private void ApplyEditorSheetOffset(double offset)
     {
         EditorSheet.TranslationY = offset;
@@ -154,7 +159,15 @@ public partial class VaultPage : ContentPage
         EditorSheetOverlay.BackgroundColor = Color.FromRgba(0, 0, 0, 0.6 * (1 - progress));
     }
 
-    private async void SettleEditorSheet(double offset)
+    private void ResetSheet()
+    {
+        EditorSheet.CancelAnimations();
+        EditorSheet.TranslationY = 0;
+        EditorSheetOverlay.BackgroundColor = EditorScrimColor;
+    }
+#pragma warning restore S2325
+
+    private async Task SettleEditorSheetAsync(double offset)
     {
         var height = EditorSheet.Height;
         var threshold = Math.Max(SheetDismissMinThreshold, height * SheetDismissFractionThreshold);
@@ -172,12 +185,5 @@ public partial class VaultPage : ContentPage
             await EditorSheet.TranslateTo(0, 0, 140, Easing.CubicOut);
             ResetSheet();
         }
-    }
-
-    private void ResetSheet()
-    {
-        EditorSheet.CancelAnimations();
-        EditorSheet.TranslationY = 0;
-        EditorSheetOverlay.BackgroundColor = EditorScrimColor;
     }
 }
