@@ -34,6 +34,18 @@ jobs:
       - name: Build Android
         run: dotnet build src/GDSB.MAUI/GDSB.MAUI.csproj -c Release -p:GdsbAndroidOnly=true
 
+      - name: Publish Android (valida o R8 e gera o mapping)
+        run: dotnet publish src/GDSB.MAUI/GDSB.MAUI.csproj -c Release -f net10.0-android -p:GdsbAndroidOnly=true -p:AndroidKeyStore=false -p:RunAOTCompilation=false
+
+      - name: Conferir mapping.txt e metadados do .aab
+        run: |
+          set -e
+          ls -la artifacts/mapping/
+          test -s artifacts/mapping/mapping-*.txt
+          AAB=$(find src/GDSB.MAUI/bin/Release/net10.0-android -name '*.aab' | head -1)
+          echo "AAB: $AAB"
+          unzip -l "$AAB" | grep -i 'proguard' || echo "AVISO: mapping não localizado no BUNDLE-METADATA do .aab"
+
   build-windows:
     runs-on: windows-latest
     steps:

@@ -46,6 +46,17 @@
 		<AssemblyName>GDSB</AssemblyName>
 	</PropertyGroup>
 
+	<!-- R8: shrinking do bytecode Java nos builds Release do Android. Reduz o tamanho do app e
+	     gera o mapping.txt que o Google Play pede como "arquivo de desofuscação" - o SDK embute
+	     esse arquivo no próprio .aab, não há upload manual no Play Console.
+	     O SDK roda o R8 sem ofuscação (-dontobfuscate em proguard_xamarin.cfg), então nomes de
+	     classes e métodos continuam legíveis nos stack traces.
+	     Rollback: apagar este PropertyGroup (e o ItemGroup do proguard.cfg logo abaixo). -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<AndroidLinkTool>r8</AndroidLinkTool>
+		<AndroidProguardMappingFile>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..', 'artifacts', 'mapping', 'mapping-$(ApplicationDisplayVersion)-$(ApplicationVersion).txt'))</AndroidProguardMappingFile>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
 	  <ApplicationVersion>5</ApplicationVersion>
 	  <ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
@@ -123,6 +134,10 @@
 		<PackageReference Include="Xamarin.AndroidX.Biometric" Version="1.1.0.33" />
 	</ItemGroup>
 
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<ProguardConfiguration Include="Platforms/Android/proguard.cfg" />
+	</ItemGroup>
+
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
 		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
 	</ItemGroup>
@@ -138,5 +153,10 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
+
+	<!-- O R8 escreve o mapping via -printmapping e não cria a pasta de destino sozinho. -->
+	<Target Name="GdsbEnsureMappingDirectory" BeforeTargets="Build" Condition="'$(AndroidProguardMappingFile)' != ''">
+		<MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(AndroidProguardMappingFile)'))" />
+	</Target>
 
 </Project>
