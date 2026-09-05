@@ -15,7 +15,7 @@ namespace GDSB.MAUI.Help
     // Os nomes de constante evitam de propósito as palavras "password"/"pwd"/"passphrase": a regra
     // S2068 do Sonar flagra a declaração de qualquer campo com esses nomes e valor literal como
     // "credencial no código", mesmo quando o valor é só um identificador. Mesmo motivo do
-    // VaultUnlockCode dos testes - ver claude-context.md.
+    // VaultUnlockCode dos testes - ver o catálogo de falsos positivos em .claude/agents/sonar.md.
     //
     // A prosa (Title, Text/Heading, Caption) vem do catálogo (AppStrings), lida na cultura vigente -
     // por isso All não é mais materializado uma vez num inicializador estático: rodada 4 (multilíngue)
