@@ -125,7 +125,11 @@
 	     via CI - inclusive dentro de publish\, no publish completo.
 	     AfterTargets="Build;Publish" porque o Archive/Publish do Visual Studio nem sempre passa pelo
 	     target "Publish" do MSBuild (às vezes empacota tudo dentro de "Build" mesmo) - rodar nos dois
-	     garante que a cópia aconteça não importa qual fluxo local gerou o .aab. -->
+	     garante que a cópia aconteça não importa qual fluxo local gerou o .aab.
+	     Segunda cópia: quando o publish usa uma pasta de destino customizada (perfil "Pasta"/ad hoc
+	     no Visual Studio, com $(PublishDir) fora do padrão bin\...\publish\), o SDK não leva o
+	     mapping.txt pra lá junto do .aab - então deixamos uma cópia direto nessa pasta também, sem
+	     subpasta, pra ficar ao lado do .aab que o usuário efetivamente vai pegar. -->
 	<Target Name="GdsbCopyR8Mapping" AfterTargets="Build;Publish" Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<ItemGroup>
 			<GdsbR8Mapping Include="$(OutputPath)**\mapping.txt" />
@@ -137,6 +141,9 @@
 		<Copy SourceFiles="@(GdsbR8Mapping)"
 		      DestinationFiles="@(GdsbR8Mapping -> '$(GdsbMappingDestDir)\%(RecursiveDir)%(Filename)%(Extension)')"
 		      Condition="'@(GdsbR8Mapping)' != ''" />
+		<Copy SourceFiles="@(GdsbR8Mapping)"
+		      DestinationFolder="$(PublishDir)"
+		      Condition="'@(GdsbR8Mapping)' != '' And '$(PublishDir)' != '' And Exists('$(PublishDir)')" />
 	</Target>
 
 </Project>
