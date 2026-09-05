@@ -175,15 +175,33 @@
         <!-- Overlay do editor em bottom-sheet (só no layout compacto - no layout largo o editor já
              aparece no painel lateral; sem o IsCompactLayout aqui, isso vazava por cima do painel
              lateral esticado até o fim da janela quando IsEditorOpen ficava true no modo tablet). -->
-        <Grid IsVisible="{Binding IsCompactEditorOpen}" BackgroundColor="#99000000">
+        <Grid x:Name="EditorSheetOverlay" IsVisible="{Binding IsCompactEditorOpen}" BackgroundColor="#99000000">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding CloseEditorCommand}" />
             </Grid.GestureRecognizers>
-            <Border VerticalOptions="End" BackgroundColor="{StaticResource SurfaceCardDark}"
-                    StrokeShape="RoundRectangle 22,22,0,0" StrokeThickness="0" Padding="20" MaximumHeightRequest="620">
-                <ScrollView>
-                    <views:ItemEditorView />
-                </ScrollView>
+            <Border x:Name="EditorSheet" VerticalOptions="End" BackgroundColor="{StaticResource SurfaceCardDark}"
+                    StrokeShape="RoundRectangle 22,22,0,0" StrokeThickness="0" Padding="20,6,20,20" MaximumHeightRequest="620">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Faixa de arraste: é aqui, e só aqui, que o PanGestureRecognizer mora. Pôr o
+                         pan no Border inteiro não funcionaria - o ScrollView do formulário consome o
+                         toque vertical antes no Android, e o gesto ficaria morto justamente sobre os
+                         campos. A alça é só a dica visual (InputTransparent): quem recebe o toque é
+                         a faixa inteira, não o traço dela. -->
+                    <Grid Grid.Row="0" HeightRequest="28" BackgroundColor="Transparent">
+                        <Grid.GestureRecognizers>
+                            <PanGestureRecognizer PanUpdated="OnEditorSheetPanUpdated" />
+                        </Grid.GestureRecognizers>
+                        <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2"
+                                 Color="{StaticResource BorderStrongDark}"
+                                 HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                    </Grid>
+
+                    <ScrollView Grid.Row="1">
+                        <views:ItemEditorView />
+                    </ScrollView>
+
+                </Grid>
             </Border>
         </Grid>
 

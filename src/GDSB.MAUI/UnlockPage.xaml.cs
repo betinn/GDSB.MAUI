@@ -21,6 +21,7 @@ public partial class UnlockPage : ContentPage
             StrokeWidth = 1.7f,
             Compact = true,
         };
+        VersionLabel.Text = $"v{AppInfo.Current.VersionString}";
     }
 
     // Mantém o conteúdo com pelo menos a altura visível: assim a linha "*" continua centralizando
