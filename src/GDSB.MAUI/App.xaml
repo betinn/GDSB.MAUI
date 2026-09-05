@@ -3,7 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GDSB.MAUI"
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+             android:Application.WindowSoftInputModeAdjust="Resize"
              x:Class="GDSB.MAUI.App">
+    <!--
+      WindowSoftInputModeAdjust=Resize: com o padrão (pan) o Android empurra a janela inteira para
+      cima quando o teclado abre, o que brigaria com o SafeAreaEdges das páginas (o conteúdo subiria
+      duas vezes). Com Resize a janela só informa o inset do teclado e quem decide o que encolher é
+      o layout. O mesmo valor está no atributo [Activity] da MainActivity, para já valer desde a
+      criação da janela, antes do MAUI aplicar este platform-specific.
+    -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
