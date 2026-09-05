@@ -151,9 +151,18 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                             StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="44">
-                        <Entry Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
-                               TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                               BackgroundColor="Transparent" VerticalOptions="Center" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Entry Grid.Column="0" Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
+                                   TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                   BackgroundColor="Transparent" VerticalOptions="Center" />
+                            <!-- Só aparece com texto digitado: sem isto era preciso apagar letra por letra
+                                 pelo teclado pra limpar a busca. -->
+                            <Button Grid.Column="1" Text="&#10005;" IsVisible="{Binding HasSearchText}"
+                                    Command="{Binding ClearSearchCommand}"
+                                    BackgroundColor="Transparent" TextColor="{StaticResource TextSecondaryDark}"
+                                    WidthRequest="30" HeightRequest="30" Padding="0" FontSize="12"
+                                    VerticalOptions="Center" />
+                        </Grid>
                     </Border>
                     <Button Grid.Column="1" Text="&#43;" FontSize="20" WidthRequest="44" HeightRequest="44" Padding="0"
                             Style="{StaticResource PrimaryActionButtonStyle}"
@@ -221,9 +230,16 @@
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                         <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceCardDark}" Stroke="{StaticResource BorderDarkBrush}"
                                 StrokeShape="RoundRectangle 12" Padding="14,0" HeightRequest="42">
-                            <Entry Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
-                                   TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
-                                   BackgroundColor="Transparent" VerticalOptions="Center" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Entry Grid.Column="0" Placeholder="{loc:Tr Vault_SearchPlaceholder}" Text="{Binding SearchText}"
+                                       TextColor="{StaticResource TextPrimaryDark}" PlaceholderColor="{StaticResource TextMutedDark}"
+                                       BackgroundColor="Transparent" VerticalOptions="Center" />
+                                <Button Grid.Column="1" Text="&#10005;" IsVisible="{Binding HasSearchText}"
+                                        Command="{Binding ClearSearchCommand}"
+                                        BackgroundColor="Transparent" TextColor="{StaticResource TextSecondaryDark}"
+                                        WidthRequest="28" HeightRequest="28" Padding="0" FontSize="11"
+                                        VerticalOptions="Center" />
+                            </Grid>
                         </Border>
                         <Button Grid.Column="1" Text="&#43;" FontSize="18" WidthRequest="42" HeightRequest="42" Padding="0"
                                 Style="{StaticResource PrimaryActionButtonStyle}"
