@@ -94,14 +94,16 @@ Prefixo de branch da rodada: **`warnings-zero`**.
 | 1 | `TrExtension` + NU1608 | 0 | −181 | ✅ | [#32](https://github.com/betinn/GDSB.MAUI/pull/32) |
 | 2 | Nulabilidade nas camadas de plataforma | 0 | −27 | ✅ | [#35](https://github.com/betinn/GDSB.MAUI/pull/35) |
 | 3 | APIs obsoletas (`CS0618`) | 0 | −10 | ✅ | [#35](https://github.com/betinn/GDSB.MAUI/pull/35) |
-| 4 | `x:DataType` — páginas sem `CollectionView` | 0 | −211 | ⬜ | — |
-| 5 | `x:DataType` + `XC0025` — `VaultPage` e `BackupRecoveryPage` | 4 | −92 | ⬜ | — |
-| 6 | Trava por processo (agentes reportam warning) | 1–5 | ±0 | ⬜ | — |
+| 4 | `x:DataType` — páginas sem `CollectionView` | 0 | −211 | ✅ | [#36](https://github.com/betinn/GDSB.MAUI/pull/36) |
+| 5 | `x:DataType` + `XC0025` — `VaultPage` e `BackupRecoveryPage` | 4 | −92 | ✅ | [#36](https://github.com/betinn/GDSB.MAUI/pull/36) |
+| 6 | Trava por processo (agentes reportam warning) | 1–5 | ±0 | ✅ | [#36](https://github.com/betinn/GDSB.MAUI/pull/36) |
 
 As fases 1, 2 e 3 não se cruzam e podem ir em paralelo; a 5 depende da 4. As fases 2 e 3
 foram executadas em paralelo e entregues no mesmo PR, porque a sessão veio com branch designada
 fixa (`claude/phases-2-3-parallel-9w1qq8`) em vez das duas branches `warnings-zero/fase*` que a
-convenção do `entrega.md` prevê.
+convenção do `entrega.md` prevê. As fases 4, 5 e 6 tiveram o mesmo desvio: a sessão veio com branch
+designada fixa (`claude/plano-fases-4-5-finalizacao-20w27r`), então as três foram executadas em
+sequência (5 depende de 4) e entregues num único PR, com um commit por fase na mesma branch.
 
 Saldo depois da fase 1, relido dos logs do run 34002213953: `build-android` fecha em **335
 warnings**, `build-windows` em **327**, e a união deduplicada por código + `arquivo:linha:coluna`
