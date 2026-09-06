@@ -68,7 +68,7 @@ backups fora da pasta do cofre, edição de cofre).
 - **`BackupItemViewModel` não é `ObservableObject`** — na troca de idioma quem reconstrói a coleção
   é o `BackupRecoveryViewModel`.
 
-## Rodada 5 — zerar os warnings de compilação — **em andamento**
+## Rodada 5 — zerar os warnings de compilação — **concluída**
 
 Buildar/implantar/publicar pelo Visual Studio produz 522 warnings. O CI reproduz o número: os logs
 dos jobs `build-android` e `build-windows` (run 33998740457) fecham em **521 warnings distintos**
@@ -117,6 +117,10 @@ Saldo depois das fases 2 e 3, relido dos logs do run 34011866431 (PR #35): `buil
 dá **303 distintos** — exatamente a projeção. **Zero `CS0618`** e **zero `CS86xx`**; o que sobra é
 só `XC0022` (293) e `XC0025` (10), que é o passivo das fases 4 e 5. Nenhum código novo apareceu — em
 particular, zero `XFC0045` e zero `XC0024`.
+
+Saldo depois das fases 4, 5 e 6 (PR #36, head `3c579b5`): `build-android` e `build-windows` fecham
+**os dois em 0 warnings**. Testes e SonarCloud Code Analysis verdes; Quality Gate: 0 New issues, 0
+Security Hotspots, 0,0% Duplication on New Code. A rodada "warnings-zero" bate a meta: **521 → 0**.
 
 Duas coisas que o CI corrigiu na medição, e que valem para quem contar warning por análise estática
 daqui: a fase 2 deixou passar um `CS8604` em `FilePickerService.cs:122` (`Uri.ToString()` é anulável
