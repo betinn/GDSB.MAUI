@@ -6,12 +6,14 @@
 O plano completo da rodada — contexto, decisões fechadas, plano macro, plano micro por fase
 (arquivos a criar/alterar, regras e "Pronto quando") e protótipos visuais — vive no artifact:
 
-**➜ https://claude.ai/code/artifact/f5f89a9f-0e1f-4144-9343-2a673d03adb7**
+**➜ https://claude.ai/code/artifact/5853da0c-5db1-4870-9ede-a758dd5f0439**
 
 Ele é a fonte da verdade. `WebFetch` funciona nessa URL. **Leia a seção da fase antes de escrever
 qualquer código**; aqui embaixo fica só o resumo.
 
 Artifacts anteriores, como histórico:
+https://claude.ai/code/artifact/f5f89a9f-0e1f-4144-9343-2a673d03adb7 (rodada 4 — app
+multilíngue) ·
 https://claude.ai/code/artifact/6bd2735a-f8fd-45ad-b7f3-4ff869c8de33 (rodada 3 — primeiro acesso
 guiado e backups versionados) ·
 https://claude.ai/code/artifact/00e12b9d-b9d9-4c72-9a4e-e111477c329d (rodada 2 — desbloqueio,
@@ -66,7 +68,62 @@ backups fora da pasta do cofre, edição de cofre).
 - **`BackupItemViewModel` não é `ObservableObject`** — na troca de idioma quem reconstrói a coleção
   é o `BackupRecoveryViewModel`.
 
-## Rodada 5 — a definir
+## Rodada 5 — zerar os warnings de compilação — **em andamento**
 
-Ainda não há plano aberto. Ao iniciar: criar o artifact, registrar aqui o objetivo, as fases e as
-dependências, e só então abrir a primeira branch `<feature>/fase1-<nome-curto>`.
+Buildar/implantar/publicar pelo Visual Studio produz 522 warnings. O CI reproduz o número: os logs
+dos jobs `build-android` e `build-windows` (run 33998740457) fecham em **521 warnings distintos**
+(dedup por código + `arquivo:linha`). Dez códigos ao todo, e dois carregam 465 deles. O alvo da
+rodada é **0**.
+
+| Código | Qtd | Causa |
+|---|---:|---|
+| `XC0022` | 293 | `{Binding}` sem `x:DataType` — não existe nenhum `x:DataType` no projeto |
+| `XC0103` | 172 | causa única: `TrExtension` sem `[AcceptEmptyServiceProvider]` |
+| `CS8602` | 14 | deref de possível nulo em `Platforms/Android` e `Platforms/Windows` |
+| `XC0025` | 10 | binding com `Source` explícito (`RelativeSource`/`x:Reference`) em `DataTemplate` |
+| `CS0618` | 10 | `MainPage`, `DisplayAlert`, `FadeTo`, `TranslateTo`, `OpenableColumns` |
+| `NU1608` | 9 | `.Ktx` do AndroidX fora da faixa dos pacotes base |
+| `CS8604` | 7 | argumento possivelmente nulo em `Platforms/Android/Services` |
+| `CS8625` `CS8603` `CS8600` | 6 | `FilePickerService` (Android e Windows), `BiometricUnlockService` |
+
+Prefixo de branch da rodada: **`warnings-zero`**.
+
+| # | Fase | Depende de | Warnings | Status | PR |
+|---|------|------------|---------:|--------|-----|
+| 0 | Contexto e plano | — | — | ✅ | — |
+| 1 | `TrExtension` + NU1608 | 0 | −181 | ⬜ | — |
+| 2 | Nulabilidade nas camadas de plataforma | 0 | −27 | ⬜ | — |
+| 3 | APIs obsoletas (`CS0618`) | 0 | −10 | ⬜ | — |
+| 4 | `x:DataType` — páginas sem `CollectionView` | 0 | −211 | ⬜ | — |
+| 5 | `x:DataType` + `XC0025` — `VaultPage` e `BackupRecoveryPage` | 4 | −92 | ⬜ | — |
+| 6 | Trava por processo (agentes reportam warning) | 1–5 | ±0 | ⬜ | — |
+
+As fases 1, 2 e 3 não se cruzam e podem ir em paralelo; a 5 depende da 4.
+
+### Decisões fechadas com o usuário nessa rodada (não relitigar)
+
+- **`XC0025`**: refatorar `SecretBoxItemViewModel` e `BackupItemViewModel` para expor os comandos do
+  ViewModel dono. Nada de `NoWarn`.
+- **`NU1608`**: fixar os 9 `.Ktx` explicitamente nas versões que o workload já resolve
+  (`Activity.Ktx 1.13.0.1`, `Collection.Ktx 1.6.0.1`, `Fragment.Ktx 1.8.9.3`, `Lifecycle.* 2.11.0.1`,
+  `SavedState.SavedState.Ktx 1.5.0.1`). `Xamarin.AndroidX.Biometric` já está na última versão
+  (1.1.0.33): bumpar não resolve.
+- **`CS0618`/`MainPage`**: migrar para `override CreateWindow` nesta rodada, validando no aparelho.
+- **Trava anti-regressão**: **não** é `TreatWarningsAsErrors`. É processo — `verificador`, `testes` e
+  `entrega-pr` passam a reportar warning ao orquestrador, que planeja a correção (fase 6).
+
+### Armadilhas desta rodada
+
+- **`x:DataType` transforma o binding em binding compilado.** Nome de propriedade errado deixa de
+  ser silêncio em runtime e vira **erro de build** (`XFC0045`/`XC0024`). É o ganho real da rodada e
+  o risco: **só o CI compila XAML aqui**. Cada fase de XAML fecha com `build-android` **e**
+  `build-windows` verdes.
+- **`{loc:Tr Chave}` não é afetado por `x:DataType`**: `TrExtension.ProvideValue` devolve um
+  `Binding` com `Source` próprio. Não encostar nesses 172 pontos.
+- **Nenhum `<Style>` contém `{Binding}`** (conferido): `x:DataType` só é necessário na raiz das
+  páginas/`ContentView` e em cada `DataTemplate`.
+- **Os `ContentView` herdam o `BindingContext` de quem hospeda** — o `x:DataType` deles é o VM da
+  hospedeira (`ItemEditorView` → `VaultViewModel`, `BiometricOptInView` →
+  `BiometricOptInCoordinator`, `OnboardingView` → `OnboardingViewModel`).
+- **Nulabilidade se corrige com guarda de verdade** (checagem + retorno/exceção com mensagem), nunca
+  com `!`. `BiometricUnlockService` só ganha guarda: não encosta em chave, IV nem byte gravado.
