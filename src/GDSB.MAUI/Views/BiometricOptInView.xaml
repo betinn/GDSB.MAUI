@@ -2,7 +2,9 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
-             x:Class="GDSB.MAUI.Views.BiometricOptInView">
+             xmlns:vm="clr-namespace:GDSB.MAUI.ViewModels;assembly=GDSB.MAUI.ViewModels"
+             x:Class="GDSB.MAUI.Views.BiometricOptInView"
+             x:DataType="vm:BiometricOptInCoordinator">
 
     <!-- Dialog no lugar de um DisplayAlert nativo, pra manter as cores/estilos do app (o alerta
          do sistema não pode ser tematizado). Reaproveitada tanto no Unlock quanto na criação de

@@ -6,7 +6,9 @@
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
+             xmlns:vm="clr-namespace:GDSB.MAUI.ViewModels;assembly=GDSB.MAUI.ViewModels"
              x:Class="GDSB.MAUI.CreateVaultPage"
+             x:DataType="vm:CreateVaultViewModel"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
 
