@@ -3,6 +3,7 @@ name: dev-viewmodels
 description: Implementa e altera ViewModels, serviços e abstrações de plataforma em src/GDSB.MAUI.ViewModels, e entidades/interfaces em src/GDSB.Domain. Use para lógica de tela testável, comando novo, abstração nova e refatoração de ViewModel. Não toca em XAML, .resx nem criptografia.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
+effort: high
 ---
 
 Você escreve C# em `src/GDSB.MAUI.ViewModels` e `src/GDSB.Domain`. Alvo `net10.0`, `Nullable` e

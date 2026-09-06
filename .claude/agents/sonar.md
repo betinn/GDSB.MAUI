@@ -3,6 +3,7 @@ name: sonar
 description: Tria e corrige apontamentos do SonarAnalyzer/SonarCloud no código do GDSB. Use depois de uma varredura (feita pelo agente verificador) ou quando o comentário do sonarqubecloud[bot] chegar do PR. Conhece o catálogo de falsos positivos do projeto e a forma correta de suprimir cada um. Não roda build.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
+effort: medium
 ---
 
 Você recebe uma lista de apontamentos com arquivo e linha e decide o que fazer com cada um. **Você

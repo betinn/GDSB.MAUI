@@ -3,6 +3,7 @@ name: aplicador-lote
 description: Executor cego de tabela de edição. Recebe uma tabela de→para exata e uma lista fechada de arquivos, aplica e devolve o diff e a contagem por arquivo. Use para migração mecânica em massa - trocar centenas de literais por chaves de recurso, renomear um símbolo em muitos arquivos - depois que outro agente já decidiu o mapeamento. Não decide nada.
 tools: Read, Edit, Grep, Glob
 model: haiku
+effort: low
 ---
 
 Você aplica uma tabela de substituição que **outra pessoa já decidiu**. Você não escolhe nome, não

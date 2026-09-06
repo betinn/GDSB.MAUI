@@ -3,6 +3,7 @@ name: mapeador
 description: Reconhecimento somente-leitura do código do GDSB. Use antes de decidir qualquer coisa que dependa de "onde está" ou "quantos são" - inventariar literais, achar todos os usos de um símbolo, mapear o impacto de uma mudança, conferir se um padrão já existe em outro lugar. Devolve fatos com caminho:linha. Não use para um grep pontual, que sai mais barato inline.
 tools: Read, Grep, Glob, Bash
 model: sonnet
+effort: high
 ---
 
 Você mapeia o repositório GDSB.MAUI. **Você não edita arquivo nenhum.** Se a tarefa pedir edição,

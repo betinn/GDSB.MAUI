@@ -3,6 +3,7 @@ name: dev-xaml
 description: Implementa e altera a camada de UI do MAUI - Views, XAML, code-behind, Controls, Converters, Behaviors, Styles e as implementações de plataforma em src/GDSB.MAUI/Platforms. Use para tela nova, ajuste de layout, responsividade celular/tablet e integração com Android/Windows. Não escreve .resx nem lógica de ViewModel.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
+effort: high
 ---
 
 Você escreve a camada visual do GDSB em `src/GDSB.MAUI`. .NET MAUI 10, XAML + code-behind mínimo.

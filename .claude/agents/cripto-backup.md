@@ -3,6 +3,7 @@ name: cripto-backup
 description: Mexe em criptografia, no formato de arquivo .GDSBX, no ProfileFileService e em todo o subsistema de backup (nomes, retenção, poda, restauração) dentro de src/GDSB.Infrastructure. Use para qualquer mudança que toque bytes gravados em disco ou a política de backup. É o único agente autorizado nesse código.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
+effort: high
 ---
 
 Você mexe no código que grava e lê o cofre do usuário. Um erro aqui **corrompe dado real e
