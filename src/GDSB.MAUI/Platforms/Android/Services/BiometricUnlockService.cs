@@ -47,7 +47,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
         }
 
         public Task<bool> IsEnabledAsync() =>
-            Task.FromResult(GetPrefs().Contains(CiphertextPrefKey));
+            Task.FromResult(GetPrefs() is { } prefs && prefs.Contains(CiphertextPrefKey));
 
         public async Task<bool> StoreKeyAsync(byte[] derivedKey)
         {
@@ -58,6 +58,9 @@ namespace GDSB.MAUI.Platforms.Android.Services
             {
                 var key = GetOrCreateKey();
                 var cipher = Cipher.GetInstance(Transformation);
+                if (key is null || cipher is null)
+                    return false;
+
                 cipher.Init(CipherMode.EncryptMode, key);
 
                 var authenticatedCipher = await AuthenticateAsync(
@@ -68,7 +71,15 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 var ciphertext = authenticatedCipher.DoFinal(derivedKey);
                 var iv = authenticatedCipher.GetIV();
 
-                var editor = GetPrefs().Edit();
+                // Sem ciphertext ou sem IV não há segredo selado utilizável: melhor não gravar
+                // nada e deixar a biometria desligada do que guardar metade do par.
+                if (ciphertext is null || iv is null)
+                    return false;
+
+                var editor = GetPrefs()?.Edit();
+                if (editor is null)
+                    return false;
+
                 editor.PutString(IvPrefKey, Convert.ToBase64String(iv));
                 editor.PutString(CiphertextPrefKey, Convert.ToBase64String(ciphertext));
                 editor.Apply();
@@ -87,6 +98,9 @@ namespace GDSB.MAUI.Platforms.Android.Services
                 return null;
 
             var prefs = GetPrefs();
+            if (prefs is null)
+                return null;
+
             var ivBase64 = prefs.GetString(IvPrefKey, null);
             var ciphertextBase64 = prefs.GetString(CiphertextPrefKey, null);
             if (ivBase64 is null || ciphertextBase64 is null)
@@ -95,12 +109,18 @@ namespace GDSB.MAUI.Platforms.Android.Services
             try
             {
                 var keyStore = KeyStore.GetInstance(KeystoreProvider);
+                if (keyStore is null)
+                    return null;
+
                 keyStore.Load(null);
 
                 if (keyStore.GetKey(KeyAlias, null) is not { } key)
                     return null;
 
                 var cipher = Cipher.GetInstance(Transformation);
+                if (cipher is null)
+                    return null;
+
                 var iv = Convert.FromBase64String(ivBase64);
                 cipher.Init(CipherMode.DecryptMode, key, new GCMParameterSpec(GcmTagLengthBits, iv));
 
@@ -128,14 +148,24 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
         public Task DisableAsync()
         {
-            GetPrefs().Edit().Clear().Apply();
+            // Mesmo padrão do StoreKeyAsync: uma guarda só no editor. Encadear ?. depois do
+            // Clear() seria checagem redundante - ele devolve o próprio editor.
+            var editor = GetPrefs()?.Edit();
+            if (editor is not null)
+            {
+                editor.Clear();
+                editor.Apply();
+            }
 
             try
             {
                 var keyStore = KeyStore.GetInstance(KeystoreProvider);
-                keyStore.Load(null);
-                if (keyStore.IsKeyEntry(KeyAlias))
-                    keyStore.DeleteEntry(KeyAlias);
+                if (keyStore is not null)
+                {
+                    keyStore.Load(null);
+                    if (keyStore.IsKeyEntry(KeyAlias))
+                        keyStore.DeleteEntry(KeyAlias);
+                }
             }
             catch (Exception)
             {
@@ -148,18 +178,27 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
         private static FragmentActivity? GetActivity() => Platform.CurrentActivity as FragmentActivity;
 
-        private static global::Android.Content.ISharedPreferences GetPrefs() =>
+        // Devolve null quando a plataforma não entrega as preferências (ou o Keystore não abre):
+        // quem chama trata como "biometria indisponível" e cai de volta pro campo de senha, o
+        // mesmo caminho de um cancelamento no prompt.
+        private static global::Android.Content.ISharedPreferences? GetPrefs() =>
             global::Android.App.Application.Context.GetSharedPreferences(PrefsName, FileCreationMode.Private);
 
-        private static IKey GetOrCreateKey()
+        private static IKey? GetOrCreateKey()
         {
             var keyStore = KeyStore.GetInstance(KeystoreProvider);
+            if (keyStore is null)
+                return null;
+
             keyStore.Load(null);
 
             if (keyStore.IsKeyEntry(KeyAlias) && keyStore.GetKey(KeyAlias, null) is { } existingKey)
                 return existingKey;
 
             var keyGenerator = KeyGenerator.GetInstance(KeyProperties.KeyAlgorithmAes, KeystoreProvider);
+            if (keyGenerator is null)
+                return null;
+
             var spec = new KeyGenParameterSpec.Builder(KeyAlias, KeyStorePurpose.Encrypt | KeyStorePurpose.Decrypt)
                 .SetBlockModes(KeyProperties.BlockModeGcm)
                 .SetEncryptionPaddings(KeyProperties.EncryptionPaddingNone)
@@ -188,6 +227,15 @@ namespace GDSB.MAUI.Platforms.Android.Services
             activity.RunOnUiThread(() =>
             {
                 var executor = ContextCompat.GetMainExecutor(activity);
+                if (executor is null)
+                {
+                    // Sem executor não há como o BiometricPrompt entregar o resultado: resolve a
+                    // task aqui mesmo, senão o chamador esperaria pra sempre por um prompt que
+                    // nunca vai aparecer.
+                    tcs.TrySetResult(null);
+                    return;
+                }
+
                 var prompt = new BiometricPrompt(activity, executor, new AuthCallback(tcs));
 
                 var promptInfo = new BiometricPrompt.PromptInfo.Builder()

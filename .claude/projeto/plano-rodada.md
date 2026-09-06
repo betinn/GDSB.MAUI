@@ -92,13 +92,16 @@ Prefixo de branch da rodada: **`warnings-zero`**.
 |---|------|------------|---------:|--------|-----|
 | 0 | Contexto e plano | — | — | ✅ | — |
 | 1 | `TrExtension` + NU1608 | 0 | −181 | ✅ | [#32](https://github.com/betinn/GDSB.MAUI/pull/32) |
-| 2 | Nulabilidade nas camadas de plataforma | 0 | −27 | ⬜ | — |
-| 3 | APIs obsoletas (`CS0618`) | 0 | −10 | ⬜ | — |
+| 2 | Nulabilidade nas camadas de plataforma | 0 | −27 | ✅ | [#35](https://github.com/betinn/GDSB.MAUI/pull/35) |
+| 3 | APIs obsoletas (`CS0618`) | 0 | −10 | ✅ | [#35](https://github.com/betinn/GDSB.MAUI/pull/35) |
 | 4 | `x:DataType` — páginas sem `CollectionView` | 0 | −211 | ⬜ | — |
 | 5 | `x:DataType` + `XC0025` — `VaultPage` e `BackupRecoveryPage` | 4 | −92 | ⬜ | — |
 | 6 | Trava por processo (agentes reportam warning) | 1–5 | ±0 | ⬜ | — |
 
-As fases 1, 2 e 3 não se cruzam e podem ir em paralelo; a 5 depende da 4.
+As fases 1, 2 e 3 não se cruzam e podem ir em paralelo; a 5 depende da 4. As fases 2 e 3
+foram executadas em paralelo e entregues no mesmo PR, porque a sessão veio com branch designada
+fixa (`claude/phases-2-3-parallel-9w1qq8`) em vez das duas branches `warnings-zero/fase*` que a
+convenção do `entrega.md` prevê.
 
 Saldo depois da fase 1, relido dos logs do run 34002213953: `build-android` fecha em **335
 warnings**, `build-windows` em **327**, e a união deduplicada por código + `arquivo:linha:coluna`
@@ -106,6 +109,17 @@ dá **338 distintos** — dois a menos que os 340 previstos. Zero `XC0103`, zero
 importava conferir, **zero `NU1605`**: fixar as `.Ktx` não virou downgrade. Nenhum código novo
 apareceu; o que sobrou é exatamente `XC0022`, `XC0025`, `CS0618`, `CS8600`, `CS8602`, `CS8603`,
 `CS8604` e `CS8625`.
+
+Saldo depois das fases 2 e 3, relido dos logs do run 34011866431 (PR #35): `build-android` e
+`build-windows` fecham **os dois em 303**, e a união deduplicada por código + `arquivo:linha:coluna`
+dá **303 distintos** — exatamente a projeção. **Zero `CS0618`** e **zero `CS86xx`**; o que sobra é
+só `XC0022` (293) e `XC0025` (10), que é o passivo das fases 4 e 5. Nenhum código novo apareceu — em
+particular, zero `XFC0045` e zero `XC0024`.
+
+Duas coisas que o CI corrigiu na medição, e que valem para quem contar warning por análise estática
+daqui: a fase 2 deixou passar um `CS8604` em `FilePickerService.cs:122` (`Uri.ToString()` é anulável
+no binding, herda de `Object.toString`), e o Sonar apontou um `?.` redundante no
+`GetPrefs()?.Edit()?.Clear()?.Apply()` do `DisableAsync`. Os dois só apareceram depois do push.
 
 ### Decisões fechadas com o usuário nessa rodada (não relitigar)
 

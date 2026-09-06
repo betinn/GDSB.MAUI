@@ -47,7 +47,8 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
             var resolver = global::Android.App.Application.Context.ContentResolver
                 ?? throw new InvalidOperationException("ContentResolver indisponível.");
-            var uri = global::Android.Net.Uri.Parse(location);
+            var uri = global::Android.Net.Uri.Parse(location)
+                ?? throw new FileNotFoundException($"Não foi possível interpretar a localização do cofre: {location}.");
 
             // "wt" = write + truncate: sem isso, alguns provedores concatenam em vez de substituir.
             using var stream = resolver.OpenOutputStream(uri, "wt")
@@ -58,10 +59,15 @@ namespace GDSB.MAUI.Platforms.Android.Services
         private static bool IsContentUri(string location) =>
             location.StartsWith(ContentScheme, StringComparison.Ordinal);
 
+        // Uri.Parse devolve null se a location não for um URI válido: sem stream, Exists responde
+        // false e ReadAllBytes cai no throw de "não foi possível abrir" que já existe lá em cima.
         private static Stream? OpenContentInputStream(string location)
         {
             var resolver = global::Android.App.Application.Context.ContentResolver;
             var uri = global::Android.Net.Uri.Parse(location);
+            if (uri is null)
+                return null;
+
             return resolver?.OpenInputStream(uri);
         }
     }

@@ -49,3 +49,10 @@ abra PR. Só os arquivos do briefing.
 
 Arquivos alterados e por quê; quais verificações estáticas rodaram e o resultado de cada uma; o que
 só o CI consegue validar; chaves de recurso pendentes.
+
+E os **cenários de teste manual** que a sua mudança exige — o que só roda no aparelho: tela e estado
+de partida, os passos, e o resultado observável (com número quando houver: duração de animação,
+texto exato, contagem). Um por comportamento que você pode ter quebrado, incluindo o caminho de
+erro, não só o de sucesso. É a matéria-prima da seção `## Testes manuais` do PR — sem isso a sessão
+principal escreve no escuro ou não escreve. Nada que o build ou o `dotnet test` já provem entra
+nessa lista. Não quebrou nada de runtime? Diga isso, com uma linha de porquê.

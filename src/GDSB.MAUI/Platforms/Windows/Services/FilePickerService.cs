@@ -25,8 +25,7 @@ namespace GDSB.MAUI.Platforms.Windows.Services
             var picker = new FileOpenPicker();
             picker.FileTypeFilter.Add(".GDSBX");
 
-            var hwnd = ((MauiWinUIWindow)App.Current.Windows[0].Handler.PlatformView).WindowHandle;
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, GetMainWindowHandle());
 
             StorageFile file = await picker.PickSingleFileAsync();
             return file is null ? null : new PickedFile(file.Path, file.Name);
@@ -39,14 +38,29 @@ namespace GDSB.MAUI.Platforms.Windows.Services
             picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
             picker.FileTypeChoices.Add(_localization.Get("Platform_WindowsFileTypeLabel"), new List<string> { ".GDSBX" });
 
-            var hwnd = ((MauiWinUIWindow)App.Current.Windows[0].Handler.PlatformView).WindowHandle;
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, GetMainWindowHandle());
 
             // StorageFile.Path aqui já é um caminho de arquivo real (inclusive dentro de uma pasta
             // sincronizada, tipo OneDrive) - ao contrário do Android, não precisa de nenhum
             // tratamento especial de URI.
             StorageFile file = await picker.PickSaveFileAsync();
             return file?.Path ?? string.Empty;
+        }
+
+        // O diálogo do WinUI precisa ser ancorado numa janela nativa: no modelo do MAUI, App.Current,
+        // o Handler da janela e o PlatformView são todos opcionais, mas um seletor só é aberto a
+        // partir de uma janela na tela. Se nada disso estiver de pé não há hwnd para ancorar, e
+        // seguir com um handle inválido faria o diálogo abrir sem dono (ou nem abrir) - os dois
+        // chamadores nos ViewModels já tratam a exceção como "não deu para escolher o caminho".
+        private static IntPtr GetMainWindowHandle()
+        {
+            var window = App.Current?.Windows.FirstOrDefault()
+                ?? throw new InvalidOperationException("Nenhuma janela ativa para ancorar o seletor de arquivos.");
+
+            if (window.Handler?.PlatformView is not MauiWinUIWindow platformWindow)
+                throw new InvalidOperationException("A janela ativa ainda não tem uma janela nativa associada.");
+
+            return platformWindow.WindowHandle;
         }
     }
 }
