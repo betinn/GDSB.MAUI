@@ -302,6 +302,8 @@ namespace GDSB.MAUI.Platforms.Android.Services
             // Corpo vazio é intencional: não há ação de sistema a tomar numa falha recuperável.
             public override void OnAuthenticationFailed()
             {
+                // Intencionalmente vazio: falha recuperável, o prompt continua aberto e o
+                // usuário pode tentar de novo sem nenhuma ação de sistema aqui.
             }
         }
     }
