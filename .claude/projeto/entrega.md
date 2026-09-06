@@ -15,9 +15,29 @@ as fases da mesma rodada. Exemplos:
 - `config-agentes/fase1-orquestrador`
 
 Regras: prefixo e nome curto em minúsculas, sem acento, palavras separadas por `-`; **sem hífen
-entre `fase` e o número** (`fase1`, não `fase-1`); a branch nasce da `main`. Vale mesmo quando a
-sessão vier com uma branch designada genérica (`claude/...`): crie a branch da fase e abra o PR a
-partir dela, não da genérica.
+entre `fase` e o número** (`fase1`, não `fase-1`); a branch nasce da `main`.
+
+### Sessão com branch designada (`claude/...`)
+
+Toda sessão do Claude Code na web/remoto chega com uma regra de ambiente, fora do controle do
+orquestrador: **nunca fazer push para uma branch diferente da designada, sem permissão explícita**.
+Isso não é uma preferência do repositório para contornar — é um limite do ambiente, mais forte que a
+convenção acima. Tentar criar a branch da fase por cima disso já causou o mesmo desvio duas vezes na mesma rodada
+"warnings-zero" (fases 2+3 num PR, fases 4-6 noutro): cada vez alguém tinha que perceber o conflito,
+explicar de novo pro `entrega-pr` e desviar na mão. Isso para de acontecer documentando o desvio como
+o caminho esperado, não como exceção a se redescobrir a cada rodada:
+
+- A branch designada da sessão **é** a branch da rodada inteira — não se cria outra por cima dela,
+  não se tenta renomear.
+- Cada fase vira **um commit** nessa branch, com a mensagem de commit da fase (não uma branch nova).
+- **Um único PR ao final da rodada** (ou do grupo de fases que a sessão recebeu), cobrindo todos os
+  commits — título e corpo descrevendo cada fase que entrou, como qualquer outro PR desta convenção.
+- Quem abre o PR **não precisa** que a sessão principal repita essa explicação toda vez: o
+  `entrega-pr` já sabe reconhecer esse caso (ver `.claude/agents/entrega-pr.md`) a partir de uma
+  frase padrão da sessão principal ("branch já designada, não crie outra").
+
+A convenção `<plano>/fase<n>-<nome-curto>`, com um PR por fase, continua sendo o padrão para
+sessões livres (sem branch designada) — é o caso mais comum fora do Claude Code na web.
 
 ## PR
 

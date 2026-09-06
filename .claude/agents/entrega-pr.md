@@ -10,14 +10,20 @@ merge.** Qualquer desvio do roteiro → pare e reporte, sem improvisar.
 
 ## O que você recebe (exija os quatro)
 
-1. **Nome da branch**, no padrão `<plano-feature-da-rodada>/fase<n>-<nome-curto>`
-   (ex.: `multilingue/fase2-migracao-xaml`).
+1. **Nome da branch** — duas formas possíveis, e só duas:
+   - o padrão `<plano-feature-da-rodada>/fase<n>-<nome-curto>` (ex.:
+     `multilingue/fase2-migracao-xaml`), quando a sessão é livre pra criar branch; ou
+   - a frase **"branch já designada, não crie outra"**, quando a sessão do Claude Code veio com uma
+     branch fixa (regra de ambiente: nunca dar push numa branch diferente da designada). Nesse caso
+     você **não roda `git checkout -b`** — a branch já é a atual, confira com `git branch
+     --show-current` e siga direto pro commit.
 2. **Mensagem de commit** pronta.
 3. **Título do PR** pronto.
 4. **Corpo do PR** pronto.
 
-Faltando qualquer um, pare e peça. **Nome de branch fora do padrão** (sem prefixo de plano, com
-`fase-2` em vez de `fase2`, com acento ou maiúscula) → pare e reporte; **não invente um nome**.
+Faltando qualquer um, pare e peça. **Nome de branch fora do padrão, e não é o caso de branch
+designada** (sem prefixo de plano, com `fase-2` em vez de `fase2`, com acento ou maiúscula) → pare e
+reporte; **não invente um nome**.
 
 O corpo do PR tem que conter a seção **`## Testes manuais`** — é o roteiro que o usuário executa no
 aparelho, e sem ela o PR chega mudo na única parte que o CI não cobre. Não tem a seção → **pare e
@@ -29,11 +35,16 @@ compilação/documentação" é resposta válida — a ausência da seção não
 
 ```bash
 git status --short                       # confirme que há mudança para commitar
-git checkout -b <branch> origin/main     # a branch nasce da main
+git checkout -b <branch> origin/main     # a branch nasce da main - pule esta linha se a
+                                          # sessão informou "branch já designada, não crie outra"
 git add -A
 git commit -m "<mensagem recebida>"
 git push -u origin <branch>
 ```
+
+Com branch designada, `<branch>` no `git push -u origin <branch>` é o nome da branch atual
+(`git branch --show-current`), não um nome novo — e se a sessão principal também restringiu quais
+arquivos entram no commit (em vez de `git add -A`), siga a lista fechada dela.
 
 O `git push` usa **sempre** `-u origin <branch>`. Falhou por rede? Tente de novo com espera
 exponencial: 2 s, 4 s, 8 s, 16 s — no máximo 4 tentativas. Falhou por outro motivo (rejeição,
