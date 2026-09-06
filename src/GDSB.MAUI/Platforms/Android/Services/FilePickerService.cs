@@ -119,7 +119,10 @@ namespace GDSB.MAUI.Platforms.Android.Services
                     // persistente - a leitura/gravação ainda funciona normalmente nesta sessão.
                 }
 
-                tcs.TrySetResult(uri.ToString());
+                // Uri.ToString() é anulável no binding (herda de Object.toString): sem texto não
+                // há location para devolver, e cadeia vazia é o mesmo "não escolheu nada" tratado
+                // acima, que os chamadores já leem com string.IsNullOrEmpty.
+                tcs.TrySetResult(uri.ToString() ?? string.Empty);
             });
 
             activity.StartActivityForResult(intent, requestCode);
