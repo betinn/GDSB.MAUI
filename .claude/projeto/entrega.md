@@ -37,10 +37,24 @@ partir dela, não da genérica.
 O repositório roda o SonarCloud Code Analysis como check automático em todo push para PR (via
 GitHub App, sem log acessível daqui).
 
-Depois de **todo push num PR** — e também ao abrir um PR novo — espere as workflows do GitHub
-Actions e o check do SonarCloud terminarem, leia o comentário do `sonarqubecloud[bot]` no PR e
-corrija o que for corrigível, **mesmo que a Quality Gate passe**. O alvo é o código mais limpo
+Depois de **todo push que mexa em código** — e também ao abrir um PR novo — espere as workflows do
+GitHub Actions e o check do SonarCloud terminarem, leia o comentário do `sonarqubecloud[bot]` no PR
+e corrija o que for corrigível, **mesmo que a Quality Gate passe**. O alvo é o código mais limpo
 possível, não só o check verde: "0 New issues" importa tanto quanto "Quality Gate passed".
+
+**Push que não toca código não se acompanha.** Atualizar `plano-rodada.md` ao fechar uma fase,
+mexer num agente, corrigir o README — nada disso muda o que o compilador vê. O CI roda de novo, mas
+roda o mesmo build sobre o mesmo código do push anterior, e o Sonar não analisa Markdown: esperar
+esse run e reler o comentário do bot é repetir uma leitura que já foi feita. Não acompanhe, não
+peça instantâneo de check ao `entrega-pr` e não deixe assinatura de evento de PR aberta por causa
+disso.
+
+Vale como **código** qualquer arquivo em `src/` ou `tests/`, mais `.github/workflows/`, `*.csproj`,
+`*.sln`, `*.props`, `*.targets`, `global.json` e `nuget.config`. Um único arquivo desses no push já
+manda acompanhar. Todo o resto — `.claude/**`, `*.md`, `docs/`, `LICENSE` — é texto.
+
+Isso não abre exceção no ciclo abaixo: o ciclo é do código, e o código foi conferido no push que o
+trouxe. Commit de documentação depois de um PR verde não reabre nada.
 
 **Quality Gate verde não encerra o ciclo.** O comentário-resumo tem que fechar em zero nas três
 linhas abaixo — todas, independentemente de a Quality Gate passar:
