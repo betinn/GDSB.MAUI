@@ -18,7 +18,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
-             x:Class="GDSB.MAUI.Views.OnboardingView">
+             xmlns:vm="clr-namespace:GDSB.MAUI.ViewModels;assembly=GDSB.MAUI.ViewModels"
+             x:Class="GDSB.MAUI.Views.OnboardingView"
+             x:DataType="vm:OnboardingViewModel">
 
     <Grid IsVisible="{Binding IsVisible}" BackgroundColor="#CC141414" Padding="24,40">
         <Border Style="{StaticResource CardBorderStyle}" Padding="0" StrokeShape="RoundRectangle 20"

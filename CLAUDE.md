@@ -60,6 +60,8 @@ Subagente não commita e não faz push. Quem publica é `entrega-pr`, com texto 
 - Neste ambiente `net10.0-android` **não compila** (a rede bloqueia o Android SDK). XAML só é
   validado pelo CI; compense com a verificação estática de `.claude/projeto/ambiente.md`.
 - Nunca fazer merge de PR sozinho.
+- Warning de build não é ruído do ambiente: build ou teste verde com warning não é "passou" —
+  `verificador`, `testes` e `entrega-pr` reportam contagem por código, e a sessão planeja a correção.
 
 ## Onde está o resto
 

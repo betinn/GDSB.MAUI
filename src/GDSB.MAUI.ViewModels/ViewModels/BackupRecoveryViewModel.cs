@@ -127,7 +127,7 @@ namespace GDSB.MAUI.ViewModels
         {
             Backups.Clear();
             foreach (var info in _backupStore.List().OrderByDescending(i => i.CreatedAtUtc))
-                Backups.Add(new BackupItemViewModel(info, Localization));
+                Backups.Add(new BackupItemViewModel(info, Localization, this));
 
             OnPropertyChanged(nameof(HasBackups));
         }

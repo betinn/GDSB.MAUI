@@ -10,7 +10,9 @@
              xmlns:behaviors="clr-namespace:GDSB.MAUI.Behaviors"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
-             x:Class="GDSB.MAUI.Views.ItemEditorView">
+             xmlns:vm="clr-namespace:GDSB.MAUI.ViewModels;assembly=GDSB.MAUI.ViewModels"
+             x:Class="GDSB.MAUI.Views.ItemEditorView"
+             x:DataType="vm:VaultViewModel">
 
     <VerticalStackLayout Spacing="16">
 

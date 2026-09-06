@@ -264,7 +264,7 @@ namespace GDSB.MAUI.ViewModels
                 boxes = boxes.Where(b => b.BoxName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
             foreach (var box in boxes.OrderByDescending(b => b.Favorito).ThenBy(b => b.BoxName))
-                Items.Add(new SecretBoxItemViewModel(box));
+                Items.Add(new SecretBoxItemViewModel(box, this));
 
             // Reaponta a seleção para o VM novo que embrulha o mesmo SecretBox. Se o item saiu da
             // lista (filtro/busca), não há o que mostrar no editor - fecha em vez de deixar vazio.

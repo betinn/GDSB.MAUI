@@ -68,7 +68,7 @@ backups fora da pasta do cofre, edição de cofre).
 - **`BackupItemViewModel` não é `ObservableObject`** — na troca de idioma quem reconstrói a coleção
   é o `BackupRecoveryViewModel`.
 
-## Rodada 5 — zerar os warnings de compilação — **em andamento**
+## Rodada 5 — zerar os warnings de compilação — **concluída**
 
 Buildar/implantar/publicar pelo Visual Studio produz 522 warnings. O CI reproduz o número: os logs
 dos jobs `build-android` e `build-windows` (run 33998740457) fecham em **521 warnings distintos**
@@ -94,14 +94,16 @@ Prefixo de branch da rodada: **`warnings-zero`**.
 | 1 | `TrExtension` + NU1608 | 0 | −181 | ✅ | [#32](https://github.com/betinn/GDSB.MAUI/pull/32) |
 | 2 | Nulabilidade nas camadas de plataforma | 0 | −27 | ✅ | [#35](https://github.com/betinn/GDSB.MAUI/pull/35) |
 | 3 | APIs obsoletas (`CS0618`) | 0 | −10 | ✅ | [#35](https://github.com/betinn/GDSB.MAUI/pull/35) |
-| 4 | `x:DataType` — páginas sem `CollectionView` | 0 | −211 | ⬜ | — |
-| 5 | `x:DataType` + `XC0025` — `VaultPage` e `BackupRecoveryPage` | 4 | −92 | ⬜ | — |
-| 6 | Trava por processo (agentes reportam warning) | 1–5 | ±0 | ⬜ | — |
+| 4 | `x:DataType` — páginas sem `CollectionView` | 0 | −211 | ✅ | [#36](https://github.com/betinn/GDSB.MAUI/pull/36) |
+| 5 | `x:DataType` + `XC0025` — `VaultPage` e `BackupRecoveryPage` | 4 | −92 | ✅ | [#36](https://github.com/betinn/GDSB.MAUI/pull/36) |
+| 6 | Trava por processo (agentes reportam warning) | 1–5 | ±0 | ✅ | [#36](https://github.com/betinn/GDSB.MAUI/pull/36) |
 
 As fases 1, 2 e 3 não se cruzam e podem ir em paralelo; a 5 depende da 4. As fases 2 e 3
 foram executadas em paralelo e entregues no mesmo PR, porque a sessão veio com branch designada
 fixa (`claude/phases-2-3-parallel-9w1qq8`) em vez das duas branches `warnings-zero/fase*` que a
-convenção do `entrega.md` prevê.
+convenção do `entrega.md` prevê. As fases 4, 5 e 6 tiveram o mesmo desvio: a sessão veio com branch
+designada fixa (`claude/plano-fases-4-5-finalizacao-20w27r`), então as três foram executadas em
+sequência (5 depende de 4) e entregues num único PR, com um commit por fase na mesma branch.
 
 Saldo depois da fase 1, relido dos logs do run 34002213953: `build-android` fecha em **335
 warnings**, `build-windows` em **327**, e a união deduplicada por código + `arquivo:linha:coluna`
@@ -115,6 +117,10 @@ Saldo depois das fases 2 e 3, relido dos logs do run 34011866431 (PR #35): `buil
 dá **303 distintos** — exatamente a projeção. **Zero `CS0618`** e **zero `CS86xx`**; o que sobra é
 só `XC0022` (293) e `XC0025` (10), que é o passivo das fases 4 e 5. Nenhum código novo apareceu — em
 particular, zero `XFC0045` e zero `XC0024`.
+
+Saldo depois das fases 4, 5 e 6 (PR #36, head `3c579b5`): `build-android` e `build-windows` fecham
+**os dois em 0 warnings**. Testes e SonarCloud Code Analysis verdes; Quality Gate: 0 New issues, 0
+Security Hotspots, 0,0% Duplication on New Code. A rodada "warnings-zero" bate a meta: **521 → 0**.
 
 Duas coisas que o CI corrigiu na medição, e que valem para quem contar warning por análise estática
 daqui: a fase 2 deixou passar um `CS8604` em `FilePickerService.cs:122` (`Uri.ToString()` é anulável

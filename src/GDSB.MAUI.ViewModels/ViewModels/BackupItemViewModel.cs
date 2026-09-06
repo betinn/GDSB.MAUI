@@ -1,4 +1,5 @@
 using System.Globalization;
+using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Entities;
 using GDSB.MAUI.Services;
 
@@ -11,13 +12,25 @@ namespace GDSB.MAUI.ViewModels
     public class BackupItemViewModel
     {
         private readonly ILocalizationService _localization;
+        private readonly BackupRecoveryViewModel _owner;
 
         public VaultBackupInfo Info { get; }
 
-        public BackupItemViewModel(VaultBackupInfo info, ILocalizationService localization)
+        // Comandos próprios sem parâmetro, encaminhando pro comando do dono com "this" -
+        // evita CommandParameter/RelativeSource no XAML.
+        public IRelayCommand BeginRestoreCommand { get; }
+        public IRelayCommand PromptDeleteCommand { get; }
+
+        public BackupItemViewModel(VaultBackupInfo info, ILocalizationService localization, BackupRecoveryViewModel owner)
         {
+            ArgumentNullException.ThrowIfNull(owner);
+
             Info = info;
             _localization = localization;
+            _owner = owner;
+
+            BeginRestoreCommand = new RelayCommand(() => _owner.BeginRestoreCommand.Execute(this));
+            PromptDeleteCommand = new RelayCommand(() => _owner.PromptDeleteCommand.Execute(this));
         }
 
         public string VaultName => Info.VaultName;

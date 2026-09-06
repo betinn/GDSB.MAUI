@@ -5,7 +5,10 @@
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
+             xmlns:vm="clr-namespace:GDSB.MAUI.ViewModels;assembly=GDSB.MAUI.ViewModels"
+             xmlns:vmloc="clr-namespace:GDSB.MAUI.Localization;assembly=GDSB.MAUI.ViewModels"
              x:Class="GDSB.MAUI.UnlockPage"
+             x:DataType="vm:UnlockViewModel"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
 
@@ -46,7 +49,6 @@
                             <Label Text="&#127760;" FontSize="12" TextColor="{StaticResource TextSecondaryDark}"
                                    VerticalOptions="Center" InputTransparent="True" />
                             <Picker ItemsSource="{Binding Language.Options}"
-                                    ItemDisplayBinding="{Binding DisplayName}"
                                     SelectedItem="{Binding Language.Selected}"
                                     TextColor="{StaticResource TextSecondaryDark}"
                                     BackgroundColor="Transparent"
@@ -54,7 +56,14 @@
                                     MinimumHeightRequest="34"
                                     MinimumWidthRequest="0"
                                     HorizontalTextAlignment="Center"
-                                    VerticalOptions="Center" />
+                                    VerticalOptions="Center">
+                                <!-- ItemDisplayBinding avalia contra cada item de Language.Options
+                                     (AppLanguage), não contra o x:DataType da página (UnlockViewModel)
+                                     - por isso o x:DataType explícito aqui, só para este Binding. -->
+                                <Picker.ItemDisplayBinding>
+                                    <Binding Path="DisplayName" x:DataType="vmloc:AppLanguage" />
+                                </Picker.ItemDisplayBinding>
+                            </Picker>
                         </HorizontalStackLayout>
                     </Border>
 

@@ -39,7 +39,9 @@ dotnet build src/GDSB.Infrastructure/GDSB.Infrastructure.csproj
 `src/GDSB.MAUI` (alvo `net10.0-android`) **não compila neste ambiente** — a rede bloqueia o Android
 SDK e para em `XA5300`. Não tente contornar; se pedirem, reporte a limitação.
 
-Reporte só as linhas `error` e `warning`, com arquivo e linha.
+Reporte só as linhas `error` e `warning`, com arquivo e linha. **Build verde com warning não é
+"passou"**: conte os warnings por código (`arquivo:linha`) mesmo quando o build fecha sem erro, e
+diga esse número na primeira linha do veredito — silêncio sobre warning é o mesmo que escondê-lo.
 
 ## Receita 3 — checklist estático de XAML
 
