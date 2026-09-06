@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidade — GDSB</title>
+<style>
+  :root {
+    --primary: #512BD4;
+    --primary-dark: #3d1fa8;
+    --text: #1f2430;
+    --muted: #5b6270;
+    --bg: #ffffff;
+    --bg-alt: #f6f5fb;
+    --border: #e6e4f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  header .badge {
+    display: inline-block;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.15);
+    line-height: 56px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    margin: 0 0 0.3rem;
+    font-size: 1.6rem;
+  }
+  header p {
+    margin: 0;
+    color: #f3f1fc;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .lang-switch {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.25rem auto 0;
+  }
+  .lang-switch button {
+    border: 1px solid rgba(255,255,255,0.5);
+    background: transparent;
+    color: #fff;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .lang-switch button.active {
+    background: #fff;
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+  .summary {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 0 0 2rem;
+    font-size: 1.02rem;
+  }
+  h2 {
+    font-size: 1.05rem;
+    color: var(--primary-dark);
+    margin: 2rem 0 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  p, li { color: var(--text); font-size: 0.97rem; }
+  ul { padding-left: 1.3rem; }
+  .note {
+    font-size: 0.85rem;
+    color: var(--muted);
+    background: var(--bg-alt);
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    margin-top: 0.6rem;
+  }
+  a { color: var(--primary); }
+  footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">GDSB</div>
+  <h1 id="title">Política de Privacidade</h1>
+  <p id="updated">Última atualização: 5 de setembro de 2026</p>
+  <div class="lang-switch">
+    <button id="btn-pt" class="active" onclick="setLang('pt')">Português</button>
+    <button id="btn-en" onclick="setLang('en')">English</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== PT-BR ===================== -->
+  <div id="pt">
+    <div class="summary">
+      <strong>Resumo em uma frase:</strong> o GDSB não coleta, não transmite e não compartilha nenhum dado seu. Tudo fica no seu próprio dispositivo.
+    </div>
+
+    <p>O GDSB ("o aplicativo") é um gerenciador de senhas pessoal desenvolvido por Beto ("nós", "o desenvolvedor"). Esta política explica, de forma direta, como o aplicativo lida — ou melhor, não lida — com os seus dados.</p>
+
+    <h2>1. Nenhum dado é coletado ou enviado</h2>
+    <p>O GDSB funciona 100% offline. A versão publicada do aplicativo não faz nenhuma chamada de rede, não usa SDKs de analytics, não envia relatórios de falha para terceiros, não exibe anúncios e não possui contas de usuário ou login. Isso significa que:</p>
+    <ul>
+      <li>Não sabemos quantas senhas você guarda, quais sites usa, nem quando abre o app.</li>
+      <li>Não existe servidor do GDSB para o qual qualquer informação seria enviada.</li>
+      <li>Não compartilhamos dados com terceiros, porque nenhum dado sai do seu aparelho.</li>
+    </ul>
+    <p class="note">Nota técnica: builds de depuração usadas durante o desenvolvimento podem incluir a permissão de internet, inserida automaticamente pelo próprio SDK do Android para uso do depurador. Essa permissão não está presente na versão publicada na Play Store.</p>
+
+    <h2>2. Onde suas senhas ficam guardadas</h2>
+    <p>Suas credenciais ficam num arquivo de cofre criptografado (extensão <code>.GDSBX</code>) que você mesmo escolhe e controla, usando o seletor de arquivos do próprio sistema operacional. O GDSB não solicita permissão de acesso a armazenamento porque não precisa: a leitura e a gravação do cofre passam pelo mecanismo padrão do sistema (Storage Access Framework, no Android), de forma que apenas o arquivo escolhido por você é acessado.</p>
+    <p>Cópias de segurança automáticas do cofre ficam guardadas numa área privada do próprio aplicativo no seu dispositivo, inacessível a outros apps, e são removidas quando você desinstala o GDSB.</p>
+
+    <h2>3. Criptografia</h2>
+    <p>O conteúdo do cofre é cifrado no próprio dispositivo antes de ser salvo. A senha mestra que você define nunca é enviada a lugar nenhum: ela existe apenas na memória do aplicativo enquanto o cofre está desbloqueado. Como o desenvolvedor não tem acesso ao seu arquivo de cofre nem à sua senha mestra, também não há como recuperar uma senha mestra esquecida.</p>
+
+    <h2>4. Desbloqueio por biometria</h2>
+    <p>Se você ativar o desbloqueio por biometria (impressão digital ou reconhecimento facial), o GDSB usa a API biométrica nativa do sistema operacional. É o próprio sistema quem verifica sua digital ou rosto — o GDSB nunca recebe, processa ou armazena dados biométricos. O que fica guardado, protegido por um cofre de chaves do sistema, é apenas uma cópia da chave de criptografia já derivada da sua senha mestra, liberada somente após a confirmação biométrica do sistema operacional. A senha mestra continua disponível como alternativa a qualquer momento.</p>
+
+    <h2>5. Permissões usadas pelo aplicativo</h2>
+    <p>No Android, o GDSB solicita apenas a permissão <code>USE_BIOMETRIC</code>, necessária para o desbloqueio por biometria descrito acima. O aplicativo não solicita permissão de armazenamento, internet, localização, câmera, contatos ou qualquer outra.</p>
+
+    <h2>6. Terceiros e serviços externos</h2>
+    <p>O GDSB não integra nenhum serviço de terceiros: sem analytics, sem ferramentas de rastreamento, sem redes de anúncio, sem relatórios de falha enviados pela internet. O código-fonte do aplicativo é público e pode ser conferido em <a href="https://github.com/betinn/GDSB.MAUI" target="_blank" rel="noopener">github.com/betinn/GDSB.MAUI</a>.</p>
+
+    <h2>7. Crianças</h2>
+    <p>O GDSB não é direcionado a crianças e não coleta dados de nenhum usuário, independentemente da idade, pelas razões descritas acima.</p>
+
+    <h2>8. Seus direitos e exclusão de dados</h2>
+    <p>Como nenhum dado seu passa pelo desenvolvedor ou por qualquer servidor do GDSB, não existem dados nossos para excluir mediante solicitação — os únicos dados existentes são os que você mesmo criou e guarda localmente, sob seu controle total. Para apagá-los, basta excluir o arquivo de cofre e desinstalar o aplicativo.</p>
+
+    <h2>9. Alterações nesta política</h2>
+    <p>Esta política pode ser atualizada caso o funcionamento do aplicativo mude no futuro. A data no topo desta página sempre reflete a versão mais recente.</p>
+
+    <h2>10. Contato</h2>
+    <p>Dúvidas sobre esta política ou sobre o GDSB podem ser enviadas para: <a href="mailto:devolibapps@gmail.com">devolibapps@gmail.com</a></p>
+  </div>
+
+  <!-- ===================== EN ===================== -->
+  <div id="en" hidden>
+    <div class="summary">
+      <strong>One-sentence summary:</strong> GDSB does not collect, transmit, or share any of your data. Everything stays on your own device.
+    </div>
+
+    <p>GDSB ("the app") is a personal password manager developed by Beto ("we", "the developer"). This policy plainly explains how the app handles — or rather, doesn't handle — your data.</p>
+
+    <h2>1. No data is collected or transmitted</h2>
+    <p>GDSB works entirely offline. The published version of the app makes no network calls, uses no analytics SDKs, sends no crash reports to any third party, shows no ads, and has no user accounts or login. This means:</p>
+    <ul>
+      <li>We don't know how many passwords you store, which sites you use, or when you open the app.</li>
+      <li>There is no GDSB server for any information to be sent to.</li>
+      <li>We don't share data with third parties, because no data ever leaves your device.</li>
+    </ul>
+    <p class="note">Technical note: debug builds used during development may include the internet permission, automatically injected by the Android SDK for debugger use. This permission is not present in the version published on the Play Store.</p>
+
+    <h2>2. Where your passwords are stored</h2>
+    <p>Your credentials live in an encrypted vault file (<code>.GDSBX</code> extension) that you choose and control yourself, using your operating system's own file picker. GDSB does not request storage access permission because it doesn't need it: reading and writing the vault goes through the system's standard mechanism (Storage Access Framework, on Android), so only the file you pick is ever accessed.</p>
+    <p>Automatic backups of the vault are kept in a private area belonging to the app on your device, inaccessible to other apps, and are removed when you uninstall GDSB.</p>
+
+    <h2>3. Encryption</h2>
+    <p>The vault's contents are encrypted on your own device before being saved. The master password you set is never sent anywhere: it only exists in the app's memory while the vault is unlocked. Since the developer has no access to your vault file or your master password, there is also no way to recover a forgotten master password.</p>
+
+    <h2>4. Biometric unlock</h2>
+    <p>If you enable biometric unlock (fingerprint or face recognition), GDSB uses the operating system's own native biometric API. The operating system itself verifies your fingerprint or face — GDSB never receives, processes, or stores biometric data. What is stored, protected by the system's secure keystore, is only a copy of the encryption key already derived from your master password, released only after the operating system confirms your biometric check. Your master password always remains available as a fallback.</p>
+
+    <h2>5. Permissions used by the app</h2>
+    <p>On Android, GDSB requests only the <code>USE_BIOMETRIC</code> permission, needed for the biometric unlock described above. The app does not request storage, internet, location, camera, contacts, or any other permission.</p>
+
+    <h2>6. Third parties and external services</h2>
+    <p>GDSB does not integrate any third-party service: no analytics, no tracking tools, no ad networks, no crash reports sent over the internet. The app's source code is public and can be reviewed at <a href="https://github.com/betinn/GDSB.MAUI" target="_blank" rel="noopener">github.com/betinn/GDSB.MAUI</a>.</p>
+
+    <h2>7. Children</h2>
+    <p>GDSB is not directed at children and does not collect data from any user, regardless of age, for the reasons described above.</p>
+
+    <h2>8. Your rights and data deletion</h2>
+    <p>Since none of your data passes through the developer or any GDSB server, there is no data of ours to delete upon request — the only data that exists is what you yourself created and keep locally, under your full control. To erase it, simply delete the vault file and uninstall the app.</p>
+
+    <h2>9. Changes to this policy</h2>
+    <p>This policy may be updated if the app's behavior changes in the future. The date at the top of this page always reflects the latest version.</p>
+
+    <h2>10. Contact</h2>
+    <p>Questions about this policy or about GDSB can be sent to: <a href="mailto:devolibapps@gmail.com">devolibapps@gmail.com</a></p>
+  </div>
+
+</main>
+
+<footer>GDSB — gerenciador de senhas local e offline</footer>
+
+<script>
+  function setLang(lang) {
+    document.getElementById('pt').hidden = lang !== 'pt';
+    document.getElementById('en').hidden = lang !== 'en';
+    document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('title').textContent = lang === 'pt' ? 'Política de Privacidade' : 'Privacy Policy';
+    document.getElementById('updated').textContent = lang === 'pt' ? 'Última atualização: 5 de setembro de 2026' : 'Last updated: September 5, 2026';
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+  }
+</script>
+
+</body>
+</html>
