@@ -34,7 +34,7 @@ namespace GDSB.MAUI.Platforms.Android.Services
             return new PickedFile(location, GetDisplayName(location));
         }
 
-        // OpenableColumns.DisplayName é o nome "de exibição" do documento, que pode não ter
+        // IOpenableColumns.DisplayName é o nome "de exibição" do documento, que pode não ter
         // relação nenhuma com o último segmento do content:// URI (provedores como o Google Drive
         // usam IDs opacos ali) - sem essa query não dá pra mostrar o nome escolhido na tela nem
         // reconhecer que o arquivo é um backup.
@@ -44,12 +44,22 @@ namespace GDSB.MAUI.Platforms.Android.Services
             {
                 var resolver = Platform.CurrentActivity?.ContentResolver
                     ?? global::Android.App.Application.Context.ContentResolver;
+
+                // Uri.Parse devolve null quando a location não é um URI válido - sem URI não há o
+                // que perguntar ao provedor, então cai direto no fallback do fim do método.
                 var uri = global::Android.Net.Uri.Parse(location);
 
-                using var cursor = resolver?.Query(uri, new[] { OpenableColumns.DisplayName }, null, null, null);
+                // A classe OpenableColumns foi depreciada no binding do Android em favor da
+                // interface IOpenableColumns. O nome da coluna é anulável ali, e sem ele não há
+                // projeção para consultar - cai no fallback junto com o URI inválido.
+                var displayNameColumn = IOpenableColumns.DisplayName;
+
+                using var cursor = uri is null || displayNameColumn is null
+                    ? null
+                    : resolver?.Query(uri, new[] { displayNameColumn }, null, null, null);
                 if (cursor is not null && cursor.MoveToFirst())
                 {
-                    var columnIndex = cursor.GetColumnIndex(OpenableColumns.DisplayName);
+                    var columnIndex = cursor.GetColumnIndex(displayNameColumn);
                     if (columnIndex >= 0)
                     {
                         var name = cursor.GetString(columnIndex);
@@ -81,18 +91,20 @@ namespace GDSB.MAUI.Platforms.Android.Services
             var tcs = new TaskCompletionSource<string>();
             var activity = Platform.CurrentActivity;
 
+            // Cadeia vazia é o "não escolheu nada" que os chamadores já tratam com
+            // string.IsNullOrEmpty (PickFileNameAsync aqui e os ViewModels do outro lado).
             if (activity is null)
             {
-                tcs.SetResult(null);
+                tcs.SetResult(string.Empty);
                 return tcs.Task;
             }
 
             MainActivity.RegisterDocumentPickCallback(requestCode, (resultCode, data) =>
             {
                 var uri = resultCode == Result.Ok ? data?.Data : null;
-                if (uri is null)
+                if (data is null || uri is null)
                 {
-                    tcs.TrySetResult(null);
+                    tcs.TrySetResult(string.Empty);
                     return;
                 }
 

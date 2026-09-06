@@ -12,7 +12,10 @@ namespace GDSB.MAUI.Platforms.Android
         public static void Hide()
         {
             var activity = Platform.CurrentActivity;
-            var decorView = activity?.Window?.DecorView;
+            if (activity is null)
+                return;
+
+            var decorView = activity.Window?.DecorView;
             if (decorView is null)
                 return;
 
