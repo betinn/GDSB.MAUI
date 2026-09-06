@@ -91,7 +91,7 @@ Prefixo de branch da rodada: **`warnings-zero`**.
 | # | Fase | Depende de | Warnings | Status | PR |
 |---|------|------------|---------:|--------|-----|
 | 0 | Contexto e plano | — | — | ✅ | — |
-| 1 | `TrExtension` + NU1608 | 0 | −181 | ⬜ | — |
+| 1 | `TrExtension` + NU1608 | 0 | −181 | ✅ | [#32](https://github.com/betinn/GDSB.MAUI/pull/32) |
 | 2 | Nulabilidade nas camadas de plataforma | 0 | −27 | ⬜ | — |
 | 3 | APIs obsoletas (`CS0618`) | 0 | −10 | ⬜ | — |
 | 4 | `x:DataType` — páginas sem `CollectionView` | 0 | −211 | ⬜ | — |
@@ -99,6 +99,13 @@ Prefixo de branch da rodada: **`warnings-zero`**.
 | 6 | Trava por processo (agentes reportam warning) | 1–5 | ±0 | ⬜ | — |
 
 As fases 1, 2 e 3 não se cruzam e podem ir em paralelo; a 5 depende da 4.
+
+Saldo depois da fase 1, relido dos logs do run 34002213953: `build-android` fecha em **335
+warnings**, `build-windows` em **327**, e a união deduplicada por código + `arquivo:linha:coluna`
+dá **338 distintos** — dois a menos que os 340 previstos. Zero `XC0103`, zero `NU1608` e, o que
+importava conferir, **zero `NU1605`**: fixar as `.Ktx` não virou downgrade. Nenhum código novo
+apareceu; o que sobrou é exatamente `XC0022`, `XC0025`, `CS0618`, `CS8600`, `CS8602`, `CS8603`,
+`CS8604` e `CS8625`.
 
 ### Decisões fechadas com o usuário nessa rodada (não relitigar)
 
