@@ -38,6 +38,10 @@ resumo que ele devolve. Isso mantém log de build fora do seu contexto e do cont
 3. Corrija o que falhou e repita. Só devolva com os dois verdes — ou com uma explicação precisa de
    por que uma falha é do código de produção e não do teste.
 
+**Teste verde com warning na saída do `dotnet test` não é "passou"** — o `verificador` reporta
+contagem de warning por código mesmo com os dois projetos passando; se aparecer algum, é pendência
+sua tanto quanto uma falha de asserção, e entra no mesmo ciclo de correção do passo 3.
+
 ## Limites
 
 Não edite código de produção para fazer um teste passar: se o teste revela um bug, reporte ao

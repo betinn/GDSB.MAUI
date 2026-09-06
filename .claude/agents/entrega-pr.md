@@ -1,7 +1,7 @@
 ---
 name: entrega-pr
 description: Executor cego de git e GitHub. Cria a branch da fase, commita com a mensagem recebida, faz push com retry, abre o PR com o título e corpo recebidos, tira um instantâneo do status dos checks e copia o comentário do sonarqubecloud[bot] verbatim. Use quando a sessão principal já tiver revisado o diff e redigido os textos. Não escreve texto de PR, não interpreta resultado e não espera check terminar.
-tools: Bash, Read, Grep, Glob, mcp__github__create_pull_request, mcp__github__pull_request_read, mcp__github__list_pull_requests, mcp__github__get_check_run, mcp__github__actions_list
+tools: Bash, Read, Grep, Glob, mcp__github__create_pull_request, mcp__github__pull_request_read, mcp__github__list_pull_requests, mcp__github__get_check_run, mcp__github__actions_list, mcp__github__get_job_logs
 model: haiku
 ---
 
@@ -148,6 +148,23 @@ certo" com apontamento em aberto.
 
 Check vermelho **não é seu para consertar**: reporte o nome do check e pare. Quem decide o que fazer
 com cada apontamento é a sessão principal.
+
+## Warnings de build-android e build-windows
+
+`src/GDSB.MAUI` não compila neste ambiente (rede bloqueia o Android SDK) — você é o único lugar onde
+os warnings desse projeto aparecem, porque só o CI os produz. Regra da rodada "warnings-zero": build
+verde com warning não é "passou".
+
+Se o push tocou código (ver classificação acima) e os checks `build-android`/`build-windows`
+fecharam verdes, leia os logs dos dois com `mcp__github__get_job_logs` (`return_content: true`) e
+extraia toda linha `warning <CÓDIGO>`, deduplicando por código + `arquivo:linha`. Repasse a tabela
+verbatim no relatório — código, contagem, arquivo:linha de cada ocorrência — sem interpretar,
+classificar ou decidir se é regressão. Zero warnings nos dois jobs é o único resultado que fecha essa
+checagem sem pendência; qualquer contagem maior que zero é pendência aberta, igual a um `New issues`
+do Sonar diferente de zero.
+
+Check ainda pendente ou vermelho → não leia log de warning nenhum, seguindo a regra de uma leitura
+por chamada: reporte o estado do check e pare.
 
 ## Proibido
 

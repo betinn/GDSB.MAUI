@@ -66,3 +66,16 @@ Rodar antes de todo push que mexa em `src/GDSB.MAUI` (o agente `verificador` exe
 `.github/workflows/build.yml`, em todo PR para a `main`: `test` (os dois projetos xUnit),
 `build-android` (ubuntu, `-p:GdsbAndroidOnly=true`) e `build-windows`. O SonarCloud roda como check
 separado, via GitHub App — não é step do workflow, não tem log acessível daqui.
+
+## Warnings de build — linha de base e trava por processo
+
+A rodada "warnings-zero" fechou o passivo de 521 warnings distintos (dedup por código +
+`arquivo:linha`) do inventário inicial em **0**. Não é `TreatWarningsAsErrors` — é processo: build ou
+teste verde com warning não é "passou", nem aqui nem no CI. `verificador`, `testes` e `entrega-pr`
+reportam contagem de warning por código sempre, mesmo quando o comando não falha.
+
+Para reextrair a contagem de um run do CI (o único lugar onde `src/GDSB.MAUI`/`net10.0-android`
+compila): `mcp__github__get_job_logs` com `return_content: true` nos jobs `build-android` e
+`build-windows`, coletar toda linha `warning <CÓDIGO>` e deduplicar por código + `arquivo:linha`. Um
+número maior que zero é regressão da rodada — trate como pendência de PR, não como ruído do
+ambiente.
