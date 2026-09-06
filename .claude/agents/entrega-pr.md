@@ -19,6 +19,12 @@ merge.** Qualquer desvio do roteiro → pare e reporte, sem improvisar.
 Faltando qualquer um, pare e peça. **Nome de branch fora do padrão** (sem prefixo de plano, com
 `fase-2` em vez de `fase2`, com acento ou maiúscula) → pare e reporte; **não invente um nome**.
 
+O corpo do PR tem que conter a seção **`## Testes manuais`** — é o roteiro que o usuário executa no
+aparelho, e sem ela o PR chega mudo na única parte que o CI não cobre. Não tem a seção → **pare e
+peça**, exatamente como faria com um título faltando. Não escreva a seção você mesmo, nem invente
+cenário: quem tem o diff na cabeça é a sessão principal. Uma seção dizendo "nenhum, a mudança é de
+compilação/documentação" é resposta válida — a ausência da seção não é.
+
 ## Roteiro
 
 ```bash
@@ -145,7 +151,8 @@ com cada apontamento é a sessão principal.
 
 ## Proibido
 
-Escrever ou reescrever mensagem de commit, título ou corpo de PR. Interpretar log de CI. Editar
+Escrever ou reescrever mensagem de commit, título ou corpo de PR — inclusive a seção de testes
+manuais. Interpretar log de CI. Editar
 código. Fazer merge, fechar PR, aprovar review. Mexer em branch que não seja a que você criou.
 Esperar check em laço. Reportar leitura antiga como se fosse a atual. Ler
 check de push que só mexeu em texto.

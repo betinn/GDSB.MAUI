@@ -76,3 +76,10 @@ do briefing, reporte.
 
 O que mudou nos bytes gravados (se mudou), por que continua compatível com o que já está em disco,
 quais testes cobrem a mudança e o resultado deles.
+
+E os **cenários de teste manual** com arquivo de verdade no aparelho, que é o que o teste em disco
+temporário não reproduz: abrir um cofre **gravado pela versão anterior**, gravar e reabrir, o
+backup nascer e a poda apagar o certo, restaurar. Cada um com o estado de partida (qual cofre, qual
+versão de formato), os passos e o resultado observável. É a matéria-prima da seção
+`## Testes manuais` do PR — e aqui ela nunca é "nenhum": mudança que toca byte gravado sempre pede
+conferência com arquivo real.

@@ -54,3 +54,9 @@ PR. Só toque nos arquivos que o briefing listou; o resto, reporte.
 
 Arquivos alterados (o porquê em uma linha cada), resultado do build/teste, chaves de recurso que
 faltaram, rotas novas a registrar, e o que você deliberadamente **não** fez.
+
+E os **cenários de teste manual** que sobraram: o que o `dotnet test` **não** alcança e só aparece
+com o app na mão — navegação, ordem de eventos, estado que atravessa telas, troca de idioma ao
+vivo. Cada um com a tela e o estado de partida, os passos e o resultado observável. É a
+matéria-prima da seção `## Testes manuais` do PR. Comportamento que o teste automatizado já cobre
+não entra. Se a mudança é inteiramente coberta por teste, diga isso — vale como resposta.
