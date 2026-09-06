@@ -5,14 +5,16 @@
              xmlns:converters="clr-namespace:GDSB.MAUI.Converters"
              xmlns:views="clr-namespace:GDSB.MAUI.Views"
              xmlns:loc="clr-namespace:GDSB.MAUI.Localization"
+             xmlns:vm="clr-namespace:GDSB.MAUI.ViewModels;assembly=GDSB.MAUI.ViewModels"
              x:Class="GDSB.MAUI.BackupRecoveryPage"
+             x:DataType="vm:BackupRecoveryViewModel"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource SurfaceDark}">
 
     <ContentPage.Resources>
         <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
 
-        <DataTemplate x:Key="BackupCardTemplate">
+        <DataTemplate x:Key="BackupCardTemplate" x:DataType="vm:BackupItemViewModel">
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,10">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="{Binding VaultName}" FontFamily="OpenSansSemibold" FontSize="15"
@@ -33,13 +35,11 @@
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
                         <Button Grid.Column="0" Text="{loc:Tr BackupRecovery_RestoreButton}" Style="{StaticResource SecondaryActionButtonStyle}"
                                 HeightRequest="42"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.BeginRestoreCommand}"
-                                CommandParameter="{Binding .}" />
+                                Command="{Binding BeginRestoreCommand}" />
                         <Button Grid.Column="1" Text="{loc:Tr Common_Delete}" HeightRequest="42"
                                 BackgroundColor="Transparent" TextColor="{StaticResource Danger}"
                                 BorderColor="{StaticResource Danger}" BorderWidth="1"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.PromptDeleteCommand}"
-                                CommandParameter="{Binding .}" />
+                                Command="{Binding PromptDeleteCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>

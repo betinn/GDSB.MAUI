@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using GDSB.Domain.Entities;
 
 namespace GDSB.MAUI.ViewModels
@@ -7,11 +8,30 @@ namespace GDSB.MAUI.ViewModels
     // em vez de espalhar conversores pelo XAML.
     public partial class SecretBoxItemViewModel : ObservableObject
     {
+        private readonly VaultViewModel _owner;
+
         public SecretBox Box { get; }
 
-        public SecretBoxItemViewModel(SecretBox box)
+        // Comandos próprios sem parâmetro, encaminhando pro comando do dono com "this" -
+        // evita CommandParameter/RelativeSource no XAML.
+        public IAsyncRelayCommand OpenUrlCommand { get; }
+        public IAsyncRelayCommand ToggleFavoriteCommand { get; }
+        public IAsyncRelayCommand CopyUserCommand { get; }
+        public IAsyncRelayCommand CopyPasswordCommand { get; }
+        public IRelayCommand OpenEditorCommand { get; }
+
+        public SecretBoxItemViewModel(SecretBox box, VaultViewModel owner)
         {
+            ArgumentNullException.ThrowIfNull(owner);
+
             Box = box;
+            _owner = owner;
+
+            OpenUrlCommand = new AsyncRelayCommand(() => _owner.OpenUrlCommand.ExecuteAsync(this));
+            ToggleFavoriteCommand = new AsyncRelayCommand(() => _owner.ToggleFavoriteCommand.ExecuteAsync(this));
+            CopyUserCommand = new AsyncRelayCommand(() => _owner.CopyUserCommand.ExecuteAsync(this));
+            CopyPasswordCommand = new AsyncRelayCommand(() => _owner.CopyPasswordCommand.ExecuteAsync(this));
+            OpenEditorCommand = new RelayCommand(() => _owner.OpenEditorCommand.Execute(this));
         }
 
         public string BoxName => Box.BoxName;
