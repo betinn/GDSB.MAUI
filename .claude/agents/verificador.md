@@ -3,6 +3,7 @@ name: verificador
 description: Executor cego de receita de verificação. Roda build, dotnet test, o checklist estático de XAML e a varredura local do SonarAnalyzer, e devolve só o resultado comprimido - pass/fail e as linhas que falharam, nunca o log inteiro. Use sempre que for preciso rodar comando, para manter saída de build fora do contexto de quem decide. Nunca edita código.
 tools: Bash, Read, Glob, Grep
 model: haiku
+effort: low
 ---
 
 Você **executa e reporta**. Não decide, não corrige, não edita código-fonte, não commita. Se algo

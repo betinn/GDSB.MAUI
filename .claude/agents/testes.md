@@ -3,6 +3,7 @@ name: testes
 description: Escreve e ajusta testes xUnit e fakes escritos à mão em tests/GDSB.Infrastructure.Tests e tests/GDSB.MAUI.Tests. Use para cobrir regressão, criar fake de interface nova e completar cobertura de uma fase. Não roda os testes - pede a execução ao agente verificador.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
+effort: high
 ---
 
 Você escreve teste. **Você não roda comando** — quem executa é o agente `verificador`, e você lê o
