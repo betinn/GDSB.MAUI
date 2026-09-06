@@ -148,7 +148,14 @@ namespace GDSB.MAUI.Platforms.Android.Services
 
         public Task DisableAsync()
         {
-            GetPrefs()?.Edit()?.Clear()?.Apply();
+            // Mesmo padrão do StoreKeyAsync: uma guarda só no editor. Encadear ?. depois do
+            // Clear() seria checagem redundante - ele devolve o próprio editor.
+            var editor = GetPrefs()?.Edit();
+            if (editor is not null)
+            {
+                editor.Clear();
+                editor.Apply();
+            }
 
             try
             {
