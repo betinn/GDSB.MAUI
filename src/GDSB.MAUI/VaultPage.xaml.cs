@@ -72,12 +72,12 @@ public partial class VaultPage : ContentPage
         _toastCts = cts;
 
         ToastLabel.Text = message;
-        await ToastBorder.FadeTo(1, 120);
+        await ToastBorder.FadeToAsync(1, 120);
 
         try
         {
             await Task.Delay(1600, cts.Token);
-            await ToastBorder.FadeTo(0, 220);
+            await ToastBorder.FadeToAsync(0, 220);
         }
         catch (TaskCanceledException)
         {
@@ -176,13 +176,13 @@ public partial class VaultPage : ContentPage
         {
             // Completa a saída antes de fechar de fato, senão o IsVisible=False do binding cortaria
             // a folha no meio da tela em vez de deixá-la terminar de sair.
-            await EditorSheet.TranslateTo(0, height, 160, Easing.CubicIn);
+            await EditorSheet.TranslateToAsync(0, height, 160, Easing.CubicIn);
             _viewModel.CloseEditorCommand.Execute(null);
             ResetSheet();
         }
         else
         {
-            await EditorSheet.TranslateTo(0, 0, 140, Easing.CubicOut);
+            await EditorSheet.TranslateToAsync(0, 0, 140, Easing.CubicOut);
             ResetSheet();
         }
     }
