@@ -4,6 +4,10 @@ namespace GDSB.MAUI.Localization
     // resolvida na hora) - é isso que dá a troca de idioma ao vivo: o binding fica vivo, ligado ao
     // indexador de ILocalizationService, e reavalia sozinho quando o serviço notifica (ver
     // LocalizationService.SetLanguage e o "ponto de risco" documentado no plano da fase 1).
+    // AcceptEmptyServiceProvider: ProvideValue não lê nada do IServiceProvider - a fonte do binding
+    // sai de Source ou do LocalizationServiceLocator. Sem o atributo, o compilador de XAML emite um
+    // XC0103 por ponto de uso de "{loc:Tr ...}" (172 no projeto) e cai para a resolução em runtime.
+    [AcceptEmptyServiceProvider]
     [ContentProperty(nameof(Key))]
     public sealed class TrExtension : IMarkupExtension<BindingBase>
     {
