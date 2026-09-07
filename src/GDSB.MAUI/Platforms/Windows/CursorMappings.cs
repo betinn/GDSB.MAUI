@@ -16,8 +16,13 @@ namespace GDSB.MAUI.Platforms.Windows
         // passaria despercebido: o mapeamento simplesmente não valeria, sem erro nenhum.
         private const string MappingKey = "HoverCursor";
 
+        // Bypass de acessibilidade revisado e intencional: ver o comentário de bloco no topo do
+        // arquivo - é a técnica documentada pela comunidade .NET MAUI/WinUI para setar o cursor
+        // de hover, não um acesso indevido a estado interno.
+#pragma warning disable S3011
         private static readonly PropertyInfo? ProtectedCursorProperty =
             typeof(UIElement).GetProperty("ProtectedCursor", BindingFlags.Instance | BindingFlags.NonPublic);
+#pragma warning restore S3011
 
         private static readonly Lazy<InputCursor> HandCursor =
             new(() => InputSystemCursor.Create(InputSystemCursorShape.Hand));
